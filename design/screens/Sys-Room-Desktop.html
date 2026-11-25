@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>房間模擬器 · 桌機 · 雙視圖</title>
+<!-- 設計稿:房間模擬器 · 桌機 · 雙視圖(1440 × 900)。樣式全部來自 ../gongban.css,這個檔案沒有自己的樣式。 -->
+<link rel="stylesheet" href="../gongban.css">
+<style>body{margin:0;background:#888}</style>
+</head>
+<body>
+<div class="gb gb-app gb-app--wide" style="width: 1440px; height: 900px">
+
+  <div class="gb-app__top">
+    <header class="gb-appbar">
+      <a class="gb-appbar__home" href="#" aria-label="回正經工班工作工具"><span class="gb-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span></a>
+      <div class="gb-appbar__titles"><span class="gb-appbar__tool">房間模擬器</span><button type="button" class="gb-appbar__project" aria-label="專案名稱:我的第一個空間,點一下改名">我的第一個空間</button></div>
+      <span class="gb-status" role="status" style="margin-right: 12px">已儲存</span>
+      <div class="gb-appbar__center gb-dense">
+        <div class="gb-seg" role="group" aria-label="檢視切換">
+          <button type="button" class="gb-seg__item" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h7v10"/></svg>平面</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>3D</button>
+          <button type="button" class="gb-seg__item" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M12 4v16"/></svg>雙視圖</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M6 12V6h12v6M9 12v6h6v-6"/></svg>剖面</button>
+        </div>
+      </div>
+      <div class="gb-appbar__actions" style="margin-left: 12px">
+        <button type="button" class="gb-iconbtn" aria-label="復原"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+        <button type="button" class="gb-iconbtn" aria-label="重做" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+        <button type="button" class="gb-btn gb-dense"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>檔案</button>
+      </div>
+    </header>
+  </div>
+
+  <div class="gb-app__body">
+
+    <aside class="gb-app__side gb-panel gb-panel--left gb-dense" aria-label="空間結構">
+      <div class="gb-panel__head">
+        <h2 class="gb-panel__title">空間結構</h2><span class="gb-panel__count">4 件</span>
+        <button type="button" class="gb-btn gb-btn--primary" style="margin-right: 8px"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>新增</button>
+      </div>
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--gb-line)">
+        <div class="gb-seg gb-seg--block" role="group" aria-label="篩選結構">
+          <button type="button" class="gb-seg__item" aria-pressed="true">全部</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false">樑柱隔間</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false">門窗</button>
+        </div>
+      </div>
+      <div class="gb-panel__body gb-list" role="listbox" aria-label="結構">
+        <button type="button" class="gb-row" role="option" aria-selected="false"><i class="gb-row__swatch gb-row__swatch--concrete"></i><span class="gb-row__main"><span class="gb-row__name">房間輪廓</span><span class="gb-row__meta">6 個轉角 · 房高 2,800 mm</span></span></button>
+        <button type="button" class="gb-row" role="option" aria-selected="true"><i class="gb-row__swatch gb-row__swatch--concrete"></i><span class="gb-row__main"><span class="gb-row__name">柱 01</span><span class="gb-row__meta">350 × 350 × 2,800 mm</span></span><span class="gb-row__end"><svg class="gb-icon" viewBox="0 0 24 24" role="img" aria-label="尺寸未確認" style="color: var(--gb-warn)"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg></span></button>
+        <button type="button" class="gb-row" role="option" aria-selected="false"><i class="gb-row__swatch gb-row__swatch--concrete"></i><span class="gb-row__main"><span class="gb-row__name">柱 02</span><span class="gb-row__meta">350 × 350 × 2,800 mm</span></span></button>
+        <button type="button" class="gb-row" role="option" aria-selected="false"><i class="gb-row__swatch gb-row__swatch--concrete"></i><span class="gb-row__main"><span class="gb-row__name">樑 01</span><span class="gb-row__meta">6,000 × 350 × 400 mm</span></span></button>
+      </div>
+      <div class="gb-section" style="border-top: 1px solid var(--gb-line); border-bottom: 0; gap: 4px">
+        <div class="gb-stat"><span class="gb-stat__label">可用地坪</span><span class="gb-stat__value">20.76 m²</span></div>
+        <span class="gb-caption gb-num" style="align-self: flex-end; color: var(--gb-ink-2)">6.28 坪 · 原始 21.00 m²</span>
+      </div>
+    </aside>
+
+    <div class="gb-split">
+      <main class="gb-canvas gb-canvas--paper">
+        <div class="gb-canvas__tl"><span class="gb-canvas__label">平面圖 · 單位 mm</span></div>
+        <div class="gb-canvas__tr"><span class="gb-canvas__label gb-num">剖切高 1,200</span></div>
+        <div class="gb-canvas__stage" style="left: 60px; top: 250px; width: 300px; height: 225px">
+          <svg role="img" aria-label="L 形房間的平面圖,寬 6,000、深 4,500 公釐,柱 01 為選中狀態" viewBox="0 0 300 225">
+            <path d="M0 0H300V125H150V225H0Z M6 6V219H144V119H294V6Z" fill-rule="evenodd" style="fill: var(--mat-concrete); stroke: var(--gb-ink-2); stroke-width: 1px"/>
+            <rect class="gb-hidden-line" x="6" y="6" width="288" height="17.5"/>
+            <rect x="6" y="6" width="17.5" height="17.5" style="fill: var(--mat-cut)"/>
+            <rect x="276.5" y="6" width="17.5" height="17.5" style="fill: var(--mat-cut)"/>
+            <path class="gb-dimline" d="M0 -30H300M0 -36V-24M300 -36V-24"/>
+            <path class="gb-dimline" d="M-30 0V225M-36 0H-24M-36 225H-24"/>
+            <path class="gb-dimline" d="M330 0V125M324 0H336M324 125H336"/>
+            <path class="gb-dimline" d="M0 255H150M0 249V261M150 249V261"/>
+            <path class="gb-dimline" d="M150 155H300M150 149V161M300 149V161"/>
+            <path class="gb-dimline" d="M180 125V225M174 125H186M174 225H186"/>
+            <rect class="gb-sel-halo" x="6" y="6" width="17.5" height="17.5"/>
+            <rect class="gb-sel" x="6" y="6" width="17.5" height="17.5"/>
+            <circle class="gb-handle" cx="294" cy="119" r="4"/>
+            <circle class="gb-handle" cx="144" cy="119" r="4"/>
+            <circle class="gb-handle" cx="144" cy="219" r="4"/>
+            <circle class="gb-handle" cx="6" cy="219" r="4"/>
+          </svg>
+          <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯尺寸 6,000 mm" style="left: 150px; top: -30px">6,000</button>
+          <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯尺寸 4,500 mm" style="left: -30px; top: 112px">4,500</button>
+          <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯尺寸 2,500 mm" style="left: 330px; top: 62px">2,500</button>
+          <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯尺寸 3,000 mm" style="left: 75px; top: 255px">3,000</button>
+          <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯尺寸 3,000 mm" style="left: 225px; top: 155px">3,000</button>
+          <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯尺寸 2,000 mm" style="left: 180px; top: 190px">2,000</button>
+          <span class="gb-tag gb-canvas__chip" style="left: 54px; top: 42px">柱 01</span>
+          <span class="gb-caption gb-canvas__chip" style="left: 150px; top: 38px; font-weight: 600; color: var(--gb-ink-2)">樑 01</span>
+          <span class="gb-caption gb-canvas__chip" style="left: 252px; top: 38px; font-weight: 600; color: var(--gb-ink-2)">柱 02</span>
+          <span class="gb-canvas__chip" style="left: 75px; top: 165px; text-align: center; white-space: nowrap"><span class="gb-num-display" style="display: block">21.00 m²</span><span class="gb-caption" style="color: var(--gb-ink-2)">約 6.35 坪</span></span>
+        </div>
+        <div class="gb-canvas__bc">
+          <div class="gb-dock" role="toolbar" aria-label="平面圖工具">
+            <button type="button" class="gb-iconbtn" aria-label="選取" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 4 6 15 2.5-6.5L20 10z"/></svg></button>
+            <button type="button" class="gb-iconbtn" aria-label="平移畫面"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button>
+            <button type="button" class="gb-iconbtn" aria-label="重畫輪廓"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v8h-7v6H5z"/></svg></button>
+            <button type="button" class="gb-iconbtn" aria-label="量測"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 14-14 4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button type="button" class="gb-iconbtn" aria-label="磁吸貼齊" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8a6 6 0 0 0 12 0V4h-4v8a2 2 0 0 1-4 0V4z"/><path d="M6 8h4M14 8h4"/></svg></button>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button type="button" class="gb-iconbtn" aria-label="顯示全部"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg></button>
+          </div>
+        </div>
+      </main>
+
+      <section class="gb-canvas" aria-label="3D 檢視">
+        <div class="gb-canvas__tl"><span class="gb-canvas__label">等角 3D · 與平面圖同步</span></div>
+        <div class="gb-canvas__stage" style="left: 20px; top: 230px; width: 380px; height: 300px">
+          <svg role="img" aria-label="同一個房間的等角 3D:兩面後牆、兩根柱與一支樑,柱 01 為選中狀態" viewBox="0 0 380 300">
+            <polygon points="170,130 377.8,250 291.2,300 187.3,240 118,280 14.1,220" style="fill: var(--mat-concrete-light); stroke: var(--mat-concrete-dark)"/>
+            <polygon points="170,130 14.1,220 14.1,108 170,18" style="fill: var(--mat-concrete-light); stroke: var(--mat-concrete-dark)"/>
+            <polygon points="170,130 377.8,250 377.8,138 170,18" style="fill: var(--mat-concrete); stroke: var(--mat-concrete-dark)"/>
+            <polygon points="170,32 353.6,138 353.6,154 170,48" style="fill: var(--mat-concrete-dark); stroke: var(--gb-ink-2)"/>
+            <polygon points="353.6,250 365.7,257 365.7,145 353.6,138" style="fill: var(--mat-concrete-light); stroke: var(--gb-ink-2)"/>
+            <polygon points="365.7,257 377.8,250 377.8,138 365.7,145" style="fill: var(--mat-concrete-dark); stroke: var(--gb-ink-2)"/>
+            <polygon points="157.9,137 170,144 170,32 157.9,25" style="fill: var(--mat-concrete-light); stroke: var(--gb-ink-2)"/>
+            <polygon points="170,144 182.1,137 182.1,25 170,32" style="fill: var(--mat-concrete-dark); stroke: var(--gb-ink-2)"/>
+            <polygon class="gb-sel-halo" points="157.9,137 170,144 182.1,137 182.1,25 170,18 157.9,25"/>
+            <polygon class="gb-sel" points="157.9,137 170,144 182.1,137 182.1,25 170,18 157.9,25"/>
+          </svg>
+          <span class="gb-tag gb-canvas__chip" style="left: 214px; top: 96px">柱 01</span>
+          <span class="gb-dim gb-dim--ref gb-canvas__chip" style="left: 26px; top: 164px">2,800</span>
+          <span class="gb-dim gb-dim--ref gb-canvas__chip" style="left: 62px; top: 262px">4,500</span>
+          <span class="gb-dim gb-dim--ref gb-canvas__chip" style="left: 340px; top: 284px">2,500</span>
+        </div>
+        <div class="gb-canvas__bc">
+          <div class="gb-dock" role="toolbar" aria-label="3D 視角">
+            <span class="gb-select gb-dense" style="width: 132px"><select aria-label="視角"><option>等角視角</option><option>俯視</option><option>正視</option></select></span>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button type="button" class="gb-iconbtn" aria-label="顯示外周牆" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button type="button" class="gb-iconbtn" aria-label="縮小"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <button type="button" class="gb-iconbtn" aria-label="放大"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="gb-app__side gb-panel gb-panel--right gb-dense" aria-label="柱 01 的設定">
+      <div class="gb-panel__head">
+        <i class="gb-row__swatch gb-row__swatch--concrete"></i>
+        <h2 class="gb-panel__title" style="margin-right: auto">柱 01</h2>
+        <button type="button" class="gb-iconbtn" aria-label="更多操作"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      </div>
+      <div class="gb-panel__body">
+        <div class="gb-section">
+          <div class="gb-notice" role="status"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg>
+            <div class="gb-notice__body"><strong class="gb-notice__title">尺寸未確認</strong>現場量過後按「確認尺寸」。</div></div>
+          <label class="gb-field"><span class="gb-field__label">名稱</span><span class="gb-input"><input class="gb-input__control" type="text" value="柱 01"></span></label>
+          <div class="gb-grid-2">
+            <label class="gb-field"><span class="gb-field__label">寬度</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="350"><span class="gb-input__unit">mm</span></span></label>
+            <label class="gb-field"><span class="gb-field__label">深度</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="350"><span class="gb-input__unit">mm</span></span></label>
+          </div>
+          <label class="gb-field"><span class="gb-field__label">高度</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="2,800"><span class="gb-input__unit">mm</span></span><span class="gb-field__hint">與房高相同</span></label>
+        </div>
+        <div class="gb-section">
+          <h3 class="gb-section__title">位置</h3>
+          <div class="gb-grid-2">
+            <label class="gb-field"><span class="gb-field__label">距左牆</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="0"><span class="gb-input__unit">mm</span></span></label>
+            <label class="gb-field"><span class="gb-field__label">距上牆</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="0"><span class="gb-input__unit">mm</span></span></label>
+          </div>
+          <div class="gb-grid-2">
+            <button type="button" class="gb-btn" aria-pressed="true">鎖定位置</button>
+            <button type="button" class="gb-btn">貼齊轉角</button>
+          </div>
+        </div>
+        <div class="gb-section" style="border-bottom: 0">
+          <h3 class="gb-section__title">顯示</h3>
+          <div class="gb-seg gb-seg--block" role="group" aria-label="在平面圖的畫法">
+            <button type="button" class="gb-seg__item" aria-pressed="true">剖切</button>
+            <button type="button" class="gb-seg__item" aria-pressed="false">上方投影</button>
+            <button type="button" class="gb-seg__item" aria-pressed="false">隱藏</button>
+          </div>
+        </div>
+      </div>
+      <div class="gb-panel__foot">
+        <button type="button" class="gb-btn gb-btn--primary" style="flex: 1"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>確認尺寸</button>
+        <button type="button" class="gb-btn gb-btn--danger"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>刪除</button>
+      </div>
+    </aside>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="../gongban.css"><meta charset="utf-8"><title>Panel — preview</title></head>
+<body class="gb gb-preview" style="padding:0;align-items:stretch">
+  <aside class="gb-panel gb-panel--left gb-dense" style="width:328px;height:470px">
+    <div class="gb-panel__head"><h2 class="gb-panel__title">構件設定</h2><span class="gb-panel__count"></span>
+      <button type="button" class="gb-iconbtn" aria-label="收合面板"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M15 4v16"/></svg></button></div>
+    <div class="gb-panel__body">
+      <div class="gb-section">
+        <label class="gb-field"><span class="gb-field__label">構件名稱</span><span class="gb-input"><input class="gb-input__control" type="text" value="下橫料"></span></label>
+        <div class="gb-grid-2">
+          <label class="gb-field"><span class="gb-field__label">裁切長度</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="decimal" value="60"><span class="gb-input__unit">cm</span></span></label>
+          <div class="gb-field"><span class="gb-field__label">斷面</span><span class="gb-input" data-readonly="true"><input class="gb-input__control gb-num" value="3.2 × 2.6" readonly aria-label="斷面"><span class="gb-input__unit">cm</span></span></div>
+        </div>
+      </div>
+      <div class="gb-section">
+        <h3 class="gb-section__title">貼齊到其他構件</h3>
+        <div class="gb-grid-3"><button type="button" class="gb-btn">貼左面</button><button type="button" class="gb-btn">貼右面</button><button type="button" class="gb-btn">疊上方</button></div>
+      </div>
+      <div class="gb-section">
+        <div class="gb-stat"><span class="gb-stat__label">外廓</span><span class="gb-stat__value">60 × 2.6 × 60</span></div>
+      </div>
+    </div>
+    <div class="gb-panel__foot"><button type="button" class="gb-btn" style="flex:1">複製構件</button><button type="button" class="gb-btn gb-btn--danger">刪除</button></div>
+  </aside>
+</body>
+</html>

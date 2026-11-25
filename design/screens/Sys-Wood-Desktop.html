@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>木工設計 · 桌機 · 3D 組裝</title>
+<!-- 設計稿:木工設計 · 桌機 · 3D 組裝(1440 × 900)。樣式全部來自 ../gongban.css,這個檔案沒有自己的樣式。 -->
+<link rel="stylesheet" href="../gongban.css">
+<style>body{margin:0;background:#888}</style>
+</head>
+<body>
+<div class="gb gb-app gb-app--wide" style="width: 1440px; height: 900px">
+
+  <div class="gb-app__top">
+    <header class="gb-appbar">
+      <a class="gb-appbar__home" href="#" aria-label="回正經工班工作工具"><span class="gb-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span></a>
+      <div class="gb-appbar__titles"><span class="gb-appbar__tool">木工設計</span><button type="button" class="gb-appbar__project" aria-label="專案名稱:60×60 正方形木框,點一下改名">60×60 正方形木框</button></div>
+      <span class="gb-status" role="status" style="margin-right: 12px">已儲存</span>
+      <div class="gb-appbar__center gb-dense">
+        <div class="gb-seg" role="group" aria-label="檢視切換">
+          <button type="button" class="gb-seg__item" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>3D 組裝</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h7v10"/></svg>設計圖紙</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M12 4v16"/></svg>圖紙+3D</button>
+        </div>
+      </div>
+      <div class="gb-appbar__actions" style="margin-left: 12px">
+        <button type="button" class="gb-iconbtn" aria-label="復原"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+        <button type="button" class="gb-iconbtn" aria-label="重做" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+        <button type="button" class="gb-btn gb-dense"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>檔案</button>
+      </div>
+    </header>
+  </div>
+
+  <div class="gb-app__body">
+
+    <aside class="gb-app__side gb-panel gb-panel--left gb-dense" aria-label="構件清單">
+      <div class="gb-panel__head">
+        <h2 class="gb-panel__title">構件清單</h2><span class="gb-panel__count">4 件</span>
+        <button type="button" class="gb-btn gb-btn--primary" style="margin-right: 8px"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>新增</button>
+      </div>
+      <div class="gb-panel__body gb-list" role="listbox" aria-label="構件">
+        <button type="button" class="gb-row" role="option" aria-selected="true"><i class="gb-row__swatch"></i><span class="gb-row__main"><span class="gb-row__name">下橫料</span><span class="gb-row__meta">60 cm · 3.2 × 2.6 · 角材</span></span></button>
+        <button type="button" class="gb-row" role="option" aria-selected="false"><i class="gb-row__swatch"></i><span class="gb-row__main"><span class="gb-row__name">上橫料</span><span class="gb-row__meta">60 cm · 3.2 × 2.6 · 角材</span></span></button>
+        <button type="button" class="gb-row" role="option" aria-selected="false"><i class="gb-row__swatch"></i><span class="gb-row__main"><span class="gb-row__name">左立柱</span><span class="gb-row__meta">53.6 cm · 3.2 × 2.6 · 角材</span></span></button>
+        <button type="button" class="gb-row" role="option" aria-selected="false"><i class="gb-row__swatch"></i><span class="gb-row__main"><span class="gb-row__name">右立柱</span><span class="gb-row__meta">53.6 cm · 3.2 × 2.6 · 角材</span></span></button>
+      </div>
+      <div class="gb-section" style="border-top: 1px solid var(--gb-line); border-bottom: 0">
+        <h3 class="gb-section__title">台尺換算</h3>
+        <div class="gb-grid-2">
+          <span class="gb-input"><input class="gb-input__control gb-num" inputmode="decimal" value="60" aria-label="公分"><span class="gb-input__unit">cm</span></span>
+          <span class="gb-input"><input class="gb-input__control gb-num" inputmode="decimal" value="1.98" aria-label="台尺"><span class="gb-input__unit">台尺</span></span>
+        </div>
+      </div>
+      <div class="gb-section" style="border-top: 1px solid var(--gb-line); border-bottom: 0; gap: 4px">
+        <div class="gb-stat"><span class="gb-stat__label">外廓</span><span class="gb-stat__value">60 × 2.6 × 60</span></div>
+        <span class="gb-caption" style="align-self: flex-end; color: var(--gb-ink-2)">cm · 約 1.98 × 1.98 台尺</span>
+      </div>
+    </aside>
+
+    <main class="gb-canvas">
+      <div class="gb-canvas__tl"><span class="gb-canvas__label">等角 3D</span></div>
+      <div class="gb-canvas__tr"><span class="gb-canvas__label">拖曳旋轉 · 滾輪縮放</span></div>
+
+      <div class="gb-canvas__stage" style="left: 50%; top: 96px; width: 480px; height: 552px; margin-left: -240px">
+        <svg role="img" aria-label="60 公分見方的木框,下橫料為選中狀態" viewBox="20 0 400 460">
+          <polygon points="90,314 372,416 378.8,412.1 96.8,310.1" style="fill: var(--mat-wood-light); stroke: var(--mat-wood-dark)"/>
+          <polygon points="90,330 372,432 372,416 90,314" style="fill: var(--mat-wood); stroke: var(--mat-wood-dark)"/>
+          <polygon points="105,319.4 111.8,315.5 111.8,47.5 105,51.4" style="fill: var(--mat-wood-dark); stroke: var(--mat-wood-dark)"/>
+          <polygon points="90,314 105,319.4 105,51.4 90,46" style="fill: var(--mat-wood); stroke: var(--mat-wood-dark)"/>
+          <polygon points="357,410.6 372,416 372,148 357,142.6" style="fill: var(--mat-wood); stroke: var(--mat-wood-dark)"/>
+          <polygon points="372,432 378.8,428.1 378.8,128.1 372,132" style="fill: var(--mat-wood-dark); stroke: var(--mat-wood-dark)"/>
+          <polygon points="90,30 372,132 378.8,128.1 96.8,26.1" style="fill: var(--mat-wood-light); stroke: var(--mat-wood-dark)"/>
+          <polygon points="90,46 372,148 372,132 90,30" style="fill: var(--mat-wood); stroke: var(--mat-wood-dark)"/>
+          <polygon class="gb-sel-halo" points="90,330 372,432 372,416 90,314"/>
+          <polygon class="gb-sel" points="90,330 372,432 372,416 90,314"/>
+        </svg>
+        <span class="gb-dim gb-canvas__chip" style="left: 253px; top: 76px">60 cm</span>
+        <span class="gb-dim gb-canvas__chip" style="left: 92px; top: 222px">53.6 cm</span>
+        <span class="gb-dim gb-canvas__chip" style="left: 414px; top: 337px">53.6 cm</span>
+        <span class="gb-tag gb-canvas__chip" style="left: 212px; top: 424px">下橫料</span>
+        <button type="button" class="gb-dim gb-canvas__chip" aria-label="編輯下橫料的長度 60 公分" style="left: 314px; top: 464px">60 cm</button>
+      </div>
+
+      <div class="gb-canvas__bc">
+        <div class="gb-dock" role="toolbar" aria-label="3D 視角">
+          <div class="gb-seg" role="group" aria-label="視角" style="border: 0; background: transparent; padding: 0">
+            <button type="button" class="gb-seg__item" aria-pressed="true">等角</button>
+            <button type="button" class="gb-seg__item" aria-pressed="false">正視</button>
+            <button type="button" class="gb-seg__item" aria-pressed="false">俯視</button>
+            <button type="button" class="gb-seg__item" aria-pressed="false">側視</button>
+          </div>
+        </div>
+        <div class="gb-dock" role="toolbar" aria-label="3D 工具">
+          <button type="button" class="gb-iconbtn" aria-label="磁吸貼齊" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8a6 6 0 0 0 12 0V4h-4v8a2 2 0 0 1-4 0V4z"/><path d="M6 8h4M14 8h4"/></svg></button>
+          <button type="button" class="gb-iconbtn" aria-label="顯示尺寸" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 14-14 4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
+          <button type="button" class="gb-iconbtn" aria-label="爆炸圖" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/><rect x="10" y="10" width="4" height="4"/></svg></button>
+          <span class="gb-dock__sep" aria-hidden="true"></span>
+          <button type="button" class="gb-iconbtn" aria-label="縮小"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+          <span class="gb-dock__label">100%</span>
+          <button type="button" class="gb-iconbtn" aria-label="放大"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button type="button" class="gb-iconbtn" aria-label="顯示全部"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg></button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="gb-app__side gb-panel gb-panel--right gb-dense" aria-label="構件設定">
+      <div class="gb-panel__head">
+        <i class="gb-row__swatch"></i>
+        <h2 class="gb-panel__title" style="margin-right: auto">下橫料</h2>
+        <button type="button" class="gb-iconbtn" aria-label="更多操作"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      </div>
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--gb-line)">
+        <div class="gb-seg gb-seg--block" role="group" aria-label="設定分頁">
+          <button type="button" class="gb-seg__item" aria-pressed="true">編輯</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false">採購裁切</button>
+          <button type="button" class="gb-seg__item" aria-pressed="false">建材規格</button>
+        </div>
+      </div>
+      <div class="gb-panel__body">
+        <div class="gb-section">
+          <label class="gb-field"><span class="gb-field__label">構件名稱</span><span class="gb-input"><input class="gb-input__control" type="text" value="下橫料"></span></label>
+          <label class="gb-field"><span class="gb-field__label">材料規格</span><span class="gb-select"><select><option>角材 · 柳安防腐 8尺 × 1.2寸 × 1寸</option></select></span></label>
+          <div class="gb-grid-2">
+            <label class="gb-field"><span class="gb-field__label">裁切長度</span><span class="gb-input"><input class="gb-input__control gb-num" inputmode="decimal" value="60"><span class="gb-input__unit">cm</span></span><span class="gb-field__hint">約 1.98 台尺</span></label>
+            <div class="gb-field"><span class="gb-field__label">斷面</span><span class="gb-input" data-readonly="true"><input class="gb-input__control gb-num" value="3.2 × 2.6" readonly aria-label="斷面,依材料規格"><span class="gb-input__unit">cm</span></span><span class="gb-field__hint">依材料規格</span></div>
+          </div>
+          <div class="gb-grid-2">
+            <label class="gb-field"><span class="gb-field__label">擺放方向</span><span class="gb-select"><select><option>沿 X 軸</option><option>沿 Y 軸</option><option>沿 Z 軸</option></select></span></label>
+            <label class="gb-field"><span class="gb-field__label">接合工法</span><span class="gb-select"><select><option>白膠 + 氣釘</option><option>螺絲</option><option>榫接</option></select></span></label>
+          </div>
+        </div>
+        <div class="gb-section">
+          <h3 class="gb-section__title">位置(cm)</h3>
+          <div class="gb-grid-3">
+            <span class="gb-input"><span class="gb-input__prefix">X</span><input class="gb-input__control gb-num" inputmode="decimal" value="0" aria-label="X 座標,公分"></span>
+            <span class="gb-input"><span class="gb-input__prefix">Y</span><input class="gb-input__control gb-num" inputmode="decimal" value="0" aria-label="Y 座標,公分"></span>
+            <span class="gb-input"><span class="gb-input__prefix">Z</span><input class="gb-input__control gb-num" inputmode="decimal" value="0" aria-label="Z 座標,公分"></span>
+          </div>
+        </div>
+        <div class="gb-section" style="border-bottom: 0">
+          <h3 class="gb-section__title">貼齊到其他構件</h3>
+          <span class="gb-select"><select aria-label="貼齊的對象"><option>對齊:上橫料</option></select></span>
+          <div class="gb-grid-3">
+            <button type="button" class="gb-btn">貼左面</button><button type="button" class="gb-btn">貼右面</button><button type="button" class="gb-btn">貼前面</button>
+            <button type="button" class="gb-btn">貼後面</button><button type="button" class="gb-btn">疊上方</button><button type="button" class="gb-btn">貼下方</button>
+          </div>
+        </div>
+      </div>
+      <div class="gb-panel__foot">
+        <button type="button" class="gb-btn" style="flex: 1"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>複製構件</button>
+        <button type="button" class="gb-btn gb-btn--danger"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>刪除</button>
+      </div>
+    </aside>
+
+  </div>
+</div>
+</body>
+</html>

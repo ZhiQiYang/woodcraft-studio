@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="../gongban.css"><meta charset="utf-8"><title>Field — preview</title></head>
+<body class="gb gb-preview gb-preview--surface gb-preview--col">
+  <div class="gb-grid-2" style="max-width:560px">
+    <label class="gb-field"><span class="gb-field__label">裁切長度</span>
+      <span class="gb-input"><input class="gb-input__control gb-num" inputmode="decimal" value="60"><span class="gb-input__unit">cm</span>
+        <button type="button" class="gb-input__step" aria-label="減 1 公分"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+        <button type="button" class="gb-input__step" aria-label="加 1 公分"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></span>
+      <span class="gb-field__hint">約 1.98 台尺</span></label>
+    <label class="gb-field"><span class="gb-field__label">房間寬度</span>
+      <span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="6,000"><span class="gb-input__unit">mm</span></span>
+      <span class="gb-field__hint">牆內完成面量測</span></label>
+    <label class="gb-field"><span class="gb-field__label">構件名稱</span>
+      <span class="gb-input"><input class="gb-input__control" type="text" value="下橫料"></span></label>
+    <div class="gb-field"><span class="gb-field__label">斷面(依材料規格)</span>
+      <span class="gb-input" data-readonly="true"><input class="gb-input__control gb-num" value="3.2 × 2.6" readonly aria-label="斷面,依材料規格"><span class="gb-input__unit">cm</span></span></div>
+    <label class="gb-field" data-invalid="true"><span class="gb-field__label">房間高度</span>
+      <span class="gb-input"><input class="gb-input__control gb-num" inputmode="numeric" value="12" aria-invalid="true"><span class="gb-input__unit">mm</span></span>
+      <span class="gb-field__hint"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg>高度至少 1,800 mm</span></label>
+    <div class="gb-grid-3" style="align-self:end">
+      <span class="gb-input"><span class="gb-input__prefix">X</span><input class="gb-input__control gb-num" inputmode="decimal" value="0" aria-label="X 座標,公分"></span>
+      <span class="gb-input"><span class="gb-input__prefix">Y</span><input class="gb-input__control gb-num" inputmode="decimal" value="0" aria-label="Y 座標,公分"></span>
+      <span class="gb-input"><span class="gb-input__prefix">Z</span><input class="gb-input__control gb-num" inputmode="decimal" value="56.8" aria-label="Z 座標,公分"></span>
+    </div>
+  </div>
+</body>
+</html>
