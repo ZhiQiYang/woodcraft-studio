@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../public/woodcraft/index.html', import.meta.url), 'utf8');
 const extract = name => {
   const match = html.match(new RegExp(`^  function ${name}\\([^]*?^  }`, 'm'));
   assert.ok(match, `Expected ${name} in the application`);

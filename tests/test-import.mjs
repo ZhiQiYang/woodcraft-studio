@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../public/woodcraft/index.html', import.meta.url), 'utf8');
 const script = html.match(/<script>([\s\S]+)<\/script>/)[1];
 const between = (start, end) => {
   const first = script.indexOf(start), last = script.indexOf(end, first);

@@ -1,0 +1,9 @@
+{
+  "name": "line-work-tools",
+  "compatibility_date": "2026-11-26",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash"
+  }
+}
