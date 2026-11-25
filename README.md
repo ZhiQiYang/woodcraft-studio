@@ -14,8 +14,10 @@ LINE 圖文選單第三格「工作工具」連到[工作工具首頁](https://l
 
 直接修改對應路徑的檔案。兩個工具各自是包含 HTML、CSS 和 JavaScript 的單檔應用。房間模擬器的場景圖以連成一體的 RC 樑、柱與牆面呈現。
 
-在儲存庫根目錄執行 `node --test`。使用 `npx wrangler dev` 預覽網站，從終端機顯示的網址進入首頁，點開兩個工具。修改木工介面時可在手機寬度確認「3D 組裝」、「設計圖紙」和「圖紙＋3D」三個分頁都能切換。
+在儲存庫根目錄執行 `node --test`。使用 `npx --yes wrangler@4.153.0 dev` 預覽網站，從終端機顯示的網址進入首頁，點開兩個工具。修改木工介面時可在手機寬度確認「3D 組裝」、「設計圖紙」和「圖紙＋3D」三個分頁都能切換。
 
 ## 部署與 LINE
 
-`wrangler.jsonc` 指向 Cloudflare Worker `line-work-tools`，直接發布 `public/` 下的靜態檔案。工具更新或增加時，LINE 第三格繼續使用首頁網址。LINE 後台使用的三格選單圖片存放於 `line/rich-menu.png`。
+Cloudflare Workers Builds 已連接這個私有庫。推送或合併到 `main` 後，Cloudflare 會先執行 `node --test`，通過後執行 `npx --yes wrangler@4.153.0 deploy`。`wrangler.jsonc` 指定 Worker `line-work-tools` 和發布目錄 `public/`。每次部署的結果可在 GitHub 對應提交的 Cloudflare 檢查中查看。
+
+LINE 圖文選單第三格固定連到首頁。日後修改任一工具或從首頁增加入口，只要更新本庫並合併到 `main` 即可。LINE 後台使用的三格選單圖片存放於 `line/rich-menu.png`。
