@@ -3,1320 +3,907 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>木工結構設計與裁切估算器 — 滿版懸浮設計版（離線單檔）</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="木工結構設計與裁切估算器：3D 組裝、設計圖紙與台灣建材裁切採購計算。">
+<title>木工設計｜正經工班</title>
 <style>
-  :root {
-    --canvas-bg: #f6f4ef;
-    --bp-bg: #ffffff;
-    --surface: rgba(255, 255, 255, 0.94);
-    --surface-solid: #ffffff;
-    --surface-2: #f8f6f2;
-    --border: rgba(30, 36, 43, 0.11);
-    --border-strong: rgba(30, 36, 43, 0.2);
-    --ink: #1b2026;
-    --ink-muted: #4b5563;
-    --ink-soft: #59626e;
-    --accent: #9a5b25;
-    --accent-hover: #7d471a;
-    --accent-soft: #f6ebe0;
-    --blue: #2563eb;
-    --blue-soft: #eff6ff;
-    --green: #15803d;
-    --green-soft: #dcfce7;
-    --red: #dc2626;
-    --red-soft: #fee2e2;
-    --amber: #b45309;
-    --amber-soft: #fef3c7;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --shadow-float: 0 6px 24px rgba(24, 30, 38, 0.10), 0 1px 4px rgba(24, 30, 38, 0.06);
-    --shadow-pill: 0 3px 14px rgba(24, 30, 38, 0.09), 0 1px 3px rgba(24, 30, 38, 0.05);
-    --font: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  }
+/* gb:start — 正經工班 工具系統,與 design/gongban.css 同步,不要在這裡手改 */
+/* 正經工班 工具系統 — generated from tokens.json */
+:root, [data-theme="light"] {
+  --gb-ground: #eef0ec;
+  --gb-surface: #ffffff;
+  --gb-sunken: #e4e8e3;
+  --gb-line: #d2d8d1;
+  --gb-line-strong: #7c8880;
+  --gb-ink: #10271f;
+  --gb-ink-hover: #22443a;
+  --gb-ink-2: #3f5047;
+  --gb-ink-3: #5f6d65;
+  --gb-on-ink: #ffffff;
+  --gb-select: #1b4fd8;
+  --gb-select-soft: #e2eafd;
+  --gb-on-select: #ffffff;
+  --gb-measure: #ffd53d;
+  --gb-on-measure: #10271f;
+  --gb-measure-edge: #8a6d00;
+  --gb-ok: #0b7468;
+  --gb-ok-soft: #dcf2ee;
+  --gb-warn: #8f4d00;
+  --gb-warn-soft: #fdebd3;
+  --gb-danger: #b3261a;
+  --gb-danger-soft: #fde6e2;
+  --gb-scrim: rgba(12, 22, 19, 0.45);
+  --mat-wood: #c8915a;
+  --mat-wood-light: #dcb485;
+  --mat-wood-dark: #a3703f;
+  --mat-concrete: #b9beb6;
+  --mat-concrete-light: #d5d9d2;
+  --mat-concrete-dark: #8f968f;
+  --mat-cut: #3f5047;
+  --gb-shadow-float: 0 1px 2px rgba(16, 39, 31, 0.14), 0 6px 20px rgba(16, 39, 31, 0.14);
+  --gb-shadow-sheet: 0 -6px 28px rgba(16, 39, 31, 0.18);
+  --gb-focus-ring: 0 0 0 2px #ffffff, 0 0 0 5px #1b4fd8;
+}
+[data-theme="dark"] {
+  --gb-ground: #0c1613;
+  --gb-surface: #15221d;
+  --gb-sunken: #1d2d27;
+  --gb-line: #2b3d35;
+  --gb-line-strong: #73857b;
+  --gb-ink: #eef4f0;
+  --gb-ink-hover: #ffffff;
+  --gb-ink-2: #b7c5bd;
+  --gb-ink-3: #8c9c93;
+  --gb-on-ink: #10271f;
+  --gb-select: #9db8ff;
+  --gb-select-soft: #1c2f63;
+  --gb-on-select: #0a1a45;
+  --gb-measure-edge: #ffd53d;
+  --gb-ok: #62d3c4;
+  --gb-ok-soft: #103a35;
+  --gb-warn: #ffb45c;
+  --gb-warn-soft: #3d2a10;
+  --gb-danger: #ff9484;
+  --gb-danger-soft: #45201b;
+  --mat-cut: #b7c5bd;
+  --gb-shadow-float: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.45);
+  --gb-shadow-sheet: 0 -6px 28px rgba(0, 0, 0, 0.55);
+  --gb-focus-ring: 0 0 0 2px #15221d, 0 0 0 5px #9db8ff;
+}
+:root {
+  --gb-space-1: 4px;
+  --gb-space-2: 8px;
+  --gb-space-3: 12px;
+  --gb-space-4: 16px;
+  --gb-space-6: 24px;
+  --gb-space-8: 32px;
+  --gb-radius-xs: 3px;
+  --gb-radius-sm: 6px;
+  --gb-radius-md: 10px;
+  --gb-radius-full: 999px;
+  --gb-size-control: 44px;
+  --gb-size-control-sm: 36px;
+  --gb-size-bar: 52px;
+  --gb-size-icon: 20px;
+  --gb-size-panel: 272px;
+  --gb-size-inspector: 328px;
+  --gb-border-hair: 1px;
+  --gb-border-rule: 2px;
+  --gb-border-select: 3px;
+  --font-ui: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-num: "Barlow Semi Condensed", system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+}
+.gb-title { font-family: var(--font-ui); font-size: 18px; line-height: 26px; font-weight: 700; }
+.gb-heading { font-family: var(--font-ui); font-size: 15px; line-height: 22px; font-weight: 700; }
+.gb-body { font-family: var(--font-ui); font-size: 14px; line-height: 22px; font-weight: 400; }
+.gb-strong { font-family: var(--font-ui); font-size: 14px; line-height: 22px; font-weight: 600; }
+.gb-label { font-family: var(--font-ui); font-size: 13px; line-height: 18px; font-weight: 600; }
+.gb-caption { font-family: var(--font-ui); font-size: 12px; line-height: 16px; font-weight: 400; }
+.gb-num-display { font-family: var(--font-num); font-size: 28px; line-height: 32px; font-weight: 600; }
+.gb-num-input { font-family: var(--font-num); font-size: 18px; line-height: 24px; font-weight: 500; }
+.gb-num-body { font-family: var(--font-num); font-size: 15px; line-height: 20px; font-weight: 500; }
+.gb-num-chip { font-family: var(--font-num); font-size: 13px; line-height: 16px; font-weight: 600; }
+@font-face { font-family: "Barlow Semi Condensed"; src: url("/fonts/barlow-semi-condensed-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Barlow Semi Condensed"; src: url("/fonts/barlow-semi-condensed-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+/* 正經工班 工具系統 — 元件樣式。只讀 tokens.css 的變數,不宣告任何 token 值。
+   純 CSS:原生 JS 與 React 都用同一組 class。根元素加上 class="gb"。 */
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    font-family: var(--font);
-    background: var(--canvas-bg);
-    color: var(--ink);
-    font-size: 13px;
-    line-height: 1.45;
-  }
+/* ---------- 基礎 ---------- */
+.gb { font-family: var(--font-ui); font-size: 14px; line-height: 22px; color: var(--gb-ink); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-font-smoothing: antialiased; }
+.gb, .gb *, .gb *::before, .gb *::after { box-sizing: border-box; }
+.gb :where(button, input, select, textarea) { font: inherit; color: inherit; margin: 0; }
+.gb :where(button) { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.gb [hidden] { display: none !important; }
+.gb-num { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 500; }
+.gb-icon { width: var(--gb-size-icon); height: var(--gb-size-icon); flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.gb-dense { --gb-h: var(--gb-size-control-sm); }
+.gb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.gb-preview { margin: 0; padding: var(--gb-space-4); background: var(--gb-ground); display: flex; flex-wrap: wrap; align-items: center; gap: var(--gb-space-3); }
+.gb-preview--surface { background: var(--gb-surface); }
+.gb-preview--col { flex-direction: column; align-items: stretch; }
 
-  /* Full-bleed App Shell */
-  .app {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
+/* ---------- Button ---------- */
+.gb-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--gb-space-2); min-height: var(--gb-h, var(--gb-size-control)); min-width: var(--gb-h, var(--gb-size-control)); padding: 0 var(--gb-space-4); border: var(--gb-border-hair) solid var(--gb-line-strong); border-radius: var(--gb-radius-sm); background: var(--gb-surface); color: var(--gb-ink); font-size: 14px; line-height: 20px; font-weight: 600; white-space: nowrap; text-decoration: none; cursor: pointer; user-select: none; -webkit-user-select: none; transition: background-color .12s ease-out, border-color .12s ease-out; }
+.gb-btn:hover { background: var(--gb-sunken); }
+.gb-btn:active { background: var(--gb-line); }
+.gb-btn:focus-visible, .gb-iconbtn:focus-visible, .gb-seg__item:focus-visible, .gb-row:focus-visible, .gb-menu__item:focus-visible, .gb-input__step:focus-visible, .gb-dim:focus-visible { outline: 2px solid transparent; outline-offset: 2px; box-shadow: var(--gb-focus-ring); position: relative; z-index: 1; }
+.gb-btn--primary { background: var(--gb-ink); border-color: var(--gb-ink); color: var(--gb-on-ink); }
+.gb-btn--primary:hover, .gb-btn--primary:active { background: var(--gb-ink-hover); border-color: var(--gb-ink-hover); }
+.gb-btn--quiet { background: transparent; border-color: transparent; }
+.gb-btn--danger { color: var(--gb-danger); border-color: var(--gb-danger); }
+.gb-btn--danger:hover, .gb-btn--danger:active { background: var(--gb-danger-soft); }
+.gb-btn[aria-pressed="true"] { background: var(--gb-select-soft); border-color: var(--gb-select); color: var(--gb-select); }
+.gb-btn:disabled, .gb-btn[aria-disabled="true"] { background: var(--gb-sunken); border-color: var(--gb-line); color: var(--gb-ink-3); cursor: not-allowed; }
+.gb-btn--block { display: flex; width: 100%; }
+.gb-btn--lg { min-height: 48px; font-size: 15px; }
 
-  /* Floating header */
-  .hud-top-bar {
-    position: fixed;
-    top: 10px; left: 10px; right: 10px;
-    z-index: 42;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    pointer-events: none;
-  }
-  .hud-top-left {
-    pointer-events: auto;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    background: var(--surface);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 5px 8px;
-    box-shadow: var(--shadow-pill);
-    min-width: 0;
-    overflow-x: auto;
-  }
-  .brand-icon {
-    width: 28px; height: 28px;
-    border-radius: 7px;
-    background: var(--accent);
-    color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .project-name-input {
-    border: 1px solid transparent;
-    background: transparent;
-    font-family: var(--font);
-    font-size: 12.5px;
-    font-weight: 700;
-    color: var(--ink);
-    padding: 3px 6px;
-    border-radius: 6px;
-    width: 140px;
-  }
-  .project-name-input:hover, .project-name-input:focus {
-    border-color: var(--border-strong);
-    background: var(--surface-solid);
-    outline: none;
-  }
-  .page-switch {
-    display: inline-flex;
-    background: rgba(30, 36, 43, 0.06);
-    border-radius: 8px;
-    padding: 2px;
-    gap: 2px;
-  }
-  .page-switch-btn {
-    border: none;
-    background: transparent;
-    color: var(--ink-muted);
-    font-family: var(--font);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
-  }
-  .page-switch-btn:hover { color: var(--ink); }
-  .page-switch-btn.active {
-    background: var(--surface-solid);
-    color: var(--accent);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.09);
-  }
+/* ---------- IconButton ---------- */
+.gb-iconbtn { display: inline-flex; align-items: center; justify-content: center; width: var(--gb-h, var(--gb-size-control)); height: var(--gb-h, var(--gb-size-control)); flex: none; padding: 0; border: var(--gb-border-hair) solid transparent; border-radius: var(--gb-radius-sm); background: transparent; color: var(--gb-ink); cursor: pointer; transition: background-color .12s ease-out; }
+.gb-iconbtn:hover { background: var(--gb-sunken); }
+.gb-iconbtn:active { background: var(--gb-line); }
+.gb-iconbtn--outline { border-color: var(--gb-line-strong); background: var(--gb-surface); }
+.gb-iconbtn[aria-pressed="true"] { background: var(--gb-select-soft); border-color: var(--gb-select); color: var(--gb-select); }
+.gb-iconbtn:disabled { color: var(--gb-ink-3); cursor: not-allowed; background: transparent; }
 
-  .hud-top-right {
-    pointer-events: auto;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: var(--surface);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 5px 8px;
-    box-shadow: var(--shadow-pill);
-    flex-shrink: 0;
-  }
-  .btn.file-menu-toggle { display: none; }
-  .file-menu-inline { display: flex; align-items: center; gap: 5px; }
-  .file-menu-dropdown {
-    display: none;
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    background: var(--surface-solid);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-float);
-    padding: 6px;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 148px;
-    z-index: 50;
-  }
-  .file-menu-dropdown.open { display: flex; }
-  .ins-sticky-footer {
-    position: sticky;
-    bottom: -10px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(6px);
-    border-top: 1px solid var(--border);
-    padding: 8px 0 4px 0;
-    margin-top: 10px;
-    display: flex;
-    gap: 6px;
-    z-index: 5;
-  }
-  .bp-print-header {
-    display: none;
-    padding: 8px 14px;
-    border-bottom: 1.5px solid #1e242b;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 13px;
-    background: #fff;
-  }
+/* ---------- Segmented ---------- */
+.gb-seg { display: inline-flex; gap: 2px; padding: 3px; border: var(--gb-border-hair) solid var(--gb-line-strong); border-radius: var(--gb-radius-sm); background: var(--gb-sunken); }
+.gb-seg__item { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: calc(var(--gb-h, var(--gb-size-control)) - 8px); padding: 0 var(--gb-space-3); border: 0; border-radius: var(--gb-radius-xs); background: transparent; color: var(--gb-ink-2); font-size: 14px; line-height: 20px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.gb-seg__item:hover { color: var(--gb-ink); }
+.gb-seg__item[aria-pressed="true"], .gb-seg__item[aria-selected="true"] { background: var(--gb-ink); color: var(--gb-on-ink); }
+.gb-seg--block { display: flex; }
+.gb-seg--block .gb-seg__item { flex: 1 1 0; min-width: 0; }
 
-  /* Floating Top-Center Main Tool Dock (Figma / Excalidraw Signature) */
-  .hud-center-dock {
-    position: fixed;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 38;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--surface);
-    backdrop-filter: blur(14px);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 5px 7px;
-    box-shadow: var(--shadow-float);
-    max-width: calc(100vw - 24px);
-    overflow-x: auto;
-  }
-  .dock-sep {
-    width: 1px;
-    height: 20px;
-    background: var(--border);
-    margin: 0 3px;
-    flex-shrink: 0;
-  }
+/* ---------- Field / Input ---------- */
+.gb-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.gb-field__label { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--gb-ink-2); }
+.gb-field__hint { display: flex; align-items: flex-start; gap: var(--gb-space-1); font-size: 12px; line-height: 16px; color: var(--gb-ink-3); }
+.gb-field__hint .gb-icon { width: 14px; height: 14px; margin-top: 1px; }
+.gb-input { display: flex; align-items: stretch; min-height: var(--gb-h, var(--gb-size-control)); border: var(--gb-border-hair) solid var(--gb-line-strong); border-radius: var(--gb-radius-sm); background: var(--gb-surface); overflow: hidden; }
+.gb-input:focus-within { border-color: var(--gb-select); box-shadow: var(--gb-focus-ring); }
+.gb-input__control { flex: 1 1 0; min-width: 0; width: 100%; padding: 0 var(--gb-space-3); border: 0; outline: 0; background: transparent; font-size: 16px; line-height: 24px; -moz-appearance: textfield; appearance: textfield; }
+.gb-input__control::-webkit-outer-spin-button, .gb-input__control::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.gb-input__control.gb-num { font-size: 18px; }
+.gb-input__control::placeholder { color: var(--gb-ink-3); }
+.gb-input__prefix, .gb-input__unit { display: inline-flex; align-items: center; flex: none; font-family: var(--font-num); font-size: 14px; font-weight: 600; color: var(--gb-ink-2); }
+.gb-input__prefix { padding-left: var(--gb-space-3); }
+.gb-input__prefix + .gb-input__control { padding-left: var(--gb-space-2); }
+.gb-input__unit { padding-right: var(--gb-space-3); font-weight: 500; }
+.gb-input__step { display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--gb-h, var(--gb-size-control)); padding: 0; border: 0; border-left: var(--gb-border-hair) solid var(--gb-line); background: transparent; cursor: pointer; }
+.gb-input__step:hover { background: var(--gb-sunken); }
+.gb-input[data-readonly="true"] { background: var(--gb-sunken); border-color: var(--gb-line); }
+.gb-field[data-invalid="true"] .gb-input { border-color: var(--gb-danger); }
+.gb-field[data-invalid="true"] .gb-field__hint { color: var(--gb-danger); font-weight: 600; }
+.gb-dense .gb-input__control { font-size: 14px; }
+.gb-dense .gb-input__control.gb-num { font-size: 16px; }
 
-  /* Buttons & Inputs */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 5px 9px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-strong);
-    background: var(--surface-solid);
-    color: var(--ink);
-    font-family: var(--font);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.14s, border-color 0.14s, color 0.14s, transform 0.1s;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .btn:hover { background: var(--surface-2); border-color: rgba(30, 36, 43, 0.32); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-ghost { border-color: transparent; background: transparent; color: var(--ink-muted); }
-  .btn-ghost:hover { background: rgba(30, 36, 43, 0.06); color: var(--ink); border-color: transparent; }
-  .btn-ghost.active { background: var(--accent-soft); color: var(--accent-hover); border-color: rgba(154, 91, 37, 0.25); }
-  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-  .btn-soft { background: var(--accent-soft); border-color: #e4cbb2; color: var(--accent-hover); }
-  .btn-soft:hover { background: #eddac5; }
-  .btn-blue { background: var(--blue-soft); border-color: #bfdbfe; color: #1d4ed8; }
-  .btn-blue:hover { background: #dbeafe; }
-  .btn-danger { color: var(--red); border-color: #f3c4c4; background: #fff; }
-  .btn-danger:hover { background: var(--red-soft); }
-  .btn-sm { padding: 4px 8px; font-size: 11.5px; }
-  .btn-xs { padding: 4px 8px; font-size: 11.5px; }
-  .btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
-  .btn-ghost.active { background: var(--accent-soft); color: var(--accent-hover); border-color: rgba(154, 91, 37, 0.35); }
+/* ---------- Select ---------- */
+.gb-select { position: relative; display: block; min-width: 0; }
+.gb-select select { -webkit-appearance: none; appearance: none; display: block; width: 100%; min-height: var(--gb-h, var(--gb-size-control)); padding: 0 40px 0 var(--gb-space-3); border: var(--gb-border-hair) solid var(--gb-line-strong); border-radius: var(--gb-radius-sm); background: var(--gb-surface); font-size: 16px; line-height: 24px; text-overflow: ellipsis; cursor: pointer; }
+.gb-select::after { content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; border-right: 2px solid var(--gb-ink-2); border-bottom: 2px solid var(--gb-ink-2); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.gb-select select:focus-visible { outline: 2px solid transparent; border-color: var(--gb-select); box-shadow: var(--gb-focus-ring); }
+.gb-dense .gb-select select { font-size: 14px; }
 
-  select, input[type="text"], input[type="number"] {
-    font-family: var(--font);
-    font-size: 12px;
-    padding: 5px 7px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: var(--surface-solid);
-    color: var(--ink);
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-  }
-  .inline-select, .price-input, #kerfInput { width: auto; }
-  select:focus, input:focus { outline: 2px solid rgba(154, 91, 37, 0.25); border-color: var(--accent); }
+/* ---------- ListRow ---------- */
+.gb-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.gb-row { display: flex; align-items: center; gap: var(--gb-space-3); width: 100%; min-height: 56px; padding: var(--gb-space-2) var(--gb-space-3) var(--gb-space-2) var(--gb-space-4); border: 0; border-bottom: var(--gb-border-hair) solid var(--gb-line); background: transparent; text-align: left; cursor: pointer; }
+.gb-row:hover { background: var(--gb-sunken); }
+.gb-row[aria-selected="true"], .gb-row[aria-current="true"] { background: var(--gb-select-soft); box-shadow: inset 0 0 0 var(--gb-border-rule) var(--gb-select); }
+.gb-row__swatch { width: 14px; height: 14px; flex: none; border-radius: var(--gb-radius-xs); border: var(--gb-border-hair) solid var(--mat-wood-dark); background: var(--mat-wood); }
+.gb-row__swatch--concrete { border-color: var(--mat-concrete-dark); background: var(--mat-concrete); }
+.gb-row__main { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; }
+.gb-row__name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gb-row__meta { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--gb-ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gb-row__end { display: inline-flex; align-items: center; gap: var(--gb-space-1); flex: none; color: var(--gb-ink-2); }
+.gb-row.is-hidden .gb-row__main, .gb-row.is-hidden .gb-row__swatch { opacity: .5; }
+.gb-dense .gb-row { min-height: 48px; }
 
-  /* Full-Screen Pages */
-  .page-view {
-    display: none;
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-  .page-view.active { display: block; }
+/* ---------- Panel ---------- */
+.gb-panel { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--gb-surface); }
+.gb-panel--left { border-right: var(--gb-border-hair) solid var(--gb-line); }
+.gb-panel--right { border-left: var(--gb-border-hair) solid var(--gb-line); }
+.gb-panel__head { display: flex; align-items: center; gap: var(--gb-space-2); flex: none; min-height: 48px; padding: 0 var(--gb-space-2) 0 var(--gb-space-4); border-bottom: var(--gb-border-hair) solid var(--gb-line); }
+.gb-panel__title { margin: 0; font-size: 15px; line-height: 22px; font-weight: 700; }
+.gb-panel__count { font-family: var(--font-num); font-size: 15px; font-weight: 500; color: var(--gb-ink-2); margin-right: auto; }
+.gb-panel__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.gb-panel__foot { display: flex; gap: var(--gb-space-2); flex: none; padding: var(--gb-space-3) var(--gb-space-4); border-top: var(--gb-border-hair) solid var(--gb-line); }
+.gb-section { display: flex; flex-direction: column; gap: var(--gb-space-3); padding: var(--gb-space-4); border-bottom: var(--gb-border-hair) solid var(--gb-line); }
+.gb-section__title { margin: 0; font-size: 13px; line-height: 18px; font-weight: 700; color: var(--gb-ink-2); }
+.gb-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gb-space-3); }
+.gb-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gb-space-2); }
+.gb-stat { display: flex; align-items: baseline; justify-content: space-between; gap: var(--gb-space-3); }
+.gb-stat__label { font-size: 13px; font-weight: 600; color: var(--gb-ink-2); }
+.gb-stat__value { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 28px; line-height: 32px; font-weight: 600; }
 
-  /* Full-Bleed Canvases */
-  .full-canvas-wrap {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    user-select: none;
-    touch-action: none;
-  }
-  #canvasWrap {
-    background: radial-gradient(circle at 50% 42%, #fdfcfa 0%, #ede8de 100%);
-  }
-  #bpCanvasWrap {
-    background: #ffffff;
-  }
-  #sceneCanvas, #bpCanvas, #refCanvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  #sceneCanvas { cursor: grab; }
-  #sceneCanvas:active { cursor: grabbing; }
+/* ---------- Sheet(手機底部抽屜) ---------- */
+.gb-sheet { display: flex; flex-direction: column; max-height: 85vh; max-height: 85dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; background: var(--gb-surface); box-shadow: var(--gb-shadow-sheet); }
+.gb-sheet__grip { flex: none; width: 40px; height: 4px; margin: var(--gb-space-2) auto 0; border-radius: var(--gb-radius-full); background: var(--gb-line-strong); }
+.gb-sheet__head { display: flex; align-items: center; gap: var(--gb-space-2); flex: none; min-height: 52px; padding: 0 var(--gb-space-2) 0 var(--gb-space-4); border-bottom: var(--gb-border-hair) solid var(--gb-line); }
+.gb-sheet__title { margin: 0 auto 0 0; font-size: 18px; line-height: 26px; font-weight: 700; }
+.gb-sheet__body { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.gb-scrim { background: var(--gb-scrim); }
 
-  /* Floating Side Cards (Collapsible Over Canvas) */
-  .float-card {
-    position: fixed;
-    z-index: 35;
-    background: var(--surface);
-    backdrop-filter: blur(14px);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-float);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: transform 0.18s ease, opacity 0.18s ease;
-  }
-  .float-card.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(6px);
-  }
-  .float-card-head {
-    padding: 9px 11px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(248, 246, 242, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    font-weight: 700;
-    font-size: 12.5px;
-  }
-  .float-card-body {
-    padding: 10px 11px;
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-  }
+/* ---------- ToolDock(畫布工具列) ---------- */
+.gb-dock { display: inline-flex; align-items: center; gap: 2px; padding: var(--gb-space-1); border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-md); background: var(--gb-surface); box-shadow: var(--gb-shadow-float); }
+.gb-dock--v { flex-direction: column; }
+.gb-dock__sep { width: 1px; height: 24px; margin: 0 var(--gb-space-1); background: var(--gb-line); }
+.gb-dock--v .gb-dock__sep { width: 24px; height: 1px; margin: var(--gb-space-1) 0; }
+.gb-dock__label { padding: 0 var(--gb-space-2); font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 500; color: var(--gb-ink-2); white-space: nowrap; }
 
-  /* 3D Left & Right Floating Drawers */
-  .drawer-3d-left {
-    top: 112px; left: 12px; bottom: 56px;
-    width: 266px;
-  }
-  .drawer-3d-right {
-    top: 112px; right: 12px; bottom: 56px;
-    width: 348px;
-  }
-  .drawer-collapsed-pill-left {
-    position: fixed;
-    top: 112px; left: 12px;
-    z-index: 36;
-  }
-  .drawer-collapsed-pill-right {
-    position: fixed;
-    top: 112px; right: 12px;
-    z-index: 36;
-    display: flex;
-    gap: 5px;
-  }
+/* ---------- DimChip(尺寸標籤) ---------- */
+.gb-dim { display: inline-flex; align-items: center; gap: 3px; min-height: 22px; padding: 0 6px; border: var(--gb-border-hair) solid var(--gb-measure-edge); border-radius: var(--gb-radius-xs); background: var(--gb-measure); color: var(--gb-on-measure); font-family: var(--font-num); font-variant-numeric: tabular-nums; font-size: 13px; line-height: 16px; font-weight: 600; white-space: nowrap; }
+.gb-dim:where(button) { cursor: pointer; }
+.gb-dim__unit { font-weight: 500; }
+.gb-dim--active { border-color: var(--gb-measure); background: var(--gb-on-measure); color: var(--gb-measure); }
+.gb-dim--ref { border-color: var(--gb-line-strong); background: var(--gb-surface); color: var(--gb-ink); }
+.gb-tag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--gb-space-2); border-radius: var(--gb-radius-xs); background: var(--gb-select); color: var(--gb-on-select); font-size: 13px; line-height: 16px; font-weight: 600; white-space: nowrap; }
 
-  /* Floating Blueprint Reference Card inside 3D Page */
-  .ref-float-card {
-    position: fixed;
-    left: 290px; bottom: 58px;
-    width: 300px; height: 265px;
-    z-index: 37;
-    background: #ffffff;
-    border: 1px solid #bfdbfe;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-float);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .ref-float-card.open { display: flex; }
-  .ref-drawer-head {
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--border);
-    background: var(--blue-soft);
-    display: flex; align-items: center; justify-content: space-between; gap: 5px;
-    font-size: 11px; font-weight: 700; color: #1e3a8a;
-  }
-  .ref-canvas-box { flex: 1; position: relative; min-height: 160px; background: #fff; }
-  .ref-drawer-foot {
-    padding: 5px 8px;
-    border-top: 1px solid var(--border);
-    background: var(--surface-2);
-    font-size: 10px; color: var(--ink-muted);
-    display: flex; align-items: center; justify-content: space-between;
-  }
+/* ---------- StatusPill(儲存狀態) ---------- */
+.gb-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--gb-ink-2); white-space: nowrap; }
+.gb-status::before { content: ""; width: 8px; height: 8px; flex: none; border-radius: var(--gb-radius-full); background: var(--gb-ok); }
+.gb-status--saving::before { background: transparent; border: 2px solid var(--gb-warn); }
+.gb-status--error { color: var(--gb-danger); }
+.gb-status--error::before { border-radius: 1px; background: var(--gb-danger); transform: rotate(45deg); }
 
-  /* 3D Bottom Floating HUD */
-  .hud-3d-bottom {
-    position: fixed;
-    bottom: 12px; left: 50%;
-    transform: translateX(-50%);
-    z-index: 36;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 5px 12px;
-    box-shadow: var(--shadow-pill);
-    max-width: calc(100vw - 24px);
-    overflow-x: auto;
-    font-size: 11.5px;
-  }
-  .hud-3d-bottom input[type="range"] { width: 82px; accent-color: var(--accent); }
+/* ---------- Notice(提示條) ---------- */
+.gb-notice { display: flex; align-items: flex-start; gap: var(--gb-space-2); padding: var(--gb-space-3); border: var(--gb-border-hair) solid var(--gb-warn); border-radius: var(--gb-radius-sm); background: var(--gb-warn-soft); color: var(--gb-ink); font-size: 14px; line-height: 20px; }
+.gb-notice > .gb-icon { margin-top: 0; color: var(--gb-warn); }
+.gb-notice__body { flex: 1 1 0; min-width: 0; }
+.gb-notice__title { display: block; font-weight: 700; }
+.gb-notice--danger { border-color: var(--gb-danger); background: var(--gb-danger-soft); }
+.gb-notice--danger > .gb-icon { color: var(--gb-danger); }
+.gb-notice--ok { border-color: var(--gb-ok); background: var(--gb-ok-soft); }
+.gb-notice--ok > .gb-icon { color: var(--gb-ok); }
 
-  /* Blueprint Floating Left Style Card & Contextual Right Property Card */
-  .bp-style-card {
-    top: 112px; left: 12px;
-    width: 222px;
-    max-height: calc(100vh - 178px);
-  }
-  .bp-prop-card {
-    top: 112px; right: 12px;
-    width: 256px;
-    max-height: calc(100vh - 178px);
-  }
+/* ---------- Menu ---------- */
+.gb-menu { display: flex; flex-direction: column; min-width: 232px; max-width: calc(100vw - 24px); padding: var(--gb-space-1); border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-md); background: var(--gb-surface); box-shadow: var(--gb-shadow-float); }
+.gb-menu__item { display: flex; align-items: center; gap: var(--gb-space-3); width: 100%; min-height: var(--gb-size-control); padding: 0 var(--gb-space-3); border: 0; border-radius: var(--gb-radius-sm); background: transparent; text-align: left; font-size: 14px; line-height: 20px; font-weight: 600; cursor: pointer; }
+.gb-menu__item:hover { background: var(--gb-sunken); }
+.gb-menu__item > .gb-icon { color: var(--gb-ink-2); }
+.gb-menu__meta { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--gb-ink-3); }
+.gb-menu__item--danger, .gb-menu__item--danger > .gb-icon { color: var(--gb-danger); }
+.gb-menu__sep { height: 1px; margin: var(--gb-space-1) 0; border: 0; background: var(--gb-line); }
+.gb-menu__label { padding: var(--gb-space-2) var(--gb-space-3) var(--gb-space-1); font-size: 12px; line-height: 16px; font-weight: 700; color: var(--gb-ink-3); }
 
-  /* Excel-Style Bottom-Left Sheet Tabs (Blueprint Page) */
-  .bp-sheet-tabs-bar {
-    position: fixed;
-    bottom: 12px; left: 12px;
-    z-index: 38;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--surface);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 4px 6px;
-    box-shadow: var(--shadow-pill);
-    max-width: calc(100vw - 280px);
-    overflow-x: auto;
-  }
-  .sheet-tab-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 7px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--ink-muted);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  .sheet-tab-chip:hover { background: rgba(30, 36, 43, 0.05); color: var(--ink); }
-  .sheet-tab-chip.active {
-    background: var(--accent-soft);
-    border-color: rgba(154, 91, 37, 0.3);
-    color: var(--accent-hover);
-    font-weight: 700;
-  }
-  .sheet-tab-del {
-    border: none; background: transparent; color: var(--ink-soft);
-    cursor: pointer; font-size: 11px; padding: 0 2px; border-radius: 3px;
-  }
-  .sheet-tab-del:hover { color: var(--red); background: var(--red-soft); }
+/* ---------- AppBar(頁首) ---------- */
+.gb-appbar { display: flex; align-items: center; gap: var(--gb-space-1); flex: none; min-height: var(--gb-size-bar); padding: 0 var(--gb-space-2); border-bottom: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-surface); }
+.gb-appbar__home { display: inline-flex; align-items: center; justify-content: center; width: var(--gb-size-control); height: var(--gb-size-control); flex: none; border-radius: var(--gb-radius-sm); color: var(--gb-ink); }
+.gb-appbar__home:hover { background: var(--gb-sunken); }
+.gb-appbar__home:focus-visible { outline: 2px solid transparent; box-shadow: var(--gb-focus-ring); }
+.gb-mark { display: grid; grid-template-columns: repeat(2, 8px); gap: 2px; width: 18px; height: 18px; }
+.gb-mark i { background: currentColor; }
+.gb-appbar__titles { display: flex; flex-direction: column; min-width: 0; margin-right: auto; padding: 0 var(--gb-space-1); }
+.gb-appbar__tool { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--gb-ink-2); white-space: nowrap; }
+.gb-appbar__project { padding: 0; border: 0; background: transparent; text-align: left; font-size: 15px; line-height: 20px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: text; }
+.gb-appbar__center { display: flex; justify-content: center; flex: none; }
+.gb-appbar__actions { display: flex; align-items: center; gap: var(--gb-space-1); flex: none; }
 
-  /* Blueprint Bottom-Right Zoom & Coords Pill */
-  .bp-status-pill {
-    position: fixed;
-    bottom: 12px; right: 12px;
-    z-index: 38;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--surface);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 5px 10px;
-    font-size: 11px;
-    font-family: var(--mono);
-    color: var(--ink-muted);
-    box-shadow: var(--shadow-pill);
-  }
+/* ---------- ActionBar(手機底部操作列) ---------- */
+.gb-actionbar { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--gb-space-2); flex: none; padding: var(--gb-space-2) var(--gb-space-3) calc(var(--gb-space-2) + env(safe-area-inset-bottom, 0px)); border-top: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-surface); }
+.gb-actionbar .gb-btn { min-height: 48px; padding: 0 var(--gb-space-2); font-size: 15px; }
 
-  /* Badges & Pills */
-  .pill-status {
-    border-radius: 99px;
-    padding: 2px 9px;
-    font-size: 11px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    white-space: nowrap;
-  }
-  .pill-ok { background: var(--green-soft); color: var(--green); }
-  .pill-danger { background: var(--red-soft); color: var(--red); }
+/* ---------- DataTable ---------- */
+.gb-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.gb-table th { padding: var(--gb-space-2) var(--gb-space-3); border-bottom: var(--gb-border-rule) solid var(--gb-ink); text-align: left; font-size: 13px; font-weight: 700; color: var(--gb-ink-2); white-space: nowrap; }
+.gb-table td { padding: 10px var(--gb-space-3); border-bottom: var(--gb-border-hair) solid var(--gb-line); vertical-align: top; }
+.gb-table td.gb-num, .gb-table th.gb-num { text-align: right; font-size: 15px; white-space: nowrap; }
+.gb-table th.gb-num { font-family: inherit; font-size: 13px; font-weight: 700; }
+.gb-table tfoot td { border-top: var(--gb-border-rule) solid var(--gb-ink); border-bottom: 0; font-weight: 700; }
+.gb-table__sub { display: block; font-size: 12px; line-height: 16px; color: var(--gb-ink-3); }
+.gb-table-wrap { overflow-x: auto; }
 
-  /* Parts List, Forms, Tables, Cut Diagrams */
-  .parts-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
-  .part-item {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 7px 8px;
-    background: var(--surface-solid);
-    cursor: pointer;
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 6px;
-  }
-  .part-item:hover { border-color: var(--accent); background: var(--surface-2); }
-  .part-item.selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
-  .part-item.colliding { border-color: #ef4444; background: #fff5f5; }
-  .part-info { min-width: 0; flex: 1; }
-  .part-title { font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 5px; }
-  .mat-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
-  .part-meta { font-size: 11px; color: var(--ink-muted); font-family: var(--mono); margin-top: 2px; }
-  .part-sub { font-size: 11px; color: var(--ink-soft); margin-top: 1px; }
-  .part-actions { display: flex; gap: 3px; flex-shrink: 0; }
-  .collision-tag { font-size: 10px; font-weight: 700; padding: 0 5px; border-radius: 4px; background: var(--red-soft); color: var(--red); margin-left: auto; }
+/* ---------- App 外殼 ---------- */
+.gb-app { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100vh; height: 100dvh; background: var(--gb-ground); }
+.gb-app__body { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); min-height: 0; }
+.gb-app__side { display: none; }
+.gb-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--gb-ground); }
+.gb-canvas--paper { background: var(--gb-surface); }
+.gb-canvas__tl, .gb-canvas__tr, .gb-canvas__bl, .gb-canvas__br, .gb-canvas__bc { position: absolute; z-index: 2; display: flex; align-items: center; gap: var(--gb-space-2); }
+.gb-canvas__tl { top: var(--gb-space-3); left: var(--gb-space-3); }
+.gb-canvas__tr { top: var(--gb-space-3); right: var(--gb-space-3); }
+.gb-canvas__bl { bottom: var(--gb-space-3); left: var(--gb-space-3); }
+.gb-canvas__br { bottom: var(--gb-space-3); right: var(--gb-space-3); }
+.gb-canvas__bc { bottom: var(--gb-space-3); left: 50%; transform: translateX(-50%); }
+.gb-canvas__label { padding: 2px var(--gb-space-2); border-radius: var(--gb-radius-xs); background: var(--gb-surface); border: var(--gb-border-hair) solid var(--gb-line); font-size: 12px; line-height: 16px; font-weight: 600; color: var(--gb-ink-2); white-space: nowrap; }
+.gb-app__top { display: flex; flex-direction: column; min-width: 0; }
+.gb-viewbar { padding: var(--gb-space-2) var(--gb-space-3); border-bottom: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-surface); }
+.gb-app .gb-appbar__center { display: none; }
+.gb-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; min-height: 0; }
+.gb-split > .gb-canvas + .gb-canvas { border-left: var(--gb-border-hair) solid var(--gb-line-strong); }
+.gb-canvas__stage { position: absolute; }
+.gb-canvas__stage > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.gb-canvas__chip { position: absolute; z-index: 1; transform: translate(-50%, -50%); }
+/* 畫布(SVG)裡的標示 */
+.gb-sel-halo { fill: none; stroke: var(--gb-surface); stroke-width: 6px; stroke-linejoin: round; }
+.gb-sel { fill: none; stroke: var(--gb-select); stroke-width: var(--gb-border-select); stroke-linejoin: round; }
+.gb-dimline { fill: none; stroke: var(--gb-ink-2); stroke-width: 1px; }
+.gb-hidden-line { fill: none; stroke: var(--gb-ink-2); stroke-width: 1px; stroke-dasharray: 5 4; }
+.gb-handle { fill: var(--gb-surface); stroke: var(--gb-ink); stroke-width: 1.5px; }
+/* 寬版(桌機):左右側欄出現,底部操作列與檢視列隱藏。gb-app--wide / gb-app--narrow 可強制指定。 */
+.gb-app--wide .gb-app__body { grid-template-columns: var(--gb-size-panel) minmax(0, 1fr) var(--gb-size-inspector); }
+.gb-app--wide .gb-app__side { display: flex; }
+.gb-app--wide .gb-actionbar, .gb-app--wide .gb-viewbar { display: none; }
+.gb-app--wide .gb-appbar__center { display: flex; }
+@media (min-width: 1080px) {
+  .gb-app:not(.gb-app--narrow) .gb-app__body { grid-template-columns: var(--gb-size-panel) minmax(0, 1fr) var(--gb-size-inspector); }
+  .gb-app:not(.gb-app--narrow) .gb-app__side { display: flex; }
+  .gb-app:not(.gb-app--narrow) .gb-actionbar, .gb-app:not(.gb-app--narrow) .gb-viewbar { display: none; }
+  .gb-app:not(.gb-app--narrow) .gb-appbar__center { display: flex; }
+}
 
-  .section-box { border-top: 1px solid var(--border); padding-top: 9px; margin-top: 9px; }
-  .section-title { font-size: 11.5px; font-weight: 700; color: var(--ink); margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-  .form-field { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .form-field.full { grid-column: 1 / -1; }
-  .form-field label { font-size: 11px; font-weight: 600; color: var(--ink-muted); }
+@media (prefers-reduced-motion: reduce) {
+  .gb *, .gb *::before, .gb *::after { transition: none !important; animation: none !important; }
+}
+@media print {
+  .gb-appbar, .gb-actionbar, .gb-dock, .gb-app__side { display: none !important; }
+}
+/* gb:end */
 
-  .tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(248, 246, 242, 0.7); }
-  .tab-btn {
-    flex: 1; padding: 8px 6px; border: none; border-bottom: 2px solid transparent;
-    background: transparent; font-family: var(--font); font-size: 12px; font-weight: 700;
-    color: var(--ink-muted); cursor: pointer;
-  }
-  .tab-btn:hover { color: var(--ink); }
-  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface-solid); }
+/* 木工設計專屬版面、畫布與列印規則（僅引用 --gb-* 與 --mat-* 變數） */
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-ground); }
+.wc-page { display: none; min-width: 0; min-height: 0; }
+.wc-page.active { display: contents; }
+#pageBlueprint.active, #pageSplit.active { display: flex; flex-direction: column; grid-column: 1 / -1; position: relative; }
+.wc-canvas-wrap { position: absolute; inset: 0; }
+.wc-canvas-wrap canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.wc-menu-wrap { position: relative; }
+.wc-menu-pop { position: absolute; top: calc(100% + var(--gb-space-1)); right: 0; z-index: 40; display: none; }
+.wc-menu-pop.open { display: flex; }
+.wc-menu-select { padding: var(--gb-space-1) var(--gb-space-2) var(--gb-space-2); }
+.wc-tabs-bar { padding: var(--gb-space-3) var(--gb-space-4); border-bottom: var(--gb-border-hair) solid var(--gb-line); flex: none; }
+.wc-explode-bar { display: none; align-items: center; gap: var(--gb-space-2); padding: var(--gb-space-2) var(--gb-space-3); border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-md); background: var(--gb-surface); box-shadow: var(--gb-shadow-float); }
+.wc-explode-bar.open { display: inline-flex; }
+.wc-explode-bar input[type="range"] { width: 112px; accent-color: var(--gb-ink); }
+.wc-ref-card { position: absolute; left: var(--gb-space-3); bottom: calc(var(--gb-space-8) + var(--gb-space-8)); width: 296px; z-index: 20; display: none; flex-direction: column; border: var(--gb-border-hair) solid var(--gb-line-strong); border-radius: var(--gb-radius-md); background: var(--gb-surface); box-shadow: var(--gb-shadow-float); overflow: hidden; }
+.wc-ref-card.open { display: flex; }
+.wc-ref-canvas { height: 200px; background: var(--gb-surface); position: relative; }
+.wc-ref-canvas canvas { width: 100%; height: 100%; display: block; }
+.wc-ref-foot { display: flex; align-items: center; justify-content: space-between; padding: var(--gb-space-2) var(--gb-space-3); border-top: var(--gb-border-hair) solid var(--gb-line); }
+.wc-bp-floating-left { position: absolute; top: var(--gb-space-3); left: var(--gb-space-3); width: var(--gb-size-panel); max-height: calc(100% - 140px); z-index: 15; border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-md); box-shadow: var(--gb-shadow-float); overflow: hidden; }
+.wc-bp-floating-right { position: absolute; top: var(--gb-space-3); right: var(--gb-space-3); width: var(--gb-size-inspector); max-height: calc(100% - 140px); z-index: 15; border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-md); box-shadow: var(--gb-shadow-float); overflow: hidden; }
+.wc-bp-floating-left.hidden, .wc-bp-floating-right.hidden { display: none; }
+.wc-bp-print-head { display: none; align-items: center; justify-content: space-between; padding: var(--gb-space-2) var(--gb-space-4); border-bottom: var(--gb-border-rule) solid var(--gb-ink); background: var(--gb-surface); }
+.wc-swatches { display: flex; gap: var(--gb-space-2); flex-wrap: wrap; }
+.wc-swatch { width: 28px; height: 28px; border-radius: var(--gb-radius-sm); border: var(--gb-border-rule) solid transparent; cursor: pointer; padding: 0; }
+.wc-swatch.active { box-shadow: var(--gb-focus-ring); }
+.wc-cut-card { border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-sm); padding: var(--gb-space-3); background: var(--gb-surface); display: flex; flex-direction: column; gap: var(--gb-space-2); }
+.wc-cut-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--gb-space-2); font-weight: 700; }
+.wc-bar-label { display: flex; justify-content: space-between; gap: var(--gb-space-2); color: var(--gb-ink-2); }
+.wc-bar-track { display: flex; height: 24px; border-radius: var(--gb-radius-xs); overflow: hidden; background: var(--gb-sunken); border: var(--gb-border-hair) solid var(--gb-line); }
+.wc-bar-seg { display: flex; align-items: center; justify-content: center; background: var(--mat-wood); color: var(--gb-on-ink); border-right: var(--gb-border-hair) solid var(--mat-wood-dark); overflow: hidden; white-space: nowrap; }
+.wc-bar-waste { flex: 1; display: flex; align-items: center; justify-content: center; background: var(--gb-sunken); color: var(--gb-ink-3); }
+.wc-sheet-svg { width: 100%; height: auto; display: block; border: var(--gb-border-hair) solid var(--gb-line); border-radius: var(--gb-radius-xs); background: var(--gb-sunken); }
+.wc-split-wrap { flex: 1; display: flex; min-height: 0; min-width: 0; }
+.wc-split-pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; flex: 1; }
+.wc-split-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--gb-space-2); flex-wrap: wrap; padding: var(--gb-space-2) var(--gb-space-3); border-bottom: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-surface); }
+.wc-split-strip { display: flex; align-items: center; justify-content: space-between; gap: var(--gb-space-2); flex-wrap: wrap; padding: var(--gb-space-2) var(--gb-space-3); border-top: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-surface); }
+.wc-split-divider { width: 8px; flex: none; cursor: col-resize; background: var(--gb-sunken); border-left: var(--gb-border-hair) solid var(--gb-line); border-right: var(--gb-border-hair) solid var(--gb-line); touch-action: none; }
+.wc-split-divider.dragging { background: var(--gb-select-soft); }
+.wc-modal-scrim { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: var(--gb-space-4); }
+.wc-modal-scrim.open { display: flex; }
+.wc-modal-box { width: 100%; max-width: 480px; border-radius: var(--gb-radius-md); overflow: hidden; }
+.wc-text-modal { position: fixed; z-index: 70; display: none; width: 280px; padding: var(--gb-space-3); border: var(--gb-border-hair) solid var(--gb-line-strong); border-radius: var(--gb-radius-md); background: var(--gb-surface); box-shadow: var(--gb-shadow-float); }
+.wc-text-modal.open { display: flex; flex-direction: column; gap: var(--gb-space-2); }
+.wc-toast { position: fixed; top: calc(var(--gb-size-bar) + var(--gb-space-3)); left: 50%; transform: translateX(-50%) translateY(-8px); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .16s ease-out, transform .16s ease-out; box-shadow: var(--gb-shadow-float); }
+.wc-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.wc-sheet-backdrop { display: none; }
+.wc-mobile-only { display: inline-flex; }
+.wc-desktop-only { display: none; }
+.wc-sheet-tab { display: inline-flex; align-items: center; gap: var(--gb-space-1); }
+.wc-docks-stack { flex-direction: column; }
+.wc-dock-scroll { max-width: calc(100vw - var(--gb-space-6)); overflow-x: auto; }
+.wc-collision-badge { display: none; align-items: center; gap: var(--gb-space-2); }
+.wc-add-box { padding: var(--gb-space-3) var(--gb-space-4); border-bottom: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-sunken); }
+.wc-ins-price { width: 84px; }
+@media (max-width: 1079px) {
+  .wc-sheet-backdrop.open { display: block; position: fixed; inset: 0; z-index: 30; }
+  .gb-app__side.wc-mobile-sheet-open { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; max-height: 82vh; max-height: 82dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; border: 0; box-shadow: var(--gb-shadow-sheet); }
+  .wc-bp-floating-left, .wc-bp-floating-right { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 70dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; }
+  .wc-split-wrap { flex-direction: column; }
+  .wc-split-pane-left { width: 100% !important; height: 50%; }
+  .wc-split-divider { width: 100%; height: 8px; cursor: row-resize; border-left: 0; border-right: 0; border-top: var(--gb-border-hair) solid var(--gb-line); border-bottom: var(--gb-border-hair) solid var(--gb-line); }
+  .wc-menu-pop.open { position: fixed; left: 0; right: 0; bottom: 0; top: auto; max-width: none; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; padding: var(--gb-space-3) var(--gb-space-3) calc(var(--gb-space-4) + env(safe-area-inset-bottom, 0px)); z-index: 50; }
+}
+@media (min-width: 1080px) {
+  .wc-mobile-only { display: none; }
+  .wc-desktop-only { display: inline-flex; }
+  .wc-docks-stack { flex-direction: row; }
+  .gb-app__side .gb-sheet__grip { display: none; }
+}
+@media print {
+  html, body, .gb-app, .gb-app__body, .wc-page.active { height: auto !important; overflow: visible !important; display: block !important; }
+  .gb-app__top, .gb-viewbar, .gb-actionbar, .gb-canvas__tl, .gb-canvas__tr, .gb-canvas__bl, .gb-canvas__br, .gb-canvas__bc, .wc-ref-card, .wc-bp-floating-left, .wc-bp-floating-right, .wc-split-bar, .wc-split-strip, .wc-split-divider, .wc-toast, #drawer3DLeft, .wc-tabs-bar { display: none !important; }
+  #drawer3DRight { display: block !important; position: static !important; width: 100% !important; border: 0 !important; box-shadow: none !important; }
+  #page3D .gb-canvas { height: 340px; position: relative; }
+  #pageBlueprint .wc-bp-print-head { display: flex !important; }
+  #pageBlueprint .gb-canvas { height: 80vh; position: relative; border: var(--gb-border-hair) solid var(--gb-line-strong); }
+  #pageSplit .wc-split-wrap { height: 82vh; }
+}
 
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-  .kpi-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 7px; }
-  .kpi-label { font-size: 10px; color: var(--ink-muted); font-weight: 600; }
-  .kpi-val { font-size: 14px; font-weight: 800; color: var(--ink); font-family: var(--mono); margin-top: 2px; }
-  .kpi-sub { font-size: 10px; color: var(--ink-soft); }
-
-  .data-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 12px; }
-  .data-table th, .data-table td { padding: 5px 5px; border-bottom: 1px solid var(--border); text-align: left; }
-  .data-table th { background: var(--surface-2); font-weight: 700; color: var(--ink-muted); }
-  .num { text-align: right !important; font-family: var(--mono); }
-  .price-input { width: 60px; padding: 2px 4px; font-size: 11px; text-align: right; font-family: var(--mono); }
-
-  .cut-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; margin-bottom: 10px; background: var(--surface-2); }
-  .cut-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 11.5px; font-weight: 700; }
-  .bar-row { margin-bottom: 7px; }
-  .bar-label { font-size: 10.5px; color: var(--ink-muted); margin-bottom: 3px; display: flex; justify-content: space-between; font-family: var(--mono); }
-  .bar-track { height: 22px; background: #e5dfd3; border: 1px solid var(--border-strong); border-radius: 4px; display: flex; overflow: hidden; }
-  .bar-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; border-right: 1px solid rgba(255,255,255,0.65); overflow: hidden; white-space: nowrap; padding: 0 2px; font-family: var(--mono); }
-  .bar-waste { height: 100%; flex: 1; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink-soft); background: repeating-linear-gradient(45deg, #ebe6dc, #ebe6dc 5px, #e2dccf 5px, #e2dccf 10px); overflow: hidden; font-family: var(--mono); }
-  .sheet-svg { width: 100%; height: auto; display: block; border: 1px solid var(--border-strong); border-radius: 4px; background: #efeae0; margin-top: 4px; }
-
-  .alert-box { padding: 7px 9px; border-radius: var(--radius-sm); font-size: 11px; margin-bottom: 8px; border: 1px solid; }
-  .alert-warn { background: var(--amber-soft); border-color: #f5d08a; color: var(--amber); }
-  .alert-danger { background: var(--red-soft); border-color: #fca5a5; color: var(--red); }
-  .alert-info { background: var(--blue-soft); border-color: #bfdbfe; color: #1d4ed8; }
-
-  .nudge-row { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
-  .catalog-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; margin-bottom: 7px; background: var(--surface-solid); }
-  .catalog-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
-  .catalog-name { font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 5px; }
-  .catalog-spec { font-size: 11px; color: var(--ink-muted); font-family: var(--mono); margin-top: 3px; }
-  .catalog-note { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
-  .conv-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px; }
-  .conv-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 5px; align-items: center; }
-
-  .color-swatch { width: 26px; height: 26px; border-radius: 7px; border: 2px solid transparent; cursor: pointer; flex-shrink: 0; }
-  .color-swatch.active { border-color: var(--ink); transform: scale(1.1); }
-
-  /* In-page Text Popover */
-  .bp-text-modal {
-    position: fixed;
-    display: none;
-    background: var(--surface-solid);
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    padding: 8px;
-    box-shadow: var(--shadow-float);
-    z-index: 60;
-    width: 224px;
-  }
-  .bp-text-modal.open { display: block; }
-
-
-  /* Page 3: Split-Screen Dual View (Left Blueprint x Right 3D) */
-  .split-container {
-    position: absolute;
-    top: 56px; left: 0; right: 0; bottom: 0;
-    display: flex;
-    overflow: hidden;
-  }
-  .split-pane {
-    position: relative;
-    height: 100%;
-    min-width: 240px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .split-pane-left {
-    width: 50%;
-    background: #ffffff;
-  }
-  .split-pane-right {
-    flex: 1;
-    background: radial-gradient(circle at 50% 42%, #fdfcfa 0%, #ede8de 100%);
-  }
-  .split-divider {
-    width: 8px;
-    background: #e6e0d5;
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    cursor: col-resize;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    z-index: 25;
-    transition: background 0.15s;
-  }
-  .split-divider:hover, .split-divider.dragging {
-    background: var(--accent-soft);
-  }
-  .split-divider::after {
-    content: "";
-    width: 2px;
-    height: 36px;
-    border-radius: 2px;
-    background: var(--ink-soft);
-    box-shadow: 0 -8px 0 var(--ink-soft), 0 8px 0 var(--ink-soft);
-    opacity: 0.55;
-  }
-  .split-pane-bar {
-    padding: 6px 10px;
-    background: var(--surface);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 5px;
-    z-index: 15;
-  }
-  .split-canvas-area {
-    position: relative;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    user-select: none;
-    touch-action: none;
-  }
-  .split-canvas-area canvas { width: 100%; height: 100%; display: block; }
-  .split-bottom-strip {
-    padding: 5px 10px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--ink-muted);
-    z-index: 15;
-  }
-
-  /* View / Cross-Section Modal */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(24, 30, 38, 0.34);
-    backdrop-filter: blur(3px);
-    z-index: 80;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal-card {
-    background: var(--surface-solid);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-float);
-    width: 100%;
-    max-width: 440px;
-    overflow: hidden;
-  }
-  .modal-head {
-    padding: 11px 14px;
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-weight: 700;
-    font-size: 13.5px;
-  }
-  .modal-body { padding: 14px; }
-  .view-preset-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .view-preset-card {
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 10px 8px;
-    background: var(--surface-2);
-    cursor: pointer;
-    text-align: center;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .view-preset-card:hover { border-color: var(--accent); background: var(--accent-soft); }
-  .view-preset-card strong { display: block; font-size: 12.5px; color: var(--ink); }
-  .view-preset-card span { font-size: 10.5px; color: var(--ink-muted); font-family: var(--mono); }
-
-  @media (max-width: 760px) {
-    .split-container { flex-direction: column; }
-    .split-pane-left { width: 100% !important; height: 50%; }
-    .split-divider { width: 100%; height: 8px; cursor: row-resize; }
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    top: 114px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: var(--ink);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 99px;
-    font-size: 12.5px;
-    font-weight: 600;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s, transform 0.2s;
-    z-index: 100;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-  .save-pill { font-size: 10.5px; font-weight: 600; color: var(--green); background: var(--green-soft); padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
-  .save-pill.err { color: var(--red); background: var(--red-soft); }
-
-  @media (max-width: 1180px) {
-    .file-menu-inline { display: none; }
-    .btn.file-menu-toggle { display: inline-flex; }
-    .project-name-input { width: 112px; }
-    .drawer-3d-left { width: 240px; }
-    .drawer-3d-right { width: 305px; }
-    .ref-float-card { left: 12px; width: 260px; }
-  }
-  @media (max-width: 760px) {
-    body {
-      font-size: 14px;
-      --mobile-header-bottom: 106px;
-    }
-    body:has(#saveStatusPill.err) { --mobile-header-bottom: 132px; }
-    .hud-top-bar {
-      top: 6px; left: 6px; right: 6px;
-      display: grid;
-      grid-template-columns: minmax(28px, auto) minmax(0, 1fr) minmax(0, 1.35fr);
-      grid-template-rows: 44px auto;
-      gap: 6px;
-    }
-    .hud-top-left { display: contents; }
-    .hud-top-left > .brand-icon { grid-row: 1; grid-column: 1; pointer-events: none; }
-    .project-name-input {
-      grid-row: 1; grid-column: 2;
-      width: 100%; min-height: 44px; font-size: 12px;
-      background: var(--surface); border-color: var(--border);
-    }
-    .hud-top-right {
-      grid-row: 1; grid-column: 3;
-      min-width: 0; height: 44px; padding: 3px 4px;
-    }
-    .hud-top-right .inline-select { flex: 1; width: 0; min-width: 0; }
-    .hud-top-right .file-menu-toggle { flex: none; }
-    .save-pill { display: none; }
-    .save-pill.err { display: inline-flex; grid-row: 2; grid-column: 1 / -1; min-height: 20px; justify-self: start; }
-    .save-pill.err + .page-switch { grid-row: 3; }
-    .page-switch {
-      grid-row: 2; grid-column: 1 / -1;
-      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-      min-height: 50px;
-      padding: 2px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-pill);
-    }
-    .page-switch-btn { justify-content: center; min-height: 44px; padding-inline: 3px; }
-    .page-switch-btn svg { flex: none; }
-    .hud-center-dock { top: calc(var(--mobile-header-bottom) + 6px); max-width: calc(100vw - 14px); }
-    .drawer-collapsed-pill-left, .drawer-collapsed-pill-right {
-      top: calc(var(--mobile-header-bottom) + 60px);
-    }
-    .split-container { top: calc(var(--mobile-header-bottom) + 6px); }
-    .toast { top: calc(var(--mobile-header-bottom) + 62px); }
-    .drawer-3d-left, .drawer-3d-right, .bp-style-card, .bp-prop-card {
-      left: 8px; right: 8px; width: auto; max-height: 48vh; bottom: 56px; top: auto;
-    }
-    .btn { min-height: 36px; }
-    .bp-sheet-tabs-bar { max-width: calc(100vw - 16px); bottom: 8px; left: 8px; }
-    .bp-status-pill { bottom: 54px; right: 8px; }
-  }
-  @media print {
-    .hud-top-bar, .hud-center-dock, .hud-3d-bottom, .drawer-3d-left, .bp-style-card, .bp-prop-card, .bp-sheet-tabs-bar, .bp-status-pill, .ref-float-card, .drawer-collapsed-pill-left, .drawer-collapsed-pill-right, .split-pane-bar, .split-bottom-strip, .split-divider { display: none !important; }
-    html, body, .app, .page-view.active { overflow: visible; height: auto; display: block; }
-    .drawer-3d-right { position: static; width: 100%; box-shadow: none; border: none; opacity: 1 !important; visibility: visible !important; }
-    #page3D .full-canvas-wrap { position: relative; height: 340px; }
-    #pageBlueprint .bp-print-header { display: flex !important; }
-    #pageBlueprint .full-canvas-wrap { position: relative; height: 80vh; border: 1px solid #cbd5e1; }
-    #pageSplit .split-container { position: static; height: 82vh; }
-  }
 </style>
 </head>
 <body>
-<div class="app">
-  <!-- Unified Non-Overlapping Top HUD Bar -->
-  <div class="hud-top-bar">
-  <div class="hud-top-left">
-    <div class="brand-icon" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-        <line x1="12" y1="22.08" x2="12" y2="12"/>
-      </svg>
-    </div>
-    <input id="projectNameInput" class="project-name-input" type="text" value="60×60 正方形木框" aria-label="專案名稱">
-    <span id="saveStatusPill" class="save-pill" title="自動儲存於本機瀏覽器">已儲存</span>
-    <nav class="page-switch" aria-label="頁面切換">
-      <button id="navPage3D" class="page-switch-btn active" type="button" data-page="3d" aria-pressed="true">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        3D 組裝
-      </button>
-      <button id="navPageBlueprint" class="page-switch-btn" type="button" data-page="blueprint" aria-pressed="false">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-        設計圖紙 (<span id="sheetCountBadge">1</span>)
-      </button>
-      <button id="navPageSplit" class="page-switch-btn" type="button" data-page="split" aria-pressed="false">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-        圖紙＋3D
-      </button>
-    </nav>
-  </div>
-
-  <!-- Floating Top-Right: Templates & Offline File Actions -->
-  <div class="hud-top-right">
-    <select id="templateSelect" class="inline-select" aria-label="載入結構範本" style="font-size:11.5px;padding:4px 6px;">
-      <option value="">範本...</option>
-      <option value="square_frame">60×60 正方形木框（角材＋釘槍）</option>
-      <option value="workbench">簡易木作工作桌（角材＋木心板）</option>
-      <option value="partition_wall">輕隔間骨架封板（角材＋矽酸鈣板）</option>
-      <option value="empty">空白畫布</option>
-    </select>
-    <div class="file-menu-inline">
-      <button id="btnExportJson" class="btn btn-sm" type="button" title="下載離線專案檔 (.json)">匯出 JSON</button>
-      <button id="btnImportJson" class="btn btn-sm" type="button" title="開啟離線專案檔 (.json)">匯入 JSON</button>
-      <button id="btnCopyBom" class="btn btn-sm btn-soft" type="button">複製採購清單</button>
-      <button id="btnPrint" class="btn btn-sm btn-primary" type="button">列印施工單</button>
-    </div>
-    <button id="btnFileMenu" class="btn btn-sm btn-soft file-menu-toggle" type="button" aria-expanded="false">檔案 ▾</button>
-    <div id="fileMenuDropdown" class="file-menu-dropdown">
-      <button class="btn btn-sm" type="button" data-menu-proxy="btnExportJson" style="width:100%;">下載專案檔 (JSON)</button>
-      <button class="btn btn-sm" type="button" data-menu-proxy="btnImportJson" style="width:100%;">開啟專案檔 (JSON)</button>
-      <button class="btn btn-sm btn-soft" type="button" data-menu-proxy="btnCopyBom" style="width:100%;">複製採購清單</button>
-      <button class="btn btn-sm btn-primary" type="button" data-menu-proxy="btnPrint" style="width:100%;">列印施工單</button>
-    </div>
-    <input id="fileImportInput" type="file" accept=".json" style="display:none">
-  </div>
-  </div>
-
-  <!-- ==================== PAGE 1: FULL-BLEED 3D ASSEMBLY ==================== -->
-  <div id="page3D" class="page-view active">
-    <!-- 100% Full-Screen 3D Canvas -->
-    <div class="full-canvas-wrap" id="canvasWrap">
-      <canvas id="sceneCanvas"></canvas>
-    </div>
-
-    <!-- Floating Top-Center 3D Dock -->
-    <div class="hud-center-dock">
-      <button class="btn btn-sm btn-ghost view-btn active" data-view="iso" type="button">等角 3D</button>
-      <button class="btn btn-sm btn-ghost view-btn" data-view="front" type="button">正視 (XZ)</button>
-      <button class="btn btn-sm btn-ghost view-btn" data-view="top" type="button">俯視 (XY)</button>
-      <button class="btn btn-sm btn-ghost view-btn" data-view="side" type="button">側視 (YZ)</button>
-      <button id="btnResetCam" class="btn btn-sm btn-ghost" type="button">重置視角</button>
-      <button id="btn3DZoomIn" class="btn btn-sm btn-ghost" type="button" title="放大">＋</button>
-      <button id="btn3DZoomOut" class="btn btn-sm btn-ghost" type="button" title="縮小">－</button>
-      <button id="btn3DPanMode" class="btn btn-sm btn-ghost" type="button" title="切換單指旋轉或平移畫布">旋轉模式</button>
-      <span class="dock-sep"></span>
-      <button id="btnUndo3D" class="btn btn-sm btn-ghost" type="button" title="復原 (Ctrl+Z)" disabled>↩ 復原</button>
-      <button id="btnRedo3D" class="btn btn-sm btn-ghost" type="button" title="重做 (Ctrl+Y)" disabled>↪ 重做</button>
-      <span class="dock-sep"></span>
-      <button id="btnCollisionMode" class="btn btn-sm btn-soft active" type="button">防穿透＋磁吸：開</button>
-      <button id="btnToggleRefSheet" class="btn btn-sm btn-blue" type="button">參考圖紙</button>
-      <button id="btnToggleLabels" class="btn btn-sm btn-ghost active" type="button">尺寸標註</button>
-      <button id="btnToggleFasteners" class="btn btn-sm btn-ghost active" type="button">釘點標記</button>
-      <button id="btnToggleWire" class="btn btn-sm btn-ghost" type="button">透視線框</button>
-    </div>
-
-    <!-- Left Collapsed Trigger (visible when left drawer is closed) -->
-    <div id="leftCollapsedPill" class="drawer-collapsed-pill-left" style="display:none;">
-      <button id="btnOpenLeft3D" class="btn btn-sm" type="button" style="box-shadow:var(--shadow-pill);">☰ 構件清單 (<span id="partCountCollapsed">0</span>)</button>
-    </div>
-
-    <!-- Floating Left Drawer: Parts & Quick Add -->
-    <section id="drawer3DLeft" class="float-card drawer-3d-left">
-      <div class="float-card-head">
-        <span>構件清單 (<span id="partCount">0</span>)</span>
-        <div style="display:flex;gap:4px;">
-          <button id="btnToggleAddForm" class="btn btn-xs btn-primary" type="button">＋ 新增構件</button>
-          <button id="btnClearParts" class="btn btn-xs btn-danger" type="button">清空</button>
-          <button id="btnCloseLeft3D" class="btn btn-xs btn-ghost" type="button" title="收合面板以最大化畫布">◀</button>
-        </div>
+<div class="gb gb-app" id="appRoot">
+  <div class="gb-app__top">
+    <header class="gb-appbar">
+      <a class="gb-appbar__home" href="/" aria-label="回正經工班工作工具"><span class="gb-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span></a>
+      <div class="gb-appbar__titles">
+        <span class="gb-appbar__tool">木工設計</span>
+        <input id="projectNameInput" class="gb-appbar__project" type="text" value="60×60 正方形木框" aria-label="專案名稱">
       </div>
-      <div class="float-card-body">
-        <div id="addPieceBox" style="display:none;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px;margin-bottom:10px;">
-          <div class="section-title">新增木工構件（自動避碰）</div>
-          <div class="form-grid">
-            <div class="form-field full">
-              <label for="addMaterial">選擇台灣建材行規格</label>
-              <select id="addMaterial"></select>
-            </div>
-            <div class="form-field">
-              <label for="addCutL">裁切長度 (cm)</label>
-              <input id="addCutL" type="number" min="1" max="364" step="0.5" value="60">
-            </div>
-            <div class="form-field" id="addCutWWrap">
-              <label for="addCutW">裁切寬度 (cm)</label>
-              <input id="addCutW" type="number" min="1" max="122" step="0.5" value="60">
-            </div>
-            <div class="form-field">
-              <label for="addOrient">擺放方向</label>
-              <select id="addOrient"></select>
-            </div>
-            <div class="form-field">
-              <label for="addJoinery">接合加工</label>
-              <select id="addJoinery"></select>
-            </div>
-            <div class="form-field full">
-              <button id="btnAddPiece" class="btn btn-primary" type="button" style="width:100%;">加入結構並選取</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="partsList" class="parts-list"></div>
-
-        <div class="section-box">
-          <div class="section-title">台尺 / 公分快速換算</div>
-          <div class="conv-box">
-            <div class="conv-row">
-              <div class="form-field"><label for="convCm">公分</label><input id="convCm" type="number" step="0.1" value="60"></div>
-              <span style="padding-top:14px;color:var(--ink-soft);">⇄</span>
-              <div class="form-field"><label for="convChi">台尺</label><input id="convChi" type="number" step="0.01" value="1.98"></div>
-            </div>
-            <div style="font-size:10px;color:var(--ink-soft);margin-top:4px;">1 台尺 = 30.3 cm ｜ 6 分板 ≈ 1.8 cm</div>
-          </div>
-        </div>
+      <span id="saveStatusPill" class="gb-status" role="status" title="自動儲存於本機瀏覽器">已儲存</span>
+      <div class="gb-appbar__center gb-dense">
+        <nav class="gb-seg" role="group" aria-label="檢視切換">
+          <button id="navPage3D" class="gb-seg__item page-switch-btn active" type="button" data-page="3d" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>3D 組裝</button>
+          <button id="navPageBlueprint" class="gb-seg__item page-switch-btn" type="button" data-page="blueprint" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h7v10"/></svg>設計圖紙 (<span id="sheetCountBadge">1</span>)</button>
+          <button id="navPageSplit" class="gb-seg__item page-switch-btn" type="button" data-page="split" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M12 4v16"/></svg>圖紙+3D</button>
+        </nav>
       </div>
-    </section>
-
-    <!-- Right Collapsed Triggers -->
-    <div id="rightCollapsedPill" class="drawer-collapsed-pill-right" style="display:none;">
-      <button id="btnOpenIns3D" class="btn btn-sm" type="button" style="box-shadow:var(--shadow-pill);">構件編輯</button>
-      <button id="btnOpenBom3D" class="btn btn-sm btn-soft" type="button" style="box-shadow:var(--shadow-pill);">採購與裁切圖</button>
-      <button id="btnOpenCat3D" class="btn btn-sm" type="button" style="box-shadow:var(--shadow-pill);">建材規格庫</button>
-    </div>
-
-    <!-- Floating Right Drawer: Inspector / BOM / Catalog -->
-    <section id="drawer3DRight" class="float-card drawer-3d-right">
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="inspector" type="button">構件編輯</button>
-        <button class="tab-btn" data-tab="bom" type="button">採購與裁切圖</button>
-        <button class="tab-btn" data-tab="catalog" type="button">建材規格庫</button>
-        <button id="btnCloseRight3D" class="btn btn-xs btn-ghost" type="button" title="收合右側面板" style="margin:4px;">▶</button>
-      </div>
-      <div class="float-card-body" id="rightPanelBody"></div>
-    </section>
-
-    <!-- Floating Reference Blueprint Card -->
-    <aside class="ref-float-card" id="refDrawer">
-      <div class="ref-drawer-head">
-        <span>參考設計圖紙</span>
-        <select id="refSheetSelect" class="inline-select" style="font-size:11px;padding:2px 5px;max-width:130px;"></select>
-        <button id="btnCloseRef" class="btn btn-xs" type="button">✕</button>
-      </div>
-      <div class="ref-canvas-box" id="refCanvasBox"><canvas id="refCanvas"></canvas></div>
-      <div class="ref-drawer-foot">
-        <span>對照尺寸組裝</span>
-        <button id="btnJumpToBlueprint" class="btn btn-xs btn-blue" type="button">前往編輯此圖紙 →</button>
-      </div>
-    </aside>
-
-    <!-- Floating Bottom-Center 3D Status & Explode Bar -->
-    <div class="hud-3d-bottom">
-      <span id="collisionBadge" class="pill-status pill-danger" style="display:none;"></span>
-      <span id="collisionSep" class="dock-sep" style="height:14px;display:none;"></span>
-      <label for="explodeSlider" style="font-weight:700;color:var(--ink-muted);">爆炸圖</label>
-      <input id="explodeSlider" type="range" min="0" max="100" value="0">
-      <span id="explodeVal" style="font-family:var(--mono);width:30px;">0%</span>
-      <span class="dock-sep" style="height:14px;"></span>
-      <span id="bboxReadout" style="font-family:var(--mono);color:var(--ink-muted);">外廓：60.0 × 2.6 × 60.0 cm</span>
-    </div>
-  </div>
-
-  <!-- ==================== PAGE 2: FIGMA / EXCALIDRAW FULL-CANVAS BLUEPRINT ==================== -->
-  <div id="pageBlueprint" class="page-view">
-    <div id="bpPrintHeader" class="bp-print-header">
-      <strong id="bpPrintTitle">木工設計圖紙</strong>
-      <span id="bpPrintMeta" style="font-family:var(--mono);font-size:11.5px;">格線 1大格=10cm</span>
-    </div>
-    <!-- 100% Edge-to-Edge Blueprint Canvas -->
-    <div class="full-canvas-wrap" id="bpCanvasWrap">
-      <canvas id="bpCanvas" tabindex="-1"></canvas>
-    </div>
-
-    <!-- Single Centered Floating Excalidraw-Style Tool Dock -->
-    <div class="hud-center-dock">
-      <button class="btn btn-sm btn-ghost bp-tool-btn active" data-tool="select" type="button" title="選取與移動 (快捷鍵 V)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
-        選取
-      </button>
-      <button class="btn btn-sm btn-ghost bp-tool-btn" data-tool="line" type="button" title="直線 (快捷鍵 L)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="19" x2="19" y2="5"/></svg>
-        直線
-      </button>
-      <button class="btn btn-sm btn-ghost bp-tool-btn" data-tool="rect" type="button" title="矩形 / 板材 (快捷鍵 R)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="5" width="16" height="14" rx="1.5"/></svg>
-        矩形
-      </button>
-      <button class="btn btn-sm btn-ghost bp-tool-btn" data-tool="circle" type="button" title="圓形 / 孔位 (快捷鍵 O)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8"/></svg>
-        圓孔
-      </button>
-      <button class="btn btn-sm btn-ghost bp-tool-btn" data-tool="dim" type="button" title="尺寸標註線 (快捷鍵 D)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12h16M4 8v8M20 8v8"/></svg>
-        尺寸標註
-      </button>
-      <button class="btn btn-sm btn-ghost bp-tool-btn" data-tool="text" type="button" title="文字標註 (快捷鍵 T)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        文字
-      </button>
-      <button class="btn btn-sm btn-ghost bp-tool-btn" data-tool="freehand" type="button" title="自由手繪 (快捷鍵 P)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
-        手繪
-      </button>
-      <span class="dock-sep"></span>
-      <select id="bpSnapSelect" class="inline-select" style="font-size:11px;padding:3px 5px;border-color:transparent;background:transparent;" title="格線吸附">
-        <option value="1">吸附 1cm</option>
-        <option value="0.5">吸附 0.5cm</option>
-        <option value="5">吸附 5cm</option>
-        <option value="0">不吸附</option>
-      </select>
-      <button id="btnBpOrtho" class="btn btn-sm btn-ghost" type="button" title="正交鎖定 90°">正交 90°</button>
-      <span class="dock-sep"></span>
-      <button id="btnBpUndo" class="btn btn-sm btn-ghost" type="button" title="復原 (Ctrl+Z)" disabled>復原</button>
-      <button id="btnBpRedo" class="btn btn-sm btn-ghost" type="button" title="重做 (Ctrl+Y)" disabled>重做</button>
-      <span class="dock-sep"></span>
-      <button id="btnToggleBpStyleCard" class="btn btn-sm btn-ghost active" type="button" title="展開/收合筆刷與底圖設定">筆刷與底圖</button>
-    </div>
-
-    <!-- Floating Left Compact Style & Underlay Card (Collapsible) -->
-    <section id="bpStyleCard" class="float-card bp-style-card">
-      <div class="float-card-head">
-        <span>筆刷與圖紙設定</span>
-        <button id="btnCloseBpStyle" class="btn btn-xs btn-ghost" type="button">✕</button>
-      </div>
-      <div class="float-card-body">
-        <div class="form-field" style="margin-bottom:8px;">
-          <label>筆刷顏色</label>
-          <div style="display:flex;gap:6px;margin-top:2px;">
-            <button class="color-swatch active" type="button" data-bp-color="#1e242b" style="background:#1e242b;" title="墨黑"></button>
-            <button class="color-swatch" type="button" data-bp-color="#1d4ed8" style="background:#1d4ed8;" title="藍圖藍"></button>
-            <button class="color-swatch" type="button" data-bp-color="#9a5b25" style="background:#9a5b25;" title="木作棕"></button>
-            <button class="color-swatch" type="button" data-bp-color="#dc2626" style="background:#dc2626;" title="標記紅"></button>
-            <button class="color-swatch" type="button" data-bp-color="#15803d" style="background:#15803d;" title="尺寸綠"></button>
-          </div>
-        </div>
-        <div class="form-grid" style="margin-bottom:8px;">
-          <div class="form-field">
-            <label for="bpWidthSelect">線寬</label>
-            <select id="bpWidthSelect">
-              <option value="1.5">細線 1.5</option>
-              <option value="2.5" selected>標準 2.5</option>
-              <option value="4">粗線 4.0</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>線型</label>
-            <button id="btnBpDashed" class="btn btn-sm" type="button" style="width:100%;">虛線</button>
-          </div>
-        </div>
-
-        <div class="section-box">
-          <div class="form-field" style="margin-bottom:6px;">
-            <label for="bpSheetName">目前圖紙名稱</label>
-            <input id="bpSheetName" type="text" value="主視圖草圖（60×60 木框）">
-          </div>
-          <div class="form-field" style="margin-bottom:6px;">
-            <label for="bpUnderlayMode">3D 投影底圖</label>
-            <select id="bpUnderlayMode">
-              <option value="front">正視投影 (XZ)</option>
-              <option value="top">俯視投影 (XY)</option>
-              <option value="side">側視投影 (YZ)</option>
-              <option value="section">自定義剖視圖 (斷面斜線)</option>
-              <option value="none">關閉底圖</option>
-            </select>
-          </div>
-          <div id="bpSectionControlBox" style="display:none;background:var(--blue-soft);border:1px solid #bfdbfe;border-radius:7px;padding:7px;margin-bottom:7px;">
-            <div style="font-size:11px;font-weight:700;color:#1e3a8a;margin-bottom:4px;">剖切平面設定</div>
-            <select id="bpSecAxis" style="margin-bottom:5px;font-size:11px;">
-              <option value="Z">水平剖面（切 Z 高度 → 看 XY）</option>
-              <option value="Y">前後縱剖（切 Y 深度 → 看 XZ）</option>
-              <option value="X">左右橫剖（切 X 寬度 → 看 YZ）</option>
-            </select>
-            <div style="display:flex;align-items:center;gap:5px;">
-              <input id="bpSecSlider" type="range" min="0" max="100" step="0.5" value="30" style="flex:1;accent-color:var(--blue);">
-              <input id="bpSecNum" type="number" step="0.5" value="30" style="width:56px;font-size:11px;padding:2px 4px;font-family:var(--mono);">
-            </div>
-          </div>
-          <button id="btnImport3DToSheet" class="btn btn-sm btn-blue" type="button" style="width:100%;margin-bottom:6px;">3D 投影轉為可編輯線框</button>
-          <div style="display:flex;gap:5px;">
-            <button id="btnBpExportPng" class="btn btn-sm btn-soft" type="button" style="flex:1;">匯出 PNG</button>
-            <button id="btnBpClearSheet" class="btn btn-sm btn-danger" type="button">清空本頁</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Floating Contextual Right Property Card (ONLY Visible When a Shape is Selected!) -->
-    <section id="bpPropCard" class="float-card bp-prop-card hidden">
-      <div class="float-card-head">
-        <span>選取物件屬性</span>
-        <button id="btnBpDeleteSel" class="btn btn-xs btn-danger" type="button">刪除選取</button>
-      </div>
-      <div class="float-card-body" id="bpInspectorBody"></div>
-    </section>
-
-    <!-- Bottom-Left Excel-Style Sheet Tabs Bar -->
-    <div class="bp-sheet-tabs-bar">
-      <div id="sheetList" style="display:flex;align-items:center;gap:3px;"></div>
-      <span class="dock-sep" style="height:16px;"></span>
-      <button id="btnAddSheet" class="btn btn-xs btn-soft" type="button">＋ 新增圖紙</button>
-      <button id="btnOpenViewModal" class="btn btn-xs btn-blue" type="button">＋ 新增視圖 / 剖視圖</button>
-    </div>
-
-    <!-- Bottom-Right Zoom, Coords & Fit Pill -->
-    <div class="bp-status-pill">
-      <span id="bpCoordReadout">X 0.0, Y 0.0 cm ｜ 100%</span>
-      <span id="bpShapeCount" style="color:var(--ink-soft);">0 物件</span>
-      <button id="btnBpZoomOut" class="btn btn-xs" type="button" title="縮小">－</button>
-      <button id="btnBpZoomIn" class="btn btn-xs" type="button" title="放大">＋</button>
-      <button id="btnBpPanToggle" class="btn btn-xs" type="button" title="單指拖曳平移畫布">平移</button>
-      <button id="btnBpFit" class="btn btn-xs" type="button">置中</button>
-    </div>
-
-
-  </div>
-
-  <!-- ==================== PAGE 3: SPLIT-SCREEN (LEFT BLUEPRINT × RIGHT 3D) ==================== -->
-  <div id="pageSplit" class="page-view">
-    <div class="split-container" id="splitContainer">
-      <!-- Left Half: Interactive 2D Blueprint -->
-      <section class="split-pane split-pane-left" id="splitLeftPane">
-        <div class="split-pane-bar">
-          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-            <strong style="font-size:12px;color:var(--accent);">2D 圖紙</strong>
-            <select id="splitSheetSelect" class="inline-select" style="font-size:11.5px;padding:3px 6px;max-width:155px;"></select>
-            <button id="btnSplitAddView" class="btn btn-xs btn-blue" type="button">＋視圖/剖面</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;">
-            <button class="btn btn-xs btn-ghost split-bp-tool active" data-tool="select" type="button">選取</button>
-            <button class="btn btn-xs btn-ghost split-bp-tool" data-tool="line" type="button">直線</button>
-            <button class="btn btn-xs btn-ghost split-bp-tool" data-tool="rect" type="button">矩形</button>
-            <button class="btn btn-xs btn-ghost split-bp-tool" data-tool="circle" type="button">圓孔</button>
-            <button class="btn btn-xs btn-ghost split-bp-tool" data-tool="dim" type="button">標註</button>
-            <button class="btn btn-xs btn-ghost split-bp-tool" data-tool="text" type="button">文字</button>
-            <button class="btn btn-xs btn-ghost split-bp-tool" data-tool="freehand" type="button">手繪</button>
-            <button id="btnSplitBpUndo" class="btn btn-xs" type="button" title="復原圖紙">↩</button>
-            <button id="btnSplitBpDel" class="btn btn-xs btn-danger" type="button" title="刪除選取圖元" disabled>刪</button>
-            <button id="btnSplitBpFit" class="btn btn-xs" type="button">置中</button>
-          </div>
-        </div>
-        <div class="split-canvas-area" id="splitBpWrap">
-          <canvas id="splitBpCanvas" tabindex="-1"></canvas>
-        </div>
-        <div class="split-bottom-strip">
-          <span id="splitBpCoord" style="font-family:var(--mono);">X 0.0, Y 0.0 cm</span>
-          <div id="splitSecLiveBar" style="display:none;align-items:center;gap:5px;">
-            <span style="font-weight:700;color:#1d4ed8;">剖切位置</span>
-            <input id="splitSecSlider" type="range" min="0" max="100" step="0.5" value="30" style="width:95px;accent-color:var(--blue);">
-            <span id="splitSecVal" style="font-family:var(--mono);color:#1d4ed8;font-weight:700;">30.0cm</span>
-          </div>
-          <button id="btnSplitRectTo3D" class="btn btn-xs btn-primary" type="button" style="display:none;">選取矩形 → 轉 3D 構件</button>
-        </div>
-      </section>
-
-      <!-- Draggable Center Divider -->
-      <div class="split-divider" id="splitDivider" title="左右拖曳調整分割比例（雙擊重置 50/50）"></div>
-
-      <!-- Right Half: Interactive 3D Assembly -->
-      <section class="split-pane split-pane-right" id="splitRightPane">
-        <div class="split-pane-bar">
-          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-            <strong style="font-size:12px;color:var(--accent);">3D 結構</strong>
-            <button class="btn btn-xs btn-ghost split-view-btn active" data-view="iso" type="button">等角</button>
-            <button class="btn btn-xs btn-ghost split-view-btn" data-view="front" type="button">正視</button>
-            <button class="btn btn-xs btn-ghost split-view-btn" data-view="top" type="button">俯視</button>
-            <button class="btn btn-xs btn-ghost split-view-btn" data-view="side" type="button">側視</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-            <button id="btnSplitUndo3D" class="btn btn-xs" type="button" title="復原 3D (Ctrl+Z)">↩ 復原</button>
-            <button id="btnSplitRedo3D" class="btn btn-xs" type="button" title="重做 3D (Ctrl+Y)">↪ 重做</button>
-            <span id="splitCollisionBadge" class="pill-status pill-danger" style="display:none;"></span>
-          </div>
-        </div>
-        <div class="split-canvas-area" id="split3DWrap">
-          <canvas id="split3DCanvas"></canvas>
-        </div>
-        <div class="split-bottom-strip">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-weight:700;">爆炸圖</span>
-            <input id="splitExplodeSlider" type="range" min="0" max="100" value="0" style="width:76px;accent-color:var(--accent);">
-            <span id="splitExplodeVal" style="font-family:var(--mono);">0%</span>
-          </div>
-          <div id="splitQuickNudge" style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;">
-            <span id="splitSelLabel" style="font-weight:700;color:var(--ink);margin-right:3px;">未選取構件</span>
-            <button class="btn btn-xs" type="button" data-split-nudge="x,-1">X-1</button>
-            <button class="btn btn-xs" type="button" data-split-nudge="x,1">X+1</button>
-            <button class="btn btn-xs" type="button" data-split-nudge="y,-1">Y-1</button>
-            <button class="btn btn-xs" type="button" data-split-nudge="y,1">Y+1</button>
-            <button class="btn btn-xs" type="button" data-split-nudge="z,-1">Z-1</button>
-            <button class="btn btn-xs" type="button" data-split-nudge="z,1">Z+1</button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- Modal: Add Standard Orthographic View or Custom Cross-Section View -->
-  <div id="viewGeneratorModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="新增視圖與剖視圖">
-    <div class="modal-card">
-      <div class="modal-head">
-        <span>新增工程視圖 / 自定義剖視圖</span>
-        <button id="btnCloseViewModal" class="btn btn-xs btn-ghost" type="button">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="section-title">一、一鍵新增標準三視圖分頁</div>
-        <div class="view-preset-grid">
-          <button class="view-preset-card" type="button" data-create-view="top">
-            <strong>俯視圖</strong>
-            <span>XY 平面</span>
-          </button>
-          <button class="view-preset-card" type="button" data-create-view="front">
-            <strong>前視圖</strong>
-            <span>XZ 正面</span>
-          </button>
-          <button class="view-preset-card" type="button" data-create-view="side">
-            <strong>側視圖</strong>
-            <span>YZ 側面</span>
-          </button>
-        </div>
-
-        <div class="section-box">
-          <div class="section-title">二、建立自定義剖視圖（Cross-Section）</div>
-          <div class="form-grid">
-            <div class="form-field full">
-              <label for="modalSecAxis">選擇剖切平面方向</label>
-              <select id="modalSecAxis">
-                <option value="Z">水平剖面（切 Z 高度 → 檢視 XY 水平斷面）</option>
-                <option value="Y">前後縱剖面（切 Y 深度 → 檢視 XZ 正面斷面）</option>
-                <option value="X">左右橫剖面（切 X 寬度 → 檢視 YZ 側面斷面）</option>
-              </select>
-            </div>
-            <div class="form-field full">
-              <label for="modalSecPos">剖切位置：<span id="modalSecRangeHint" style="font-family:var(--mono);color:var(--accent);">30.0 cm</span></label>
-              <div style="display:flex;align-items:center;gap:8px;">
-                <input id="modalSecSlider" type="range" min="0" max="60" step="0.5" value="30" style="flex:1;accent-color:var(--blue);">
-                <input id="modalSecPos" type="number" step="0.5" value="30" style="width:74px;font-family:var(--mono);">
-              </div>
-            </div>
-            <div class="form-field full">
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-                <input id="modalIncludeLines" type="checkbox" checked style="width:auto;">
-                <span>自動產生可編輯剖面線框與外廓尺寸標註</span>
+      <div class="gb-appbar__actions">
+        <button id="btnUndo3D" class="gb-iconbtn" type="button" aria-label="復原" title="復原 (Ctrl+Z)" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+        <button id="btnRedo3D" class="gb-iconbtn wc-desktop-only" type="button" aria-label="重做" title="重做 (Ctrl+Y)" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+        <div class="wc-menu-wrap">
+          <button id="btnFileMenu" class="gb-btn gb-dense wc-desktop-only" type="button" aria-expanded="false" aria-haspopup="menu"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>檔案</button>
+          <button id="btnFileMenuMobile" class="gb-iconbtn gb-iconbtn--outline wc-mobile-only" type="button" aria-label="檔案選單" aria-expanded="false" aria-haspopup="menu"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+          <div id="fileMenuDropdown" class="gb-menu wc-menu-pop" role="menu" aria-label="檔案選單">
+            <span class="gb-menu__label">專案</span>
+            <button id="btnExportJson" class="gb-menu__item" type="button" role="menuitem"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>匯出專案<span class="gb-menu__meta">JSON</span></button>
+            <button id="btnImportJson" class="gb-menu__item" type="button" role="menuitem"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0-4 4m4-4 4 4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>匯入專案<span class="gb-menu__meta">JSON</span></button>
+            <div class="wc-menu-select">
+              <label class="gb-field">
+                <span class="gb-field__label">載入範本</span>
+                <span class="gb-select">
+                  <select id="templateSelect" aria-label="載入結構範本">
+                    <option value="">選擇範本…</option>
+                    <option value="square_frame">60×60 正方形木框（角材＋釘槍）</option>
+                    <option value="workbench">簡易木作工作桌（角材＋木心板）</option>
+                    <option value="partition_wall">輕隔間骨架封板（角材＋矽酸鈣板）</option>
+                    <option value="empty">空白畫布</option>
+                  </select>
+                </span>
               </label>
             </div>
-            <div class="form-field full" style="margin-top:4px;">
-              <button id="btnCreateSectionSheet" class="btn btn-primary" type="button" style="width:100%;">建立自定義剖視圖分頁</button>
+            <hr class="gb-menu__sep">
+            <span class="gb-menu__label">輸出</span>
+            <button id="btnCopyBom" class="gb-menu__item" type="button" role="menuitem"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>複製採購清單</button>
+            <button id="btnPrint" class="gb-menu__item" type="button" role="menuitem"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/></svg>列印施工單</button>
+            <hr class="gb-menu__sep">
+            <button id="btnClearParts" class="gb-menu__item gb-menu__item--danger" type="button" role="menuitem"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>清空畫布</button>
+          </div>
+          <input id="fileImportInput" type="file" accept=".json" hidden>
+        </div>
+      </div>
+    </header>
+    <div class="gb-viewbar">
+      <div class="gb-seg gb-seg--block" role="group" aria-label="檢視切換">
+        <button class="gb-seg__item page-switch-btn active" type="button" data-page="3d" aria-pressed="true">3D 組裝</button>
+        <button class="gb-seg__item page-switch-btn" type="button" data-page="blueprint" aria-pressed="false">設計圖紙</button>
+        <button class="gb-seg__item page-switch-btn" type="button" data-page="split" aria-pressed="false">圖紙+3D</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="gb-app__body">
+    <div id="mobileSheetBackdrop" class="gb-scrim wc-sheet-backdrop" aria-hidden="true"></div>
+
+    <!-- ==================== PAGE 1: 3D ASSEMBLY ==================== -->
+    <div id="page3D" class="wc-page page-view active">
+      <aside id="drawer3DLeft" class="gb-app__side gb-panel gb-panel--left gb-dense" aria-label="構件清單">
+        <div class="gb-sheet__grip" aria-hidden="true"></div>
+        <div class="gb-panel__head">
+          <h2 class="gb-panel__title">構件清單</h2>
+          <span class="gb-panel__count"><span id="partCount">0</span> 件</span>
+          <button id="btnToggleAddForm" class="gb-btn gb-btn--primary" type="button"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>新增</button>
+          <button id="btnCloseLeft3D" class="gb-iconbtn wc-mobile-only" type="button" aria-label="關閉構件清單"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div id="addPieceBox" class="wc-add-box" style="display:none;">
+          <div class="gb-section" style="padding:0;border:0;">
+            <h3 class="gb-section__title">新增木工構件（自動避碰）</h3>
+            <label class="gb-field">
+              <span class="gb-field__label">材料規格（台灣建材行）</span>
+              <span class="gb-select"><select id="addMaterial"></select></span>
+            </label>
+            <div class="gb-grid-2">
+              <label class="gb-field">
+                <span class="gb-field__label">裁切長度</span>
+                <span class="gb-input"><input id="addCutL" class="gb-input__control gb-num" type="number" min="1" max="364" step="0.5" value="60"><span class="gb-input__unit">cm</span></span>
+              </label>
+              <label class="gb-field" id="addCutWWrap">
+                <span class="gb-field__label">裁切寬度</span>
+                <span class="gb-input"><input id="addCutW" class="gb-input__control gb-num" type="number" min="1" max="122" step="0.5" value="60"><span class="gb-input__unit">cm</span></span>
+              </label>
+            </div>
+            <div class="gb-grid-2">
+              <label class="gb-field">
+                <span class="gb-field__label">擺放方向</span>
+                <span class="gb-select"><select id="addOrient"></select></span>
+              </label>
+              <label class="gb-field">
+                <span class="gb-field__label">接合工法</span>
+                <span class="gb-select"><select id="addJoinery"></select></span>
+              </label>
+            </div>
+            <button id="btnAddPiece" class="gb-btn gb-btn--primary gb-btn--block" type="button">加入結構並選取</button>
+          </div>
+        </div>
+        <div id="partsList" class="gb-panel__body gb-list" role="listbox" aria-label="構件"></div>
+        <div class="gb-section" style="border-top: var(--gb-border-hair) solid var(--gb-line); border-bottom: 0;">
+          <h3 class="gb-section__title">台尺換算</h3>
+          <div class="gb-grid-2">
+            <span class="gb-input"><input id="convCm" class="gb-input__control gb-num" type="number" step="0.1" value="60" aria-label="公分"><span class="gb-input__unit">cm</span></span>
+            <span class="gb-input"><input id="convChi" class="gb-input__control gb-num" type="number" step="0.01" value="1.98" aria-label="台尺"><span class="gb-input__unit">台尺</span></span>
+          </div>
+          <span class="gb-caption" style="color: var(--gb-ink-3);">1 台尺 = 30.3 cm · 6 分板 ≈ 1.8 cm</span>
+        </div>
+      </aside>
+
+      <main class="gb-canvas">
+        <div class="wc-canvas-wrap" id="canvasWrap">
+          <canvas id="sceneCanvas"></canvas>
+        </div>
+
+        <div class="gb-canvas__tl">
+          <span id="viewModeLabel" class="gb-canvas__label">等角 3D</span>
+          <span id="collisionBadge" class="gb-notice gb-notice--danger wc-collision-badge" role="status"></span>
+        </div>
+        <div class="gb-canvas__tr">
+          <span id="bboxReadout" class="gb-canvas__label gb-num">外廓 60.0 × 2.6 × 60.0 cm</span>
+        </div>
+
+        <div class="gb-canvas__bl">
+          <div id="explodeBarWrap" class="wc-explode-bar">
+            <label for="explodeSlider" class="gb-label">爆炸圖</label>
+            <input id="explodeSlider" type="range" min="0" max="100" value="0">
+            <span id="explodeVal" class="gb-num">0%</span>
+          </div>
+        </div>
+
+        <aside class="wc-ref-card" id="refDrawer" aria-label="參考設計圖紙">
+          <div class="gb-panel__head">
+            <h3 class="gb-panel__title">參考圖紙</h3>
+            <span class="gb-select" style="flex:1;margin-left:var(--gb-space-2);"><select id="refSheetSelect" aria-label="選擇參考圖紙"></select></span>
+            <button id="btnCloseRef" class="gb-iconbtn" type="button" aria-label="關閉參考圖紙"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="wc-ref-canvas" id="refCanvasBox"><canvas id="refCanvas"></canvas></div>
+          <div class="wc-ref-foot">
+            <span class="gb-caption" style="color:var(--gb-ink-2);">對照尺寸組裝</span>
+            <button id="btnJumpToBlueprint" class="gb-btn gb-dense" type="button">前往編輯此圖紙</button>
+          </div>
+        </aside>
+
+        <div class="gb-canvas__bc wc-docks-stack">
+          <div class="gb-dock" role="toolbar" aria-label="3D 視角">
+            <div class="gb-seg" role="group" aria-label="視角" style="border:0;background:transparent;padding:0;">
+              <button class="gb-seg__item view-btn active" data-view="iso" type="button" aria-pressed="true">等角</button>
+              <button class="gb-seg__item view-btn" data-view="front" type="button" aria-pressed="false">正視</button>
+              <button class="gb-seg__item view-btn" data-view="top" type="button" aria-pressed="false">俯視</button>
+              <button class="gb-seg__item view-btn" data-view="side" type="button" aria-pressed="false">側視</button>
             </div>
           </div>
+          <div class="gb-dock wc-dock-scroll" role="toolbar" aria-label="3D 工具">
+            <button id="btnCollisionMode" class="gb-iconbtn active" type="button" aria-label="防穿透與磁吸貼齊" aria-pressed="true" title="防穿透＋磁吸"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8a6 6 0 0 0 12 0V4h-4v8a2 2 0 0 1-4 0V4z"/><path d="M6 8h4M14 8h4"/></svg></button>
+            <button id="btnToggleLabels" class="gb-iconbtn active" type="button" aria-label="顯示尺寸標註" aria-pressed="true" title="顯示尺寸"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 14-14 4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
+            <button id="btnToggleExplode" class="gb-iconbtn" type="button" aria-label="爆炸圖" aria-pressed="false" title="爆炸圖"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/><rect x="10" y="10" width="4" height="4"/></svg></button>
+            <button id="btnToggleFasteners" class="gb-iconbtn active wc-desktop-only" type="button" aria-label="釘點標記" aria-pressed="true" title="釘點標記"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg></button>
+            <button id="btnToggleWire" class="gb-iconbtn wc-desktop-only" type="button" aria-label="透視線框" aria-pressed="false" title="透視線框"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></button>
+            <button id="btnToggleRefSheet" class="gb-iconbtn wc-desktop-only" type="button" aria-label="參考圖紙" aria-pressed="false" title="參考圖紙"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button id="btn3DPanMode" class="gb-iconbtn" type="button" aria-label="切換平移與旋轉模式" aria-pressed="false" title="切換旋轉／平移"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button id="btn3DZoomOut" class="gb-iconbtn" type="button" aria-label="縮小" title="縮小"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <button id="btn3DZoomIn" class="gb-iconbtn" type="button" aria-label="放大" title="放大"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button id="btnResetCam" class="gb-iconbtn" type="button" aria-label="重置視角" title="顯示全部"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg></button>
+          </div>
+        </div>
+      </main>
+
+      <aside id="drawer3DRight" class="gb-app__side gb-panel gb-panel--right gb-dense" aria-label="構件設定">
+        <div class="gb-sheet__grip" aria-hidden="true"></div>
+        <div class="gb-panel__head">
+          <h2 class="gb-panel__title" style="margin-right:auto;">構件設定</h2>
+          <button id="btnCloseRight3D" class="gb-iconbtn wc-mobile-only" type="button" aria-label="關閉構件設定"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div class="wc-tabs-bar">
+          <div class="gb-seg gb-seg--block" role="group" aria-label="設定分頁">
+            <button class="gb-seg__item tab-btn active" data-tab="inspector" type="button" aria-pressed="true">編輯</button>
+            <button class="gb-seg__item tab-btn" data-tab="bom" type="button" aria-pressed="false">採購裁切</button>
+            <button class="gb-seg__item tab-btn" data-tab="catalog" type="button" aria-pressed="false">建材規格</button>
+          </div>
+        </div>
+        <div class="gb-panel__body" id="rightPanelBody"></div>
+      </aside>
+      <div id="leftCollapsedPill" hidden><span id="partCountCollapsed">0</span><button id="btnOpenLeft3D" type="button"></button></div>
+      <div id="rightCollapsedPill" hidden><button id="btnOpenIns3D" type="button"></button><button id="btnOpenBom3D" type="button"></button><button id="btnOpenCat3D" type="button"></button></div>
+      <span id="collisionSep" hidden></span>
+    </div>
+
+    <!-- ==================== PAGE 2: 2D BLUEPRINT ==================== -->
+    <div id="pageBlueprint" class="wc-page page-view">
+      <div id="bpPrintHeader" class="wc-bp-print-head">
+        <strong id="bpPrintTitle">木工設計圖紙</strong>
+        <span id="bpPrintMeta" class="gb-num">格線 1 大格 = 10 cm</span>
+      </div>
+      <main class="gb-canvas gb-canvas--paper" style="flex:1;">
+        <div class="wc-canvas-wrap" id="bpCanvasWrap">
+          <canvas id="bpCanvas" tabindex="-1"></canvas>
+        </div>
+
+        <div class="gb-canvas__tl">
+          <div class="gb-dock wc-dock-scroll" role="toolbar" aria-label="繪圖工具">
+            <button class="gb-iconbtn bp-tool-btn active" data-tool="select" type="button" aria-label="選取" aria-pressed="true" title="選取 (V)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 4 6 15 2.5-6.5L20 10z"/></svg></button>
+            <button class="gb-iconbtn bp-tool-btn" data-tool="line" type="button" aria-label="直線" aria-pressed="false" title="直線 (L)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="19" x2="19" y2="5"/></svg></button>
+            <button class="gb-iconbtn bp-tool-btn" data-tool="rect" type="button" aria-label="矩形" aria-pressed="false" title="矩形 (R)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1.5"/></svg></button>
+            <button class="gb-iconbtn bp-tool-btn" data-tool="circle" type="button" aria-label="圓孔" aria-pressed="false" title="圓孔 (O)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg></button>
+            <button class="gb-iconbtn bp-tool-btn" data-tool="dim" type="button" aria-label="尺寸標註" aria-pressed="false" title="尺寸標註 (D)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M4 8v8M20 8v8"/></svg></button>
+            <button class="gb-iconbtn bp-tool-btn" data-tool="text" type="button" aria-label="文字標註" aria-pressed="false" title="文字 (T)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></button>
+            <button class="gb-iconbtn bp-tool-btn" data-tool="freehand" type="button" aria-label="自由手繪" aria-pressed="false" title="手繪 (P)"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg></button>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button id="btnBpOrtho" class="gb-btn gb-btn--quiet gb-dense" type="button" aria-pressed="false">正交 90°</button>
+            <button id="btnBpUndo" class="gb-iconbtn" type="button" aria-label="復原圖紙" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+            <button id="btnBpRedo" class="gb-iconbtn" type="button" aria-label="重做圖紙" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button id="btnToggleBpStyleCard" class="gb-btn gb-btn--quiet gb-dense active" type="button" aria-pressed="true">筆刷與底圖</button>
+          </div>
+        </div>
+
+        <section id="bpStyleCard" class="gb-panel gb-dense wc-bp-floating-left" aria-label="筆刷與圖紙設定">
+          <div class="gb-panel__head">
+            <h3 class="gb-panel__title" style="margin-right:auto;">筆刷與圖紙設定</h3>
+            <button id="btnCloseBpStyle" class="gb-iconbtn" type="button" aria-label="關閉筆刷設定"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
+          <div class="gb-panel__body">
+            <div class="gb-section">
+              <div class="gb-field">
+                <span class="gb-field__label">筆刷顏色</span>
+                <div class="wc-swatches">
+                  <button class="wc-swatch color-swatch active" type="button" data-bp-color="#10271f" style="background:var(--gb-ink);" aria-label="墨黑"></button>
+                  <button class="wc-swatch color-swatch" type="button" data-bp-color="#1b4fd8" style="background:var(--gb-select);" aria-label="藍圖藍"></button>
+                  <button class="wc-swatch color-swatch" type="button" data-bp-color="#a3703f" style="background:var(--mat-wood-dark);" aria-label="木作棕"></button>
+                  <button class="wc-swatch color-swatch" type="button" data-bp-color="#b3261a" style="background:var(--gb-danger);" aria-label="標記紅"></button>
+                  <button class="wc-swatch color-swatch" type="button" data-bp-color="#0b7468" style="background:var(--gb-ok);" aria-label="尺寸綠"></button>
+                </div>
+              </div>
+              <div class="gb-grid-2">
+                <label class="gb-field">
+                  <span class="gb-field__label">線寬</span>
+                  <span class="gb-select">
+                    <select id="bpWidthSelect">
+                      <option value="1.5">細線 1.5</option>
+                      <option value="2.5" selected>標準 2.5</option>
+                      <option value="4">粗線 4.0</option>
+                    </select>
+                  </span>
+                </label>
+                <div class="gb-field">
+                  <span class="gb-field__label">線型</span>
+                  <button id="btnBpDashed" class="gb-btn gb-btn--block" type="button" aria-pressed="false">虛線</button>
+                </div>
+              </div>
+              <label class="gb-field">
+                <span class="gb-field__label">格線吸附</span>
+                <span class="gb-select">
+                  <select id="bpSnapSelect" aria-label="格線吸附">
+                    <option value="1">吸附 1 cm</option>
+                    <option value="0.5">吸附 0.5 cm</option>
+                    <option value="5">吸附 5 cm</option>
+                    <option value="0">不吸附</option>
+                  </select>
+                </span>
+              </label>
+            </div>
+            <div class="gb-section" style="border-bottom:0;">
+              <label class="gb-field">
+                <span class="gb-field__label">目前圖紙名稱</span>
+                <span class="gb-input"><input id="bpSheetName" class="gb-input__control" type="text" value="主視圖草圖（60×60 木框）"></span>
+              </label>
+              <label class="gb-field">
+                <span class="gb-field__label">3D 投影底圖</span>
+                <span class="gb-select">
+                  <select id="bpUnderlayMode">
+                    <option value="front">正視投影 (XZ)</option>
+                    <option value="top">俯視投影 (XY)</option>
+                    <option value="side">側視投影 (YZ)</option>
+                    <option value="section">自定義剖視圖 (斷面斜線)</option>
+                    <option value="none">關閉底圖</option>
+                  </select>
+                </span>
+              </label>
+              <div id="bpSectionControlBox" class="gb-section" style="display:none;padding:var(--gb-space-3);background:var(--gb-select-soft);border-radius:var(--gb-radius-sm);border:var(--gb-border-hair) solid var(--gb-select);">
+                <span class="gb-section__title">剖切平面設定</span>
+                <span class="gb-select">
+                  <select id="bpSecAxis" aria-label="剖切方向">
+                    <option value="Z">水平剖面（切 Z → 看 XY）</option>
+                    <option value="Y">前後縱剖（切 Y → 看 XZ）</option>
+                    <option value="X">左右橫剖（切 X → 看 YZ）</option>
+                  </select>
+                </span>
+                <div style="display:flex;align-items:center;gap:var(--gb-space-2);">
+                  <input id="bpSecSlider" type="range" min="0" max="100" step="0.5" value="30" style="flex:1;accent-color:var(--gb-select);">
+                  <span class="gb-input" style="width:88px;"><input id="bpSecNum" class="gb-input__control gb-num" type="number" step="0.5" value="30" aria-label="剖切位置"></span>
+                </div>
+              </div>
+              <button id="btnImport3DToSheet" class="gb-btn gb-btn--block" type="button">3D 投影轉為可編輯線框</button>
+              <div class="gb-grid-2">
+                <button id="btnBpExportPng" class="gb-btn" type="button">匯出 PNG</button>
+                <button id="btnBpClearSheet" class="gb-btn gb-btn--danger" type="button">清空本頁</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="bpPropCard" class="gb-panel gb-dense wc-bp-floating-right hidden" aria-label="選取物件屬性">
+          <div class="gb-panel__head">
+            <h3 class="gb-panel__title" style="margin-right:auto;">選取物件屬性</h3>
+            <button id="btnBpDeleteSel" class="gb-btn gb-btn--danger" type="button">刪除</button>
+          </div>
+          <div class="gb-panel__body" id="bpInspectorBody"></div>
+        </section>
+
+        <div class="gb-canvas__bl">
+          <div class="gb-dock wc-dock-scroll" role="toolbar" aria-label="圖紙分頁">
+            <div id="sheetList" class="gb-seg" style="border:0;background:transparent;padding:0;"></div>
+            <span class="gb-dock__sep" aria-hidden="true"></span>
+            <button id="btnAddSheet" class="gb-btn gb-btn--quiet gb-dense" type="button"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>圖紙</button>
+            <button id="btnOpenViewModal" class="gb-btn gb-dense" type="button"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>視圖／剖面</button>
+          </div>
+        </div>
+
+        <div class="gb-canvas__br">
+          <div class="gb-dock" role="toolbar" aria-label="圖紙縮放">
+            <span id="bpCoordReadout" class="gb-dock__label wc-desktop-only">X 0.0, Y 0.0 cm · 100%</span>
+            <span id="bpShapeCount" class="gb-dock__label wc-desktop-only">0 物件</span>
+            <button id="btnBpZoomOut" class="gb-iconbtn" type="button" aria-label="縮小"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <button id="btnBpZoomIn" class="gb-iconbtn" type="button" aria-label="放大"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button id="btnBpPanToggle" class="gb-iconbtn" type="button" aria-label="平移畫布" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button>
+            <button id="btnBpFit" class="gb-iconbtn" type="button" aria-label="置中顯示"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg></button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==================== PAGE 3: SPLIT-SCREEN ==================== -->
+    <div id="pageSplit" class="wc-page page-view">
+      <div class="wc-split-wrap" id="splitContainer">
+        <section class="wc-split-pane wc-split-pane-left" id="splitLeftPane">
+          <div class="wc-split-bar gb-dense">
+            <div style="display:flex;align-items:center;gap:var(--gb-space-2);flex-wrap:wrap;">
+              <span class="gb-panel__title">2D 圖紙</span>
+              <span class="gb-select" style="width:168px;"><select id="splitSheetSelect" aria-label="選擇圖紙"></select></span>
+              <button id="btnSplitAddView" class="gb-btn" type="button"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>視圖／剖面</button>
+            </div>
+            <div class="gb-dock" role="toolbar" aria-label="分割圖紙工具">
+              <button class="gb-iconbtn split-bp-tool active" data-tool="select" type="button" aria-label="選取" aria-pressed="true"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 4 6 15 2.5-6.5L20 10z"/></svg></button>
+              <button class="gb-iconbtn split-bp-tool" data-tool="line" type="button" aria-label="直線" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="19" x2="19" y2="5"/></svg></button>
+              <button class="gb-iconbtn split-bp-tool" data-tool="rect" type="button" aria-label="矩形" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1.5"/></svg></button>
+              <button class="gb-iconbtn split-bp-tool" data-tool="circle" type="button" aria-label="圓孔" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg></button>
+              <button class="gb-iconbtn split-bp-tool" data-tool="dim" type="button" aria-label="尺寸標註" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M4 8v8M20 8v8"/></svg></button>
+              <button class="gb-iconbtn split-bp-tool" data-tool="text" type="button" aria-label="文字" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></button>
+              <button class="gb-iconbtn split-bp-tool" data-tool="freehand" type="button" aria-label="手繪" aria-pressed="false"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg></button>
+              <span class="gb-dock__sep" aria-hidden="true"></span>
+              <button id="btnSplitBpUndo" class="gb-iconbtn" type="button" aria-label="復原圖紙"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+              <button id="btnSplitBpDel" class="gb-iconbtn" type="button" aria-label="刪除選取圖元" disabled><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+              <button id="btnSplitBpFit" class="gb-iconbtn" type="button" aria-label="置中顯示"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg></button>
+            </div>
+          </div>
+          <div class="gb-canvas gb-canvas--paper" style="flex:1;" id="splitBpWrap">
+            <canvas id="splitBpCanvas" tabindex="-1" style="width:100%;height:100%;display:block;touch-action:none;"></canvas>
+          </div>
+          <div class="wc-split-strip gb-dense">
+            <span id="splitBpCoord" class="gb-num">X 0.0, Y 0.0 cm</span>
+            <div id="splitSecLiveBar" style="display:none;align-items:center;gap:var(--gb-space-2);">
+              <span class="gb-label">剖切位置</span>
+              <input id="splitSecSlider" type="range" min="0" max="100" step="0.5" value="30" style="width:96px;accent-color:var(--gb-select);">
+              <span id="splitSecVal" class="gb-num">30.0 cm</span>
+            </div>
+            <button id="btnSplitRectTo3D" class="gb-btn gb-btn--primary" type="button" style="display:none;">選取矩形轉 3D 構件</button>
+          </div>
+        </section>
+
+        <div class="wc-split-divider" id="splitDivider" title="拖曳調整分割比例（雙擊重置 50/50）"></div>
+
+        <section class="wc-split-pane" id="splitRightPane">
+          <div class="wc-split-bar gb-dense">
+            <div style="display:flex;align-items:center;gap:var(--gb-space-2);flex-wrap:wrap;">
+              <span class="gb-panel__title">3D 結構</span>
+              <div class="gb-seg" role="group" aria-label="3D 視角">
+                <button class="gb-seg__item split-view-btn active" data-view="iso" type="button" aria-pressed="true">等角</button>
+                <button class="gb-seg__item split-view-btn" data-view="front" type="button" aria-pressed="false">正視</button>
+                <button class="gb-seg__item split-view-btn" data-view="top" type="button" aria-pressed="false">俯視</button>
+                <button class="gb-seg__item split-view-btn" data-view="side" type="button" aria-pressed="false">側視</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:var(--gb-space-1);">
+              <button id="btnSplitUndo3D" class="gb-iconbtn" type="button" aria-label="復原 3D"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+              <button id="btnSplitRedo3D" class="gb-iconbtn" type="button" aria-label="重做 3D"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+              <span id="splitCollisionBadge" class="gb-notice gb-notice--danger wc-collision-badge" role="status"></span>
+            </div>
+          </div>
+          <div class="gb-canvas" style="flex:1;" id="split3DWrap">
+            <canvas id="split3DCanvas" style="width:100%;height:100%;display:block;touch-action:none;"></canvas>
+          </div>
+          <div class="wc-split-strip gb-dense">
+            <div style="display:flex;align-items:center;gap:var(--gb-space-2);">
+              <span class="gb-label">爆炸圖</span>
+              <input id="splitExplodeSlider" type="range" min="0" max="100" value="0" style="width:84px;accent-color:var(--gb-ink);">
+              <span id="splitExplodeVal" class="gb-num">0%</span>
+            </div>
+            <div id="splitQuickNudge" style="display:flex;align-items:center;gap:var(--gb-space-1);flex-wrap:wrap;">
+              <span id="splitSelLabel" class="gb-label">未選取構件</span>
+              <button class="gb-btn" type="button" data-split-nudge="x,-1">X-1</button>
+              <button class="gb-btn" type="button" data-split-nudge="x,1">X+1</button>
+              <button class="gb-btn" type="button" data-split-nudge="y,-1">Y-1</button>
+              <button class="gb-btn" type="button" data-split-nudge="y,1">Y+1</button>
+              <button class="gb-btn" type="button" data-split-nudge="z,-1">Z-1</button>
+              <button class="gb-btn" type="button" data-split-nudge="z,1">Z+1</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom ActionBar -->
+  <nav class="gb-actionbar" id="mobileActionBar" aria-label="主要操作">
+    <button id="btnMobileParts" type="button" class="gb-btn"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-9 5 9 5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>構件 <span id="partCountMobile" class="gb-num">0</span></button>
+    <button id="btnMobileAdd" type="button" class="gb-btn gb-btn--primary"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>新增</button>
+    <button id="btnMobileSettings" type="button" class="gb-btn"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/></svg>設定</button>
+  </nav>
+
+  <!-- Modal: Add View / Cross-Section -->
+  <div id="viewGeneratorModal" class="gb-scrim wc-modal-scrim" role="dialog" aria-modal="true" aria-label="新增視圖與剖視圖">
+    <div class="gb-sheet wc-modal-box">
+      <div class="gb-sheet__head">
+        <h2 class="gb-sheet__title">新增工程視圖／剖視圖</h2>
+        <button id="btnCloseViewModal" class="gb-iconbtn" type="button" aria-label="關閉視窗"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="gb-sheet__body">
+        <div class="gb-section">
+          <h3 class="gb-section__title">標準三視圖分頁</h3>
+          <div class="gb-grid-3">
+            <button class="gb-btn" type="button" data-create-view="top">俯視圖</button>
+            <button class="gb-btn" type="button" data-create-view="front">前視圖</button>
+            <button class="gb-btn" type="button" data-create-view="side">側視圖</button>
+          </div>
+        </div>
+        <div class="gb-section" style="border-bottom:0;">
+          <h3 class="gb-section__title">自定義剖視圖</h3>
+          <label class="gb-field">
+            <span class="gb-field__label">選擇剖切平面方向</span>
+            <span class="gb-select">
+              <select id="modalSecAxis">
+                <option value="Z">水平剖面（切 Z 高度 → 看 XY）</option>
+                <option value="Y">前後縱剖面（切 Y 深度 → 看 XZ）</option>
+                <option value="X">左右橫剖面（切 X 寬度 → 看 YZ）</option>
+              </select>
+            </span>
+          </label>
+          <div class="gb-field">
+            <span class="gb-field__label">剖切位置：<span id="modalSecRangeHint" class="gb-num">30.0 cm</span></span>
+            <div style="display:flex;align-items:center;gap:var(--gb-space-2);">
+              <input id="modalSecSlider" type="range" min="0" max="60" step="0.5" value="30" style="flex:1;accent-color:var(--gb-select);">
+              <span class="gb-input" style="width:96px;"><input id="modalSecPos" class="gb-input__control gb-num" type="number" step="0.5" value="30" aria-label="剖切位置"><span class="gb-input__unit">cm</span></span>
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:var(--gb-space-2);cursor:pointer;">
+            <input id="modalIncludeLines" type="checkbox" checked>
+            <span>自動產生可編輯剖面線框與外廓尺寸標註</span>
+          </label>
+          <button id="btnCreateSectionSheet" class="gb-btn gb-btn--primary gb-btn--block" type="button">建立自定義剖視圖分頁</button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-    <!-- In-page Text Annotation Popover -->
-    <div id="bpTextModal" class="bp-text-modal">
-      <div style="font-size:11px;font-weight:700;margin-bottom:5px;">輸入圖紙文字標註</div>
-      <input id="bpTextInput" type="text" placeholder="例如：F30 釘槍固定、留縫 3mm">
-      <div style="display:flex;gap:5px;margin-top:6px;justify-content:flex-end;">
-        <button id="btnBpTextCancel" class="btn btn-xs" type="button">取消</button>
-        <button id="btnBpTextOk" class="btn btn-xs btn-primary" type="button">確定放置</button>
-      </div>
+  <!-- Text Annotation Popover -->
+  <div id="bpTextModal" class="wc-text-modal">
+    <span class="gb-field__label">輸入圖紙文字標註</span>
+    <span class="gb-input"><input id="bpTextInput" class="gb-input__control" type="text" placeholder="例如：F30 釘槍固定、留縫 3mm"></span>
+    <div style="display:flex;gap:var(--gb-space-2);justify-content:flex-end;">
+      <button id="btnBpTextCancel" class="gb-btn gb-dense" type="button">取消</button>
+      <button id="btnBpTextOk" class="gb-btn gb-btn--primary gb-dense" type="button">確定放置</button>
     </div>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <div id="toast" class="gb-notice gb-notice--ok wc-toast" role="status" aria-live="polite"></div>
+</div>
 
 <script>
 (function () {
@@ -1503,6 +1090,12 @@
   /* =========================================================================
      3. 應用程式狀態 (State + 3D/2D Undo-Redo)
      ========================================================================= */
+  function gbVar(name, fallback) {
+    try {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    } catch (_) { return fallback; }
+  }
   const STORAGE_KEY = 'tw_woodcraft_studio_v2';
 
   const state = {
@@ -1516,9 +1109,9 @@
     collisionMode: 'prevent',
     showRefDrawer: false,
     refSheetId: null,
-    leftDrawerOpen: window.innerWidth > 760,
-    rightDrawerOpen: window.innerWidth > 760,
-    bpStyleCardOpen: window.innerWidth > 760,
+    leftDrawerOpen: window.innerWidth >= 1080,
+    rightDrawerOpen: window.innerWidth >= 1080,
+    bpStyleCardOpen: window.innerWidth >= 1080,
     panMode3D: false,
     panModeBp: false,
     lastFocusedPane: '3d',
@@ -1742,7 +1335,7 @@
     const el = document.getElementById('saveStatusPill');
     if (!el) return;
     el.textContent = msg || (ok ? '已儲存' : '儲存失敗');
-    el.classList.toggle('err', !ok);
+    el.classList.toggle('gb-status--error', !ok);
   }
 
   function saveToLocal() {
@@ -2178,8 +1771,8 @@
     } else {
       cBadge.style.display = 'inline-flex';
       if (cSep) cSep.style.display = 'inline-block';
-      cBadge.className = 'pill-status pill-danger';
-      cBadge.innerHTML = `⚠ ${collisionPairs.length} 處碰撞 <button id="btnAutoFixAll" class="btn btn-xs btn-danger" type="button" style="margin-left:3px;padding:1px 6px;">一鍵退讓解碰</button>`;
+      cBadge.className = 'gb-notice gb-notice--danger wc-collision-badge';
+      cBadge.innerHTML = `⚠ ${collisionPairs.length} 處碰撞 <button id="btnAutoFixAll" class="gb-btn gb-btn--danger gb-dense" type="button" style="margin-left:3px;padding:1px 6px;">一鍵退讓解碰</button>`;
     }
 
     const bboxEl = document.getElementById('bboxReadout');
@@ -2792,14 +2385,23 @@
   }
 
   function syncDrawerVisibility() {
-    const isMobile = window.innerWidth <= 760;
-    if (isMobile && state.leftDrawerOpen && state.rightDrawerOpen) state.leftDrawerOpen = false;
-    setCardHidden(document.getElementById('drawer3DLeft'), !state.leftDrawerOpen);
-    document.getElementById('leftCollapsedPill').style.display = state.leftDrawerOpen ? 'none' : 'block';
-    setCardHidden(document.getElementById('drawer3DRight'), !state.rightDrawerOpen);
-    document.getElementById('rightCollapsedPill').style.display = state.rightDrawerOpen ? 'none' : 'flex';
+    const isMobile = window.innerWidth < 1080;
+    const leftEl = document.getElementById('drawer3DLeft');
+    const rightEl = document.getElementById('drawer3DRight');
+    const backdrop = document.getElementById('mobileSheetBackdrop');
+    if (isMobile) {
+      leftEl.classList.toggle('wc-mobile-sheet-open', state.leftDrawerOpen);
+      rightEl.classList.toggle('wc-mobile-sheet-open', state.rightDrawerOpen);
+      if (backdrop) backdrop.classList.toggle('open', state.leftDrawerOpen || state.rightDrawerOpen);
+    } else {
+      leftEl.classList.remove('wc-mobile-sheet-open');
+      rightEl.classList.remove('wc-mobile-sheet-open');
+      if (backdrop) backdrop.classList.remove('open');
+    }
     setCardHidden(document.getElementById('bpStyleCard'), !state.bpStyleCardOpen);
-    document.getElementById('btnToggleBpStyleCard').classList.toggle('active', state.bpStyleCardOpen);
+    const toggleBp = document.getElementById('btnToggleBpStyleCard');
+    toggleBp.classList.toggle('active', state.bpStyleCardOpen);
+    toggleBp.setAttribute('aria-pressed', state.bpStyleCardOpen ? 'true' : 'false');
     if (isMobile && state.bpStyleCardOpen) setCardHidden(document.getElementById('bpPropCard'), true);
   }
 
@@ -2834,33 +2436,31 @@
     const list = document.getElementById('partsList');
     document.getElementById('partCount').textContent = state.pieces.length;
     document.getElementById('partCountCollapsed').textContent = state.pieces.length;
+    const mCount = document.getElementById('partCountMobile');
+    if (mCount) mCount.textContent = state.pieces.length;
     const { collidingIds } = detectAllCollisions();
 
     if (!state.pieces.length) {
-      list.innerHTML = '<div class="alert-box alert-info" style="margin:0;">目前畫布為空，請從下方新增構件或切換範本。</div>';
+      list.innerHTML = '<div class="gb-section"><p class="gb-caption" style="margin:0;color:var(--gb-ink-2);">目前畫布為空，請點「新增」加入構件或從檔案載入範本。</p></div>';
       return;
     }
     list.innerHTML = state.pieces.map(p => {
       const m = MAT_MAP[p.materialId], isSel = p.id === state.selectedId, isCol = collidingIds.has(p.id);
-      const dimStr = m.category === 'batten' ? `長 ${p.cutL} cm (${m.stockW}×${m.thick})` : `${p.cutL} × ${p.cutW} cm (厚 ${m.thick})`;
-      const jLabel = JOINERY_MAP[p.joinery] ? JOINERY_MAP[p.joinery].label.split(' ')[0] : '';
+      const dimStr = m.category === 'batten' ? `${p.cutL} cm · ${m.stockW} × ${m.thick} · ${m.categoryLabel}` : `${p.cutL} × ${p.cutW} cm · 厚 ${m.thick} · ${m.categoryLabel}`;
       return `
-        <div class="part-item ${isSel ? 'selected' : ''} ${isCol ? 'colliding' : ''}" data-select-id="${escapeHtml(p.id)}">
-          <div class="part-info">
-            <div class="part-title"><span class="mat-dot" style="background:${m.colorFront};"></span><span>${escapeHtml(p.name)}</span>${isCol ? '<span class="collision-tag">干涉</span>' : ''}</div>
-            <div class="part-meta">${dimStr}</div>
-            <div class="part-sub">${m.categoryLabel} · ${escapeHtml(jLabel)} · (${p.x}, ${p.y}, ${p.z})</div>
-          </div>
-          <div class="part-actions">
-            <button class="btn btn-xs" type="button" data-dup-id="${escapeHtml(p.id)}">複製</button>
-            <button class="btn btn-xs btn-danger" type="button" data-del-id="${escapeHtml(p.id)}">✕</button>
-          </div>
-        </div>`;
+        <button type="button" class="gb-row" role="option" aria-selected="${isSel ? 'true' : 'false'}" data-select-id="${escapeHtml(p.id)}">
+          <i class="gb-row__swatch" style="background:${m.colorFront};border-color:${m.colorSide};"></i>
+          <span class="gb-row__main">
+            <span class="gb-row__name">${escapeHtml(p.name)}</span>
+            <span class="gb-row__meta">${dimStr}</span>
+          </span>
+          ${isCol ? '<span class="gb-row__end" title="構件重疊干涉"><svg class="gb-icon" viewBox="0 0 24 24" role="img" aria-label="干涉" style="color:var(--gb-danger)"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg></span>' : ''}
+        </button>`;
     }).join('');
   }
 
   function renderRightPanel() {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === state.activeTab));
+    document.querySelectorAll('.tab-btn').forEach(btn => { const on = btn.dataset.tab === state.activeTab; btn.classList.toggle('active', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     const body = document.getElementById('rightPanelBody');
     if (state.activeTab === 'inspector') renderInspector(body);
     else if (state.activeTab === 'bom') renderBOM(body);
@@ -2870,7 +2470,7 @@
   function renderInspector(container) {
     const p = state.pieces.find(x => x.id === state.selectedId);
     if (!p) {
-      container.innerHTML = '<div class="alert-box alert-info">請在左側清單或 3D 畫布中點擊任一構件以微調尺寸、座標與接合方式。</div>';
+      container.innerHTML = '<div class="gb-section"><p class="gb-caption" style="margin:0;color:var(--gb-ink-2);">請在構件清單或 3D 畫布點選任一構件，調整尺寸、座標與接合方式。</p></div>';
       return;
     }
     const m = MAT_MAP[p.materialId], isBatten = m.category === 'batten';
@@ -2884,139 +2484,154 @@
 
     container.innerHTML = `
       ${myCollisions.length ? `
-        <div class="alert-box alert-danger">
-          <div style="font-weight:700;margin-bottom:4px;">⚠ 與 ${myCollisions.length} 個構件重疊干涉：</div>
-          ${myCollisions.map(c => `<div>• 與「${escapeHtml((c.a.id === p.id ? c.b : c.a).name)}」重疊 ${c.ov.depth.toFixed(1)} cm</div>`).join('')}
-          <button id="btnAutoSeparatePiece" class="btn btn-xs btn-danger" type="button" style="margin-top:6px;width:100%;">沿最小軸自動退讓貼齊</button>
+        <div class="gb-section">
+          <div class="gb-notice gb-notice--danger">
+            <svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg>
+            <div class="gb-notice__body">
+              <span class="gb-notice__title">與 ${myCollisions.length} 個構件重疊干涉</span>
+              ${myCollisions.map(c => `<div>與「${escapeHtml((c.a.id === p.id ? c.b : c.a).name)}」重疊 ${c.ov.depth.toFixed(1)} cm</div>`).join('')}
+              <button id="btnAutoSeparatePiece" class="gb-btn gb-btn--danger gb-btn--block" type="button" style="margin-top:var(--gb-space-2);">沿最小軸自動退讓貼齊</button>
+            </div>
+          </div>
         </div>` : ''}
-      <div id="insOversizeWarn" class="alert-box alert-warn" style="display:${(overL || overW) ? 'block' : 'none'};">⚠ 裁切尺寸超出單一原料規格（${m.stockL}×${m.stockW} cm）。</div>
-      <div class="form-grid">
-        <div class="form-field full"><label for="insName">構件名稱</label><input id="insName" type="text" value="${escapeHtml(p.name)}"></div>
-        <div class="form-field full">
-          <label for="insMat">材料規格（台灣建材行）</label>
-          <select id="insMat">${MATERIALS.map(mat => `<option value="${mat.id}" ${mat.id === p.materialId ? 'selected' : ''}>[${mat.categoryLabel}] ${escapeHtml(mat.name)}</option>`).join('')}</select>
-        </div>
-        <div class="form-field"><label for="insCutL">裁切長度 (cm)</label><input id="insCutL" type="number" min="1" max="500" step="0.1" value="${p.cutL}"></div>
-        <div class="form-field">
-          <label for="insCutW">${isBatten ? '斷面寬×厚' : '裁切寬度 (cm)'}</label>
-          ${isBatten ? `<input type="text" value="${m.stockW} × ${m.thick} cm" disabled style="background:var(--surface-2);color:var(--ink-muted);">` : `<input id="insCutW" type="number" min="1" max="244" step="0.1" value="${p.cutW}">`}
-        </div>
-        <div class="form-field"><label for="insOrient">擺放方向</label><select id="insOrient">${orientOpts.map(o => `<option value="${o.v}" ${p.orientation === o.v ? 'selected' : ''}>${o.t}</option>`).join('')}</select></div>
-        <div class="form-field"><label>&nbsp;</label><button id="btnFlipSection" class="btn" type="button" style="width:100%;">旋轉 90° (${p.flipSection ? '已轉向' : '標準'})</button></div>
-      </div>
-
-      <div class="section-box">
-        <div class="section-title"><span>3D 空間座標 (cm)</span><span id="insDimsReadout" style="font-size:10.5px;font-family:var(--mono);color:var(--ink-soft);">${dims.dx.toFixed(1)}×${dims.dy.toFixed(1)}×${dims.dz.toFixed(1)}</span></div>
-        <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;">
-          <div class="form-field"><label for="insX">X</label><input id="insX" type="number" step="0.2" value="${p.x}"></div>
-          <div class="form-field"><label for="insY">Y</label><input id="insY" type="number" step="0.2" value="${p.y}"></div>
-          <div class="form-field"><label for="insZ">Z</label><input id="insZ" type="number" step="0.2" value="${p.z}"></div>
-        </div>
-        <div id="insCoordWarn" style="display:none;margin-top:5px;font-size:11px;color:var(--red);background:var(--red-soft);padding:5px 7px;border-radius:5px;"></div>
-        <div class="nudge-row">
-          <button class="btn btn-xs" type="button" data-nudge="x,-1">X -1</button><button class="btn btn-xs" type="button" data-nudge="x,1">X +1</button>
-          <button class="btn btn-xs" type="button" data-nudge="y,-1">Y -1</button><button class="btn btn-xs" type="button" data-nudge="y,1">Y +1</button>
-          <button class="btn btn-xs" type="button" data-nudge="z,-1">Z -1</button><button class="btn btn-xs" type="button" data-nudge="z,1">Z +1</button>
-          <button class="btn btn-xs btn-soft" type="button" id="btnSnapGround">貼齊地面</button>
+      <div id="insOversizeWarn" class="gb-section" style="display:${(overL || overW) ? 'flex' : 'none'};">
+        <div class="gb-notice">
+          <svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg>
+          <div class="gb-notice__body">裁切尺寸超出單一原料規格（${m.stockL} × ${m.stockW} cm）。</div>
         </div>
       </div>
-
+      <div class="gb-section">
+        <label class="gb-field"><span class="gb-field__label">構件名稱</span><span class="gb-input"><input id="insName" class="gb-input__control" type="text" value="${escapeHtml(p.name)}"></span></label>
+        <label class="gb-field"><span class="gb-field__label">材料規格</span><span class="gb-select"><select id="insMat">${MATERIALS.map(mat => `<option value="${mat.id}" ${mat.id === p.materialId ? 'selected' : ''}>${mat.categoryLabel} · ${escapeHtml(mat.name)}</option>`).join('')}</select></span></label>
+        <div class="gb-grid-2">
+          <label class="gb-field"><span class="gb-field__label">裁切長度</span><span class="gb-input"><input id="insCutL" class="gb-input__control gb-num" type="number" min="1" max="500" step="0.1" value="${p.cutL}"><span class="gb-input__unit">cm</span></span><span class="gb-field__hint">約 ${(p.cutL / 30.3).toFixed(2)} 台尺</span></label>
+          <label class="gb-field"><span class="gb-field__label">${isBatten ? '斷面' : '裁切寬度'}</span>${isBatten ? `<span class="gb-input" data-readonly="true"><input class="gb-input__control gb-num" value="${m.stockW} × ${m.thick}" readonly aria-label="斷面"><span class="gb-input__unit">cm</span></span><span class="gb-field__hint">依材料規格</span>` : `<span class="gb-input"><input id="insCutW" class="gb-input__control gb-num" type="number" min="1" max="244" step="0.1" value="${p.cutW}"><span class="gb-input__unit">cm</span></span>`}</label>
+        </div>
+        <div class="gb-grid-2">
+          <label class="gb-field"><span class="gb-field__label">擺放方向</span><span class="gb-select"><select id="insOrient">${orientOpts.map(o => `<option value="${o.v}" ${p.orientation === o.v ? 'selected' : ''}>${o.t}</option>`).join('')}</select></span></label>
+          <div class="gb-field"><span class="gb-field__label">斷面轉向</span><button id="btnFlipSection" class="gb-btn gb-btn--block" type="button">旋轉 90°（${p.flipSection ? '已轉向' : '標準'}）</button></div>
+        </div>
+      </div>
+      <div class="gb-section">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <h3 class="gb-section__title">位置 (cm)</h3>
+          <span id="insDimsReadout" class="gb-caption gb-num" style="color:var(--gb-ink-2);">${dims.dx.toFixed(1)} × ${dims.dy.toFixed(1)} × ${dims.dz.toFixed(1)}</span>
+        </div>
+        <div class="gb-grid-3">
+          <span class="gb-input"><span class="gb-input__prefix">X</span><input id="insX" class="gb-input__control gb-num" type="number" step="0.2" value="${p.x}" aria-label="X 座標"></span>
+          <span class="gb-input"><span class="gb-input__prefix">Y</span><input id="insY" class="gb-input__control gb-num" type="number" step="0.2" value="${p.y}" aria-label="Y 座標"></span>
+          <span class="gb-input"><span class="gb-input__prefix">Z</span><input id="insZ" class="gb-input__control gb-num" type="number" step="0.2" value="${p.z}" aria-label="Z 座標"></span>
+        </div>
+        <div id="insCoordWarn" class="gb-notice gb-notice--danger" style="display:none;"></div>
+        <div class="gb-grid-3">
+          <button class="gb-btn" type="button" data-nudge="x,-1">X -1</button><button class="gb-btn" type="button" data-nudge="x,1">X +1</button><button class="gb-btn" type="button" id="btnSnapGround">貼齊地面</button>
+          <button class="gb-btn" type="button" data-nudge="y,-1">Y -1</button><button class="gb-btn" type="button" data-nudge="y,1">Y +1</button><button class="gb-btn" type="button" data-nudge="z,-1">Z -1</button>
+          <button class="gb-btn" type="button" data-nudge="z,1">Z +1</button>
+        </div>
+      </div>
       ${otherPieces.length ? `
-      <div class="section-box">
-        <div class="section-title">智慧面貼齊（零碰撞接合）</div>
-        <div class="form-field" style="margin-bottom:5px;"><select id="snapTargetSelect">${otherPieces.map(op => `<option value="${escapeHtml(op.id)}">對齊：${escapeHtml(op.name)}</option>`).join('')}</select></div>
-        <div class="nudge-row">
-          <button class="btn btn-xs btn-blue" type="button" data-face-snap="left">貼左面</button><button class="btn btn-xs btn-blue" type="button" data-face-snap="right">貼右面</button>
-          <button class="btn btn-xs btn-blue" type="button" data-face-snap="front">貼前面</button><button class="btn btn-xs btn-blue" type="button" data-face-snap="back">貼後面</button>
-          <button class="btn btn-xs btn-blue" type="button" data-face-snap="top">疊上方</button><button class="btn btn-xs btn-blue" type="button" data-face-snap="bottom">貼下方</button>
+      <div class="gb-section">
+        <h3 class="gb-section__title">貼齊到其他構件</h3>
+        <span class="gb-select"><select id="snapTargetSelect" aria-label="貼齊的對象">${otherPieces.map(op => `<option value="${escapeHtml(op.id)}">對齊：${escapeHtml(op.name)}</option>`).join('')}</select></span>
+        <div class="gb-grid-3">
+          <button class="gb-btn" type="button" data-face-snap="left">貼左面</button><button class="gb-btn" type="button" data-face-snap="right">貼右面</button><button class="gb-btn" type="button" data-face-snap="front">貼前面</button>
+          <button class="gb-btn" type="button" data-face-snap="back">貼後面</button><button class="gb-btn" type="button" data-face-snap="top">疊上方</button><button class="gb-btn" type="button" data-face-snap="bottom">貼下方</button>
         </div>
       </div>` : ''}
-
-      <div class="section-box">
-        <div class="form-grid">
-          <div class="form-field full"><label for="insJoinery">接合工法</label><select id="insJoinery">${JOINERY_OPTIONS.map(j => `<option value="${j.id}" ${p.joinery === j.id ? 'selected' : ''}>${escapeHtml(j.label)}</option>`).join('')}</select></div>
-          <div class="form-field full"><label for="insNotes">加工備註</label><input id="insNotes" type="text" value="${escapeHtml(p.notes || '')}" placeholder="例如：45度斜切..."></div>
-        </div>
+      <div class="gb-section">
+        <label class="gb-field"><span class="gb-field__label">接合工法</span><span class="gb-select"><select id="insJoinery">${JOINERY_OPTIONS.map(j => `<option value="${j.id}" ${p.joinery === j.id ? 'selected' : ''}>${escapeHtml(j.label)}</option>`).join('')}</select></span></label>
+        <label class="gb-field"><span class="gb-field__label">加工備註</span><span class="gb-input"><input id="insNotes" class="gb-input__control" type="text" value="${escapeHtml(p.notes || '')}" placeholder="例如：45 度斜切"></span></label>
       </div>
-      <div class="ins-sticky-footer">
-        <button id="btnInsDup" class="btn btn-soft" type="button" style="flex:1;">複製此構件</button>
-        <button id="btnInsDel" class="btn btn-danger" type="button">刪除</button>
+      <div class="gb-panel__foot">
+        <button id="btnInsDup" class="gb-btn" type="button" style="flex:1;"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>複製構件</button>
+        <button id="btnInsDel" class="gb-btn gb-btn--danger" type="button"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>刪除</button>
       </div>`;
   }
 
   function renderBOM(container, onlyDynamic) {
-    if (!state.pieces.length) { container.innerHTML = '<div class="alert-box alert-info">尚未有構件，請先新增材料即可自動估算裁切排版。</div>'; return; }
+    if (!state.pieces.length) { container.innerHTML = '<div class="gb-section"><p class="gb-caption" style="margin:0;color:var(--gb-ink-2);">尚未有構件，請先新增材料即可自動估算裁切排版。</p></div>'; return; }
     if (!onlyDynamic || !container.querySelector('#bomDynamicContent')) {
       container.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;background:var(--surface-2);padding:5px 8px;border-radius:6px;border:1px solid var(--border);">
-          <label for="kerfInput" style="font-size:11.5px;font-weight:700;color:var(--ink-muted);">鋸片損耗（鋸路 cm）</label>
-          <input id="kerfInput" type="number" min="0" max="1" step="0.05" value="${state.kerfCm}" style="width:72px;text-align:right;font-family:var(--mono);">
+        <div class="gb-section">
+          <label class="gb-field">
+            <span class="gb-field__label">鋸片損耗（鋸路）</span>
+            <span class="gb-input"><input id="kerfInput" class="gb-input__control gb-num" type="number" min="0" max="1" step="0.05" value="${state.kerfCm}"><span class="gb-input__unit">cm</span></span>
+          </label>
         </div>
         <div id="bomDynamicContent"></div>`;
     }
     const dynTarget = container.querySelector('#bomDynamicContent');
     const bom = computeBOM();
     const totalStockItems = bom.summaryRows.reduce((s, r) => s + r.qty, 0);
-    const segPalette = ['#9a5b25', '#b46d2e', '#7c4d25', '#2563eb', '#0f766e', '#6d28d9', '#be185d'];
 
     let html = bom.excludedPieces.length ? `
-      <div class="alert-box alert-warn">
-        <strong>${bom.excludedPieces.length} 個構件超出單件原料尺寸</strong>
-        <p>採購數量和費用只計入可裁切的構件。</p>
-        <ul>${bom.excludedPieces.map(item => `<li>${escapeHtml(describeExcludedCut(item))}</li>`).join('')}</ul>
+      <div class="gb-section">
+        <div class="gb-notice">
+          <svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h0"/></svg>
+          <div class="gb-notice__body">
+            <span class="gb-notice__title">${bom.excludedPieces.length} 個構件超出單件原料尺寸</span>
+            <p style="margin:4px 0;">採購數量和費用只計入可裁切的構件。</p>
+            <ul style="margin:0;padding-left:18px;">${bom.excludedPieces.map(item => `<li>${escapeHtml(describeExcludedCut(item))}</li>`).join('')}</ul>
+          </div>
+        </div>
       </div>` : '';
 
     if (!bom.summaryRows.length) {
-      dynTarget.innerHTML = html + '<div class="alert-box alert-info">目前沒有可裁切的構件，尚無採購估算。</div>';
+      dynTarget.innerHTML = html + '<div class="gb-section"><p class="gb-caption" style="margin:0;color:var(--gb-ink-2);">目前沒有可裁切的構件，尚無採購估算。</p></div>';
       return;
     }
 
-    html += `<div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-label">預估材料總費</div><div class="kpi-val">NT$${bom.grandTotalCost.toLocaleString()}</div><div class="kpi-sub">單價可修改</div></div>
-        <div class="kpi-card"><div class="kpi-label">需採購原料</div><div class="kpi-val">${totalStockItems} 件</div><div class="kpi-sub">${bom.summaryRows.length} 種規格</div></div>
-        <div class="kpi-card"><div class="kpi-label">預估裁切刀數</div><div class="kpi-val">${bom.totalCuts} 刀</div><div class="kpi-sub">鋸路 ${state.kerfCm} cm</div></div>
+    html += `<div class="gb-section">
+        <div class="gb-stat"><span class="gb-stat__label">預估材料總費</span><span class="gb-stat__value kpi-val">NT$${bom.grandTotalCost.toLocaleString()}</span></div>
+        <span class="gb-caption gb-num" style="color:var(--gb-ink-2);">需採購 ${totalStockItems} 件（${bom.summaryRows.length} 種規格）· 預估 ${bom.totalCuts} 刀 · 鋸路 ${state.kerfCm} cm</span>
       </div>
-      <table class="data-table">
-        <thead><tr><th>材料規格</th><th class="num">數量</th><th class="num">利用率</th><th class="num">單價</th><th class="num">小計</th></tr></thead>
-        <tbody>
-          ${bom.summaryRows.map(r => `
-            <tr>
-              <td><div style="font-weight:700;">${escapeHtml(r.material.name)}</div><div style="font-size:10px;color:var(--ink-soft);">${escapeHtml(r.material.taiwanSpec)}</div></td>
-              <td class="num"><strong>${r.qty}</strong> ${r.material.unit}</td>
-              <td class="num">${r.utilPct.toFixed(1)}%</td>
-              <td class="num"><input class="price-input" type="number" min="0" step="5" data-price-mat="${r.material.id}" value="${r.unitPrice}"></td>
-              <td class="num"><strong>$${r.subtotal.toLocaleString()}</strong></td>
-            </tr>`).join('')}
-        </tbody>
-      </table>`;
+      <div class="gb-section">
+        <div class="gb-table-wrap">
+          <table class="gb-table">
+            <thead><tr><th>材料規格</th><th class="gb-num">數量</th><th class="gb-num">利用率</th><th class="gb-num">單價</th><th class="gb-num">小計</th></tr></thead>
+            <tbody>
+              ${bom.summaryRows.map(r => `
+                <tr>
+                  <td><strong>${escapeHtml(r.material.name)}</strong><span class="gb-table__sub">${escapeHtml(r.material.taiwanSpec)}</span></td>
+                  <td class="gb-num">${r.qty} ${r.material.unit}</td>
+                  <td class="gb-num">${r.utilPct.toFixed(1)}%</td>
+                  <td class="gb-num"><span class="gb-input wc-ins-price"><input class="gb-input__control gb-num price-input" type="number" min="0" step="5" data-price-mat="${r.material.id}" value="${r.unitPrice}" aria-label="${escapeHtml(r.material.name)} 單價"></span></td>
+                  <td class="gb-num"><strong>$${r.subtotal.toLocaleString()}</strong></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
 
     if (bom.battenPlans.length) {
-      html += `<div class="section-title">角材 1D 裁切排版圖</div>`;
+      html += `<div class="gb-section"><h3 class="gb-section__title">角材 1D 裁切排版圖</h3>`;
       for (const plan of bom.battenPlans) {
-        html += `<div class="cut-card"><div class="cut-card-header"><span>${escapeHtml(plan.material.name)}</span><span style="font-family:var(--mono);color:var(--accent);">${plan.bins.length} 支 (${plan.utilPct.toFixed(1)}%)</span></div>
+        html += `<div class="wc-cut-card"><div class="wc-cut-head"><span>${escapeHtml(plan.material.name)}</span><span class="gb-num">${plan.bins.length} 支 (${plan.utilPct.toFixed(1)}%)</span></div>
           ${plan.bins.map((bin, idx) => {
             const rem = Math.max(0, plan.material.stockL - bin.used);
-            return `<div class="bar-row"><div class="bar-label"><span>第 ${idx + 1} 支 (${plan.material.stockL}cm)</span><span>用 ${bin.used.toFixed(1)} ｜ 餘 ${rem.toFixed(1)}</span></div>
-              <div class="bar-track">${bin.cuts.map((c, ci) => `<div class="bar-seg" style="width:${Math.min(100, (c.l / plan.material.stockL) * 100).toFixed(2)}%;background:${segPalette[ci % segPalette.length]};">${c.l}</div>`).join('')}
-              ${rem > 0.5 ? `<div class="bar-waste">${rem >= 15 ? '餘' + rem.toFixed(0) : ''}</div>` : ''}</div></div>`;
+            return `<div><div class="wc-bar-label gb-caption gb-num"><span>第 ${idx + 1} 支 (${plan.material.stockL} cm)</span><span>用 ${bin.used.toFixed(1)} · 餘 ${rem.toFixed(1)}</span></div>
+              <div class="wc-bar-track">${bin.cuts.map(c => `<div class="wc-bar-seg gb-num" style="width:${Math.min(100, (c.l / plan.material.stockL) * 100).toFixed(2)}%;">${c.l}</div>`).join('')}
+              ${rem > 0.5 ? `<div class="wc-bar-waste gb-num">${rem >= 15 ? '餘 ' + rem.toFixed(0) : ''}</div>` : ''}</div></div>`;
           }).join('')}</div>`;
       }
+      html += `</div>`;
     }
 
     if (bom.sheetPlans.length) {
-      html += `<div class="section-title">板材 2D 裁切排版圖</div>`;
+      html += `<div class="gb-section"><h3 class="gb-section__title">板材 2D 裁切排版圖</h3>`;
       for (const plan of bom.sheetPlans) {
         const m = plan.material;
-        html += `<div class="cut-card"><div class="cut-card-header"><span>${escapeHtml(m.name)}</span><span style="font-family:var(--mono);color:var(--accent);">${plan.sheets.length} 片 (${plan.utilPct.toFixed(1)}%)</span></div>
-          ${plan.sheets.map((sheet, idx) => `<div style="margin-bottom:8px;"><div class="bar-label"><span>第 ${idx + 1} 片 (${m.stockL}×${m.stockW}cm)</span><span>${sheet.rects.length} 塊</span></div>
-            <svg class="sheet-svg" viewBox="0 0 ${m.stockL} ${m.stockW}"><rect x="0" y="0" width="${m.stockL}" height="${m.stockW}" fill="#ece6da"/>
-            ${sheet.rects.map(rc => `<g><rect x="${rc.x}" y="${rc.y}" width="${rc.w}" height="${rc.h}" fill="${m.category === 'csb' ? '#cbd5e1' : '#d8ad78'}" stroke="${m.category === 'csb' ? '#475569' : '#7c4d25'}" stroke-width="1.2"/>
-              <text x="${rc.x + rc.w / 2}" y="${rc.y + rc.h / 2}" text-anchor="middle" dominant-baseline="middle" font-size="${Math.max(6, Math.min(13, Math.min(rc.w, rc.h) * 0.22))}" font-weight="700" fill="#1e242b" font-family="monospace">${rc.w.toFixed(0)}×${rc.h.toFixed(0)}</text></g>`).join('')}</svg></div>`).join('')}</div>`;
+        html += `<div class="wc-cut-card"><div class="wc-cut-head"><span>${escapeHtml(m.name)}</span><span class="gb-num">${plan.sheets.length} 片 (${plan.utilPct.toFixed(1)}%)</span></div>
+          ${plan.sheets.map((sheet, idx) => `<div><div class="wc-bar-label gb-caption gb-num"><span>第 ${idx + 1} 片 (${m.stockL} × ${m.stockW} cm)</span><span>${sheet.rects.length} 塊</span></div>
+            <svg class="wc-sheet-svg" viewBox="0 0 ${m.stockL} ${m.stockW}"><rect x="0" y="0" width="${m.stockL}" height="${m.stockW}" style="fill:var(--gb-sunken);"/>
+            ${sheet.rects.map(rc => `<g><rect x="${rc.x}" y="${rc.y}" width="${rc.w}" height="${rc.h}" style="fill:${m.category === 'csb' ? 'var(--mat-concrete)' : 'var(--mat-wood-light)'};stroke:${m.category === 'csb' ? 'var(--mat-concrete-dark)' : 'var(--mat-wood-dark)'};" stroke-width="1.2"/>
+              <text x="${rc.x + rc.w / 2}" y="${rc.y + rc.h / 2}" text-anchor="middle" dominant-baseline="middle" font-size="${Math.max(6, Math.min(13, Math.min(rc.w, rc.h) * 0.22))}" font-weight="600" style="fill:var(--gb-ink);font-family:var(--font-num);">${rc.w.toFixed(0)}×${rc.h.toFixed(0)}</text></g>`).join('')}</svg></div>`).join('')}</div>`;
       }
+      html += `</div>`;
     }
 
-    html += `<div class="section-box"><div class="section-title">接合與五金統計</div><table class="data-table"><thead><tr><th>接合方式</th><th class="num">構件數</th><th class="num">預估點數</th></tr></thead><tbody>
-      ${Object.entries(bom.joinerySummary).map(([jId, info]) => `<tr><td>${escapeHtml(JOINERY_MAP[jId] ? JOINERY_MAP[jId].label : jId)}</td><td class="num">${info.count}</td><td class="num">${info.points > 0 ? info.points + ' 點' : '—'}</td></tr>`).join('')}
+    html += `<div class="gb-section" style="border-bottom:0;"><h3 class="gb-section__title">接合與五金統計</h3><table class="gb-table"><thead><tr><th>接合方式</th><th class="gb-num">構件數</th><th class="gb-num">預估點數</th></tr></thead><tbody>
+      ${Object.entries(bom.joinerySummary).map(([jId, info]) => `<tr><td>${escapeHtml(JOINERY_MAP[jId] ? JOINERY_MAP[jId].label : jId)}</td><td class="gb-num">${info.count}</td><td class="gb-num">${info.points > 0 ? info.points + ' 點' : '—'}</td></tr>`).join('')}
     </tbody></table></div>`;
     dynTarget.innerHTML = html;
   }
@@ -3024,26 +2639,28 @@
   function renderCatalog(container) {
     const groups = [{ key: 'batten', title: '角材（柳安／積層）' }, { key: 'blockboard', title: '木心板（6分 18mm）' }, { key: 'csb', title: '矽酸鈣板（6mm / 9mm）' }];
     container.innerHTML = groups.map(g => `
-      <div class="section-title" style="margin-top:6px;">${g.title}</div>
+      <div class="gb-section" style="padding-bottom:0;border-bottom:0;"><h3 class="gb-section__title">${g.title}</h3></div>
+      <div class="gb-list">
       ${MATERIALS.filter(m => m.category === g.key).map(m => `
-        <div class="catalog-card">
-          <div class="catalog-top">
-            <div class="catalog-name"><span class="mat-dot" style="background:${m.colorFront};"></span><span>${escapeHtml(m.name)}</span></div>
-            <button class="btn btn-xs btn-soft" type="button" data-quick-add="${m.id}">＋ 加入</button>
+        <div class="gb-row" style="cursor:default;">
+          <i class="gb-row__swatch" style="background:${m.colorFront};border-color:${m.colorSide};"></i>
+          <div class="gb-row__main">
+            <span class="gb-row__name">${escapeHtml(m.name)}</span>
+            <span class="gb-row__meta">${m.taiwanSpec} · ${m.stockL} × ${m.stockW} × ${m.thick} cm · NT$${getPrice(m.id)}/${m.unit}</span>
           </div>
-          <div class="catalog-spec">${m.taiwanSpec} ｜ ${m.stockL}×${m.stockW}×${m.thick}cm ｜ NT$${getPrice(m.id)}/${m.unit}</div>
-          <div class="catalog-note">${escapeHtml(m.note)}</div>
-        </div>`).join('')}`).join('');
+          <span class="gb-row__end"><button class="gb-btn" type="button" data-quick-add="${m.id}">加入</button></span>
+        </div>`).join('')}
+      </div>`).join('');
   }
 
   function renderBlueprintSheetTabs() {
     const sh = getActiveSheet();
     const list = document.getElementById('sheetList');
     list.innerHTML = state.blueprints.map(s => `
-      <div class="sheet-tab-chip ${sh && s.id === sh.id ? 'active' : ''}" data-bp-sheet="${escapeHtml(s.id)}">
-        <span>${escapeHtml(s.name)}</span>
-        ${state.blueprints.length > 1 ? `<button class="sheet-tab-del" type="button" data-del-sheet="${escapeHtml(s.id)}" title="刪除此圖紙">✕</button>` : ''}
-      </div>`).join('');
+      <span class="wc-sheet-tab">
+        <button class="gb-seg__item sheet-tab-chip ${sh && s.id === sh.id ? 'active' : ''}" type="button" aria-pressed="${sh && s.id === sh.id ? 'true' : 'false'}" data-bp-sheet="${escapeHtml(s.id)}">${escapeHtml(s.name)}</button>
+        ${state.blueprints.length > 1 ? `<button class="gb-iconbtn sheet-tab-del" type="button" data-del-sheet="${escapeHtml(s.id)}" aria-label="刪除此圖紙"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>` : ''}
+      </span>`).join('');
     if (sh) {
       document.getElementById('bpSheetName').value = sh.name;
       document.getElementById('bpUnderlayMode').value = sh.underlay || 'none';
@@ -3061,7 +2678,7 @@
       setCardHidden(card, true);
       return;
     }
-    if (window.innerWidth <= 760 && state.bpStyleCardOpen) {
+    if (window.innerWidth < 1080 && state.bpStyleCardOpen) {
       state.bpStyleCardOpen = false;
       syncDrawerVisibility();
     }
@@ -3208,7 +2825,7 @@
   let toastTimer = null;
   function showToast(msg, actionObj) {
     const el = document.getElementById('toast');
-    el.innerHTML = `<span>${escapeHtml(msg)}</span>` + (actionObj ? `<button id="toastActionBtn" class="btn btn-xs btn-soft" type="button">${escapeHtml(actionObj.label)}</button>` : '');
+    el.innerHTML = `<span>${escapeHtml(msg)}</span>` + (actionObj ? `<button id="toastActionBtn" class="gb-btn gb-dense" type="button">${escapeHtml(actionObj.label)}</button>` : '');
     if (actionObj) {
       const ab = document.getElementById('toastActionBtn');
       if (ab) ab.addEventListener('click', () => { el.classList.remove('show'); actionObj.onClick(); });
@@ -3252,17 +2869,18 @@
   /* =========================================================================
      10. 事件綁定
      ========================================================================= */
-  document.getElementById('navPage3D').addEventListener('click', () => switchPage('3d'));
-  document.getElementById('navPageBlueprint').addEventListener('click', () => switchPage('blueprint'));
+  for (const button of document.querySelectorAll('.page-switch-btn')) {
+    button.addEventListener('click', () => switchPage(button.dataset.page));
+  }
   document.getElementById('projectNameInput').addEventListener('input', e => { state.projectName = e.target.value; saveToLocal(); });
 
   // Floating drawer collapse/expand controls
   document.getElementById('btnCloseLeft3D').addEventListener('click', () => { state.leftDrawerOpen = false; syncDrawerVisibility(); });
-  document.getElementById('btnOpenLeft3D').addEventListener('click', () => { state.leftDrawerOpen = true; if (window.innerWidth <= 760) state.rightDrawerOpen = false; syncDrawerVisibility(); });
+  document.getElementById('btnOpenLeft3D').addEventListener('click', () => { state.leftDrawerOpen = true; if (window.innerWidth < 1080) state.rightDrawerOpen = false; syncDrawerVisibility(); });
   document.getElementById('btnCloseRight3D').addEventListener('click', () => { state.rightDrawerOpen = false; syncDrawerVisibility(); });
-  document.getElementById('btnOpenIns3D').addEventListener('click', () => { state.activeTab = 'inspector'; state.rightDrawerOpen = true; if (window.innerWidth <= 760) state.leftDrawerOpen = false; renderAll(); });
-  document.getElementById('btnOpenBom3D').addEventListener('click', () => { state.activeTab = 'bom'; state.rightDrawerOpen = true; if (window.innerWidth <= 760) state.leftDrawerOpen = false; renderAll(); });
-  document.getElementById('btnOpenCat3D').addEventListener('click', () => { state.activeTab = 'catalog'; state.rightDrawerOpen = true; if (window.innerWidth <= 760) state.leftDrawerOpen = false; renderAll(); });
+  document.getElementById('btnOpenIns3D').addEventListener('click', () => { state.activeTab = 'inspector'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
+  document.getElementById('btnOpenBom3D').addEventListener('click', () => { state.activeTab = 'bom'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
+  document.getElementById('btnOpenCat3D').addEventListener('click', () => { state.activeTab = 'catalog'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
   document.getElementById('btnToggleBpStyleCard').addEventListener('click', () => {
     state.bpStyleCardOpen = !state.bpStyleCardOpen;
     syncDrawerVisibility();
@@ -3588,7 +3206,7 @@
         }
         if (found) {
           state.selectedId = found; state.activeTab = 'inspector';
-          state.rightDrawerOpen = true; if (window.innerWidth <= 760) state.leftDrawerOpen = false;
+          state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false;
           renderAll();
         } else if (state.selectedId) {
           state.selectedId = null; renderAll();
@@ -4144,7 +3762,6 @@
   /* =========================================================================
      12. 第三頁「左圖紙 × 右 3D」雙視窗 & 標準三視圖 / 自定義剖視圖產生器
      ========================================================================= */
-  document.getElementById('navPageSplit').addEventListener('click', () => switchPage('split'));
 
   function getAxisBounds(ax) {
     const b = getOverallBounds();
@@ -4205,7 +3822,7 @@
     const { pairs } = detectAllCollisions();
     const sBadge = document.getElementById('splitCollisionBadge');
     if (pairs.length === 0) { sBadge.style.display = 'none'; }
-    else { sBadge.style.display = 'inline-flex'; sBadge.className = 'pill-status pill-danger'; sBadge.innerHTML = `⚠ ${pairs.length} 碰撞 <button id="btnSplitFixCol" class="btn btn-xs btn-danger" type="button" style="padding:0 5px;">解碰</button>`; }
+    else { sBadge.style.display = 'inline-flex'; sBadge.className = 'gb-notice gb-notice--danger wc-collision-badge'; sBadge.innerHTML = `⚠ ${pairs.length} 碰撞 <button id="btnSplitFixCol" class="gb-btn gb-btn--danger gb-dense" type="button" style="padding:0 5px;">解碰</button>`; }
 
     const selP = state.pieces.find(p => p.id === state.selectedId);
     document.getElementById('splitSelLabel').textContent = selP ? `${selP.name} (${selP.x},${selP.y},${selP.z})` : '點右側構件可微調';
@@ -4237,7 +3854,7 @@
     if (!isResizingSplit) return;
     const cont = document.getElementById('splitContainer').getBoundingClientRect();
     const leftPane = document.getElementById('splitLeftPane');
-    if (window.innerWidth <= 760) {
+    if (window.innerWidth < 1080) {
       const ratio = Math.max(0.22, Math.min(0.78, (e.clientY - cont.top) / cont.height));
       state.splitRatio = ratio;
       leftPane.style.height = (ratio * 100).toFixed(1) + '%';
@@ -4646,7 +4263,7 @@
   });
   document.getElementById('btn3DPanMode').addEventListener('click', e => {
     state.panMode3D = !state.panMode3D;
-    e.currentTarget.textContent = state.panMode3D ? '平移模式' : '旋轉模式';
+    e.currentTarget.setAttribute('aria-pressed', state.panMode3D ? 'true' : 'false'); e.currentTarget.title = state.panMode3D ? '目前：平移模式' : '目前：旋轉模式';
     e.currentTarget.classList.toggle('active', state.panMode3D);
     showToast(state.panMode3D ? '已切為單指平移畫布模式' : '已切為單指旋轉 3D 模式');
   });
@@ -4720,6 +4337,64 @@
       fileMenuBtn.setAttribute('aria-expanded', 'false');
     });
   }
+
+  // 正經工班設計系統互動補充：手機底部操作列、爆炸圖開關、手機檔案選單與 aria-pressed 同步
+  const btnMobileParts = document.getElementById('btnMobileParts');
+  const btnMobileAdd = document.getElementById('btnMobileAdd');
+  const btnMobileSettings = document.getElementById('btnMobileSettings');
+  const mobileBackdrop = document.getElementById('mobileSheetBackdrop');
+  if (btnMobileParts) btnMobileParts.addEventListener('click', () => {
+    state.leftDrawerOpen = !state.leftDrawerOpen;
+    if (state.leftDrawerOpen) state.rightDrawerOpen = false;
+    syncDrawerVisibility();
+  });
+  if (btnMobileAdd) btnMobileAdd.addEventListener('click', () => {
+    state.leftDrawerOpen = true;
+    state.rightDrawerOpen = false;
+    const box = document.getElementById('addPieceBox');
+    if (box) box.style.display = 'block';
+    syncDrawerVisibility();
+  });
+  if (btnMobileSettings) btnMobileSettings.addEventListener('click', () => {
+    state.rightDrawerOpen = !state.rightDrawerOpen;
+    if (state.rightDrawerOpen) state.leftDrawerOpen = false;
+    syncDrawerVisibility();
+  });
+  if (mobileBackdrop) mobileBackdrop.addEventListener('click', () => {
+    state.leftDrawerOpen = false;
+    state.rightDrawerOpen = false;
+    syncDrawerVisibility();
+  });
+  const btnToggleExplode = document.getElementById('btnToggleExplode');
+  const explodeBarWrap = document.getElementById('explodeBarWrap');
+  if (btnToggleExplode && explodeBarWrap) btnToggleExplode.addEventListener('click', () => {
+    const on = !explodeBarWrap.classList.contains('open');
+    explodeBarWrap.classList.toggle('open', on);
+    btnToggleExplode.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  const btnFileMenuMobile = document.getElementById('btnFileMenuMobile');
+  if (btnFileMenuMobile && fileMenuDrop) {
+    btnFileMenuMobile.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = !fileMenuDrop.classList.contains('open');
+      fileMenuDrop.classList.toggle('open', open);
+      btnFileMenuMobile.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+  const viewNames = { iso: '等角 3D', front: '正視 (XZ)', top: '俯視 (XY)', side: '側視 (YZ)' };
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.view-btn').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+      const lbl = document.getElementById('viewModeLabel');
+      if (lbl && viewNames[btn.dataset.view]) lbl.textContent = viewNames[btn.dataset.view];
+    });
+  });
+  ['btnCollisionMode', 'btnToggleLabels', 'btnToggleFasteners', 'btnToggleWire', 'btnToggleRefSheet', 'btn3DPanMode', 'btnBpOrtho', 'btnBpDashed', 'btnBpPanToggle'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', () => {
+      setTimeout(() => el.setAttribute('aria-pressed', el.classList.contains('active') ? 'true' : 'false'), 0);
+    });
+  });
 
   window.addEventListener('beforeprint', () => {
     const sh = getActiveSheet();
