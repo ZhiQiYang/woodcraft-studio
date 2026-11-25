@@ -394,8 +394,104 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 .wc-collision-badge { display: none; align-items: center; gap: var(--gb-space-2); }
 .wc-add-box { padding: var(--gb-space-3) var(--gb-space-4); border-bottom: var(--gb-border-hair) solid var(--gb-line); background: var(--gb-sunken); }
 .wc-ins-price { width: 84px; }
+
+.gb-iconbtn[data-count] { position: relative; }
+.gb-iconbtn[data-count]::after {
+  content: attr(data-count);
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--gb-radius-full);
+  background: var(--gb-ink);
+  color: var(--gb-on-ink);
+  font-family: var(--font-num);
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+.wc-view-wrap { position: relative; display: inline-flex; align-items: center; }
+.wc-view-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 10px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 39, 31, 0.08);
+}
+.wc-view-trigger:hover { background: var(--gb-sunken); }
+.wc-view-caret { width: 14px; height: 14px; flex: none; opacity: 0.7; }
+.wc-view-menu {
+  position: absolute;
+  top: calc(100% + var(--gb-space-1));
+  left: 0;
+  min-width: 144px;
+  z-index: 25;
+  display: none;
+}
+.wc-view-menu.open { display: flex; }
+.wc-view-menu .gb-menu__item.active {
+  background: var(--gb-select-soft);
+  color: var(--gb-select);
+}
+.wc-sel-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-space-2);
+  width: min(calc(100vw - var(--gb-space-6)), 380px);
+  padding: 6px 6px 6px 10px;
+  border: var(--gb-border-hair) solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-md);
+  background: var(--gb-surface);
+  box-shadow: var(--gb-shadow-float);
+}
+.wc-sel-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.wc-sel-bar__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.wc-sel-bar__name {
+  font-size: 13px;
+  line-height: 17px;
+  font-weight: 700;
+  color: var(--gb-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wc-sel-bar__meta {
+  font-family: var(--font-num);
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--gb-ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wc-sel-bar__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.wc-sel-bar .gb-btn { min-height: 34px; padding: 0 12px; font-size: 13px; }
+.wc-sel-bar .gb-iconbtn { width: 34px; height: 34px; }
+.wc-sheet-guard, .wc-sheet-guard * { pointer-events: none !important; }
 @media (max-width: 1079px) {
   .wc-sheet-backdrop.open { display: block; position: fixed; inset: 0; z-index: 30; }
+  .wc-view-dock { display: none; }
   .gb-app__side.wc-mobile-sheet-open { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; max-height: 82vh; max-height: 82dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; border: 0; box-shadow: var(--gb-shadow-sheet); }
   .wc-bp-floating-left, .wc-bp-floating-right { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 70dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; }
   .wc-split-wrap { flex-direction: column; }
@@ -542,7 +638,18 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         </div>
 
         <div class="gb-canvas__tl">
-          <span id="viewModeLabel" class="gb-canvas__label">等角 3D</span>
+          <div class="wc-view-wrap">
+            <button id="viewModeBtn" class="gb-canvas__label wc-view-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="切換 3D 視角">
+              <span id="viewModeLabel">等角 3D</span>
+              <svg class="gb-icon wc-view-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div id="viewModeMenu" class="gb-menu wc-view-menu" role="menu" aria-label="切換 3D 視角">
+              <button class="gb-menu__item view-btn active" data-view="iso" type="button" role="menuitemradio" aria-checked="true">等角 3D</button>
+              <button class="gb-menu__item view-btn" data-view="front" type="button" role="menuitemradio" aria-checked="false">正視 (XZ)</button>
+              <button class="gb-menu__item view-btn" data-view="top" type="button" role="menuitemradio" aria-checked="false">俯視 (XY)</button>
+              <button class="gb-menu__item view-btn" data-view="side" type="button" role="menuitemradio" aria-checked="false">側視 (YZ)</button>
+            </div>
+          </div>
           <span id="collisionBadge" class="gb-notice gb-notice--danger wc-collision-badge" role="status"></span>
         </div>
         <div class="gb-canvas__tr">
@@ -571,7 +678,22 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         </aside>
 
         <div class="gb-canvas__bc wc-docks-stack">
-          <div class="gb-dock" role="toolbar" aria-label="3D 視角">
+          <div id="mobileSelBar" class="wc-sel-bar wc-mobile-only" role="region" aria-label="已選取構件操作" hidden>
+            <div class="wc-sel-bar__info">
+              <span id="mobileSelSwatch" class="gb-row__swatch" aria-hidden="true"></span>
+              <div class="wc-sel-bar__text">
+                <span id="mobileSelName" class="wc-sel-bar__name"></span>
+                <span id="mobileSelMeta" class="wc-sel-bar__meta"></span>
+              </div>
+            </div>
+            <div class="wc-sel-bar__actions">
+              <button id="btnMobileSelEdit" class="gb-btn gb-btn--primary" type="button">編輯</button>
+              <button id="btnMobileSelDup" class="gb-iconbtn" type="button" aria-label="複製構件" title="複製"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
+              <button id="btnMobileSelDel" class="gb-iconbtn" type="button" aria-label="刪除構件" title="刪除" style="color:var(--gb-danger);"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+              <button id="btnMobileSelClear" class="gb-iconbtn" type="button" aria-label="取消選取" title="取消選取"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+          </div>
+          <div class="gb-dock wc-view-dock" role="toolbar" aria-label="3D 視角">
             <div class="gb-seg" role="group" aria-label="視角" style="border:0;background:transparent;padding:0;">
               <button class="gb-seg__item view-btn active" data-view="iso" type="button" aria-pressed="true">等角</button>
               <button class="gb-seg__item view-btn" data-view="front" type="button" aria-pressed="false">正視</button>
@@ -1301,14 +1423,18 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     if (u3) {
       const n = state.history3D.undo.length;
       u3.disabled = n === 0;
-      u3.textContent = n ? `↩ 復原 (${n})` : '↩ 復原';
-      u3.title = n ? `復原：${state.history3D.undo[n - 1].label} (Ctrl+Z)` : '復原 (Ctrl+Z)';
+      if (n > 0) u3.dataset.count = String(n); else delete u3.dataset.count;
+      const tip = n ? `復原：${state.history3D.undo[n - 1].label} (Ctrl+Z)` : '復原 (Ctrl+Z)';
+      u3.title = tip;
+      u3.setAttribute('aria-label', n ? `復原 (${n})` : '復原');
     }
     if (r3) {
       const n = state.history3D.redo.length;
       r3.disabled = n === 0;
-      r3.textContent = n ? `↪ 重做 (${n})` : '↪ 重做';
-      r3.title = n ? `重做：${state.history3D.redo[n - 1].label} (Ctrl+Y)` : '重做 (Ctrl+Y)';
+      if (n > 0) r3.dataset.count = String(n); else delete r3.dataset.count;
+      const tip = n ? `重做：${state.history3D.redo[n - 1].label} (Ctrl+Y)` : '重做 (Ctrl+Y)';
+      r3.title = tip;
+      r3.setAttribute('aria-label', n ? `重做 (${n})` : '重做');
     }
     const sh = getActiveSheet();
     const shHist = getSheetHistory(sh && sh.id);
@@ -1318,11 +1444,15 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     const rb = document.getElementById('btnBpRedo');
     if (ub) {
       ub.disabled = bpUndoTotal === 0;
-      ub.textContent = bpUndoTotal ? `復原 (${bpUndoTotal})` : '復原';
+      if (bpUndoTotal > 0) ub.dataset.count = String(bpUndoTotal); else delete ub.dataset.count;
+      ub.title = bpUndoTotal ? `復原圖紙 (${bpUndoTotal})` : '復原圖紙';
+      ub.setAttribute('aria-label', ub.title);
     }
     if (rb) {
       rb.disabled = bpRedoTotal === 0;
-      rb.textContent = bpRedoTotal ? `重做 (${bpRedoTotal})` : '重做';
+      if (bpRedoTotal > 0) rb.dataset.count = String(bpRedoTotal); else delete rb.dataset.count;
+      rb.title = bpRedoTotal ? `重做圖紙 (${bpRedoTotal})` : '重做圖紙';
+      rb.setAttribute('aria-label', rb.title);
     }
   }
 
@@ -2384,18 +2514,50 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     if ('inert' in el) el.inert = hidden;
   }
 
+  function guardSheetGhostClick(el) {
+    if (!el) return;
+    el.classList.add('wc-sheet-guard');
+    clearTimeout(el._ghostTimer);
+    el._ghostTimer = setTimeout(() => el.classList.remove('wc-sheet-guard'), 320);
+  }
+
+  function renderMobileSelBar() {
+    const bar = document.getElementById('mobileSelBar');
+    if (!bar) return;
+    const isMobile = window.innerWidth < 1080;
+    const piece = state.pieces.find(p => p.id === state.selectedId);
+    const shouldShow = isMobile && state.activePage === '3d' && !!piece && !state.leftDrawerOpen && !state.rightDrawerOpen;
+    bar.hidden = !shouldShow;
+    if (!shouldShow) return;
+    const mat = getMat(piece.materialId);
+    const d = getPieceDims(piece);
+    const sw = document.getElementById('mobileSelSwatch');
+    if (sw) {
+      sw.classList.toggle('gb-row__swatch--concrete', mat.category === 'board' && mat.id.includes('calcium'));
+      sw.style.background = mat.color;
+    }
+    const nameEl = document.getElementById('mobileSelName');
+    const metaEl = document.getElementById('mobileSelMeta');
+    if (nameEl) nameEl.textContent = piece.name;
+    if (metaEl) metaEl.textContent = `${piece.cutL} cm · ${d.dx.toFixed(1)}×${d.dy.toFixed(1)}×${d.dz.toFixed(1)} cm`;
+  }
+
   function syncDrawerVisibility() {
     const isMobile = window.innerWidth < 1080;
     const leftEl = document.getElementById('drawer3DLeft');
     const rightEl = document.getElementById('drawer3DRight');
     const backdrop = document.getElementById('mobileSheetBackdrop');
     if (isMobile) {
+      const wasLeftOpen = leftEl.classList.contains('wc-mobile-sheet-open');
+      const wasRightOpen = rightEl.classList.contains('wc-mobile-sheet-open');
       leftEl.classList.toggle('wc-mobile-sheet-open', state.leftDrawerOpen);
       rightEl.classList.toggle('wc-mobile-sheet-open', state.rightDrawerOpen);
+      if (state.leftDrawerOpen && !wasLeftOpen) guardSheetGhostClick(leftEl);
+      if (state.rightDrawerOpen && !wasRightOpen) guardSheetGhostClick(rightEl);
       if (backdrop) backdrop.classList.toggle('open', state.leftDrawerOpen || state.rightDrawerOpen);
     } else {
-      leftEl.classList.remove('wc-mobile-sheet-open');
-      rightEl.classList.remove('wc-mobile-sheet-open');
+      leftEl.classList.remove('wc-mobile-sheet-open', 'wc-sheet-guard');
+      rightEl.classList.remove('wc-mobile-sheet-open', 'wc-sheet-guard');
       if (backdrop) backdrop.classList.remove('open');
     }
     setCardHidden(document.getElementById('bpStyleCard'), !state.bpStyleCardOpen);
@@ -2403,6 +2565,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     toggleBp.classList.toggle('active', state.bpStyleCardOpen);
     toggleBp.setAttribute('aria-pressed', state.bpStyleCardOpen ? 'true' : 'false');
     if (isMobile && state.bpStyleCardOpen) setCardHidden(document.getElementById('bpPropCard'), true);
+    renderMobileSelBar();
   }
 
   function renderAll(persist = true) {
@@ -3126,14 +3289,25 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   });
   document.getElementById('btnResetCam').addEventListener('click', () => {
     state.camera.yaw = -0.62; state.camera.pitch = 0.42; state.camera.zoom = 1.0; state.camera.panX = 0; state.camera.panY = 0;
-    document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === 'iso')); renderScene();
+    document.querySelectorAll('.view-btn').forEach(b => {
+      const isIso = b.dataset.view === 'iso';
+      b.classList.toggle('active', isIso);
+      if (b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', isIso ? 'true' : 'false');
+      if (b.hasAttribute('aria-checked')) b.setAttribute('aria-checked', isIso ? 'true' : 'false');
+    });
+    const lbl = document.getElementById('viewModeLabel');
+    if (lbl) lbl.textContent = '等角 3D';
+    renderScene();
   });
   document.getElementById('btnUndo3D').addEventListener('click', undo3D);
   document.getElementById('btnRedo3D').addEventListener('click', redo3D);
   document.getElementById('btnCollisionMode').addEventListener('click', e => {
     state.collisionMode = state.collisionMode === 'prevent' ? 'warn' : 'prevent';
     const isPrev = state.collisionMode === 'prevent';
-    e.currentTarget.textContent = isPrev ? '防穿透＋磁吸：開' : '自由穿插（僅警示）';
+    const label = isPrev ? '防穿透＋磁吸：開' : '自由穿插（僅警示）';
+    e.currentTarget.title = label;
+    e.currentTarget.setAttribute('aria-label', label);
+    e.currentTarget.setAttribute('aria-pressed', isPrev ? 'true' : 'false');
     e.currentTarget.classList.toggle('active', isPrev);
     showToast(isPrev ? '已開啟「防穿透＋表面磁吸」' : '已切換「自由穿插」模式');
   });
@@ -3205,8 +3379,21 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
           if (pointInPoly(mx, my, hitPolygons[i].pts)) { found = hitPolygons[i].pieceId; break; }
         }
         if (found) {
-          state.selectedId = found; state.activeTab = 'inspector';
-          state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false;
+          if (e.cancelable) e.preventDefault();
+          const isMobile = window.innerWidth < 1080;
+          if (isMobile) {
+            const alreadySelected = state.selectedId === found;
+            state.selectedId = found;
+            state.activeTab = 'inspector';
+            state.leftDrawerOpen = false;
+            if (alreadySelected) {
+              state.rightDrawerOpen = true;
+            }
+          } else {
+            state.selectedId = found;
+            state.activeTab = 'inspector';
+            state.rightDrawerOpen = true;
+          }
           renderAll();
         } else if (state.selectedId) {
           state.selectedId = null; renderAll();
@@ -4382,12 +4569,61 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     });
   }
   const viewNames = { iso: '等角 3D', front: '正視 (XZ)', top: '俯視 (XY)', side: '側視 (YZ)' };
+  const viewModeBtn = document.getElementById('viewModeBtn');
+  const viewModeMenu = document.getElementById('viewModeMenu');
+  function closeViewModeMenu() {
+    if (!viewModeMenu || !viewModeBtn) return;
+    viewModeMenu.classList.remove('open');
+    viewModeBtn.setAttribute('aria-expanded', 'false');
+  }
+  if (viewModeBtn && viewModeMenu) {
+    viewModeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = !viewModeMenu.classList.contains('open');
+      viewModeMenu.classList.toggle('open', open);
+      viewModeBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', e => {
+      if (viewModeMenu.classList.contains('open') && !viewModeMenu.contains(e.target) && e.target !== viewModeBtn) closeViewModeMenu();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && viewModeMenu.classList.contains('open')) closeViewModeMenu();
+    });
+  }
   document.querySelectorAll('.view-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.view-btn').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+      const targetView = btn.dataset.view;
+      document.querySelectorAll('.view-btn').forEach(b => {
+        const match = b.dataset.view === targetView;
+        b.classList.toggle('active', match);
+        if (b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', match ? 'true' : 'false');
+        if (b.hasAttribute('aria-checked')) b.setAttribute('aria-checked', match ? 'true' : 'false');
+      });
       const lbl = document.getElementById('viewModeLabel');
-      if (lbl && viewNames[btn.dataset.view]) lbl.textContent = viewNames[btn.dataset.view];
+      if (lbl && viewNames[targetView]) lbl.textContent = viewNames[targetView];
+      closeViewModeMenu();
     });
+  });
+  const btnMobileSelEdit = document.getElementById('btnMobileSelEdit');
+  const btnMobileSelDup = document.getElementById('btnMobileSelDup');
+  const btnMobileSelDel = document.getElementById('btnMobileSelDel');
+  const btnMobileSelClear = document.getElementById('btnMobileSelClear');
+  if (btnMobileSelEdit) btnMobileSelEdit.addEventListener('click', () => {
+    if (!state.selectedId) return;
+    state.activeTab = 'inspector';
+    state.rightDrawerOpen = true;
+    state.leftDrawerOpen = false;
+    renderAll();
+  });
+  if (btnMobileSelDup) btnMobileSelDup.addEventListener('click', () => {
+    if (state.selectedId) duplicatePiece(state.selectedId);
+  });
+  if (btnMobileSelDel) btnMobileSelDel.addEventListener('click', () => {
+    if (state.selectedId) deletePiece(state.selectedId);
+  });
+  if (btnMobileSelClear) btnMobileSelClear.addEventListener('click', () => {
+    state.selectedId = null;
+    renderAll();
   });
   ['btnCollisionMode', 'btnToggleLabels', 'btnToggleFasteners', 'btnToggleWire', 'btnToggleRefSheet', 'btn3DPanMode', 'btnBpOrtho', 'btnBpDashed', 'btnBpPanToggle'].forEach(id => {
     const el = document.getElementById(id);
