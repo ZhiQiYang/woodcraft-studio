@@ -489,12 +489,254 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 .wc-sel-bar .gb-btn { min-height: 34px; padding: 0 12px; font-size: 13px; }
 .wc-sel-bar .gb-iconbtn { width: 34px; height: 34px; }
 .wc-sheet-guard, .wc-sheet-guard * { pointer-events: none !important; }
+.wc-add-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--gb-space-3);
+  padding: 8px 10px;
+  border: var(--gb-border-hair) solid var(--gb-line);
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-surface);
+}
+.wc-add-preview__svg {
+  width: 88px;
+  height: 66px;
+  flex: none;
+  border-radius: var(--gb-radius-xs);
+  background: var(--gb-ground);
+  border: var(--gb-border-hair) solid var(--gb-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.wc-add-preview__svg svg { width: 100%; height: 100%; display: block; }
+.wc-add-preview__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.wc-add-preview__tag {
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 700;
+  color: var(--gb-ok);
+}
+.wc-add-preview__dims {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--gb-ink);
+  white-space: nowrap;
+}
+.wc-add-preview__sub {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--gb-ink-2);
+}
+.wc-orient-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.wc-orient-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 4px;
+  border: var(--gb-border-hair) solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-surface);
+  color: var(--gb-ink-2);
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wc-orient-btn svg { width: 28px; height: 22px; flex: none; }
+.wc-orient-btn[aria-pressed="true"] {
+  background: var(--gb-select-soft);
+  border-color: var(--gb-select);
+  color: var(--gb-select);
+  box-shadow: inset 0 0 0 1px var(--gb-select);
+}
+.wc-add-only #partsList,
+.wc-add-only .wc-conv-section,
+.wc-add-only .gb-panel__count,
+.wc-add-only #btnToggleAddForm {
+  display: none !important;
+}
+
+.wc-drag-tray {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100vw - var(--gb-space-6));
+  padding: 6px 8px;
+  border: var(--gb-border-hair) solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-md);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--gb-shadow-float);
+  overflow-x: auto;
+  touch-action: none;
+}
+.wc-drag-tray__hint {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  color: var(--gb-ink-3);
+  white-space: nowrap;
+  padding: 0 2px;
+}
+.wc-drag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 10px 0 6px;
+  border: var(--gb-border-hair) solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-surface);
+  color: var(--gb-ink);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  flex: none;
+}
+.wc-drag-chip:active { cursor: grabbing; background: var(--gb-select-soft); border-color: var(--gb-select); color: var(--gb-select); }
+.wc-drag-chip svg { width: 22px; height: 18px; flex: none; }
+.wc-sel-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(calc(100vw - var(--gb-space-4)), 420px);
+  padding: 8px 10px;
+  border: var(--gb-border-hair) solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-md);
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: var(--gb-shadow-float);
+}
+.wc-sel-panel__top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.wc-sel-panel__modes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 4px;
+  border-top: var(--gb-border-hair) solid var(--gb-line);
+}
+.wc-sel-mode-btn {
+  height: 28px;
+  padding: 0 9px;
+  border: var(--gb-border-hair) solid var(--gb-line);
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-ground);
+  color: var(--gb-ink-2);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.wc-sel-mode-btn[aria-pressed="true"] {
+  background: var(--gb-ink);
+  border-color: var(--gb-ink);
+  color: var(--gb-on-ink);
+}
+.wc-sel-panel__ctrl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 1px;
+}
+.wc-mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 30px;
+  min-width: 34px;
+  padding: 0 8px;
+  border: var(--gb-border-hair) solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-surface);
+  color: var(--gb-ink);
+  font-family: var(--font-num);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  flex: none;
+}
+.wc-mini-btn:active { background: var(--gb-sunken); }
+.wc-mini-btn[aria-pressed="true"] {
+  background: var(--gb-select-soft);
+  border-color: var(--gb-select);
+  color: var(--gb-select);
+}
+.wc-mini-btn--lock[aria-pressed="true"] {
+  background: var(--gb-warn-soft);
+  border-color: var(--gb-warn);
+  color: var(--gb-warn);
+}
+.wc-mini-btn--danger { color: var(--gb-danger); border-color: var(--gb-line); }
+.wc-mini-readout {
+  font-family: var(--font-num);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gb-ink);
+  padding: 0 4px;
+  white-space: nowrap;
+}
+.wc-snap-pill {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  padding: 4px 10px;
+  border-radius: var(--gb-radius-full);
+  background: var(--gb-select);
+  color: var(--gb-on-select);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: var(--gb-shadow-float);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.wc-add-only #addPieceBox {
+  display: block !important;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  background: var(--gb-surface);
+  border-bottom: 0;
+}
+
 @media (max-width: 1079px) {
   .wc-sheet-backdrop.open { display: block; position: fixed; inset: 0; z-index: 30; }
   .wc-view-dock { display: none; }
   #pageBlueprint .gb-canvas__bl { left: var(--gb-space-3); right: var(--gb-space-3); bottom: var(--gb-space-3); }
   #pageBlueprint .gb-canvas__bl .wc-dock-scroll { max-width: 100%; width: 100%; }
   #pageBlueprint .gb-canvas__br { bottom: calc(var(--gb-space-3) + 56px); right: var(--gb-space-3); }
+  #bboxReadout { max-width: calc(100vw - 118px); overflow: hidden; text-overflow: ellipsis; }
+  .wc-sel-active .wc-3d-tools-dock { display: none; }
+  .wc-drag-tray { width: calc(100vw - var(--gb-space-4)); padding: 5px 6px; gap: 4px; justify-content: space-between; }
+  .wc-drag-tray__hint { display: none; }
+  .wc-drag-chip { flex: 1 1 0; justify-content: center; padding: 0 4px; gap: 3px; font-size: 11px; min-width: 0; }
   .gb-app__side.wc-mobile-sheet-open { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; max-height: 82vh; max-height: 82dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; border: 0; box-shadow: var(--gb-shadow-sheet); }
   .wc-bp-floating-left, .wc-bp-floating-right { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 70dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; }
   .wc-split-wrap { flex-direction: column; }
@@ -589,14 +831,26 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       <aside id="drawer3DLeft" class="gb-app__side gb-panel gb-panel--left gb-dense" aria-label="構件清單">
         <div class="gb-sheet__grip" aria-hidden="true"></div>
         <div class="gb-panel__head">
-          <h2 class="gb-panel__title">構件清單</h2>
+          <h2 id="leftDrawerTitle" class="gb-panel__title" style="margin-right:auto;">構件清單</h2>
           <span class="gb-panel__count"><span id="partCount">0</span> 件</span>
           <button id="btnToggleAddForm" class="gb-btn gb-btn--primary" type="button"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>新增</button>
-          <button id="btnCloseLeft3D" class="gb-iconbtn wc-mobile-only" type="button" aria-label="關閉構件清單"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          <button id="btnCloseLeft3D" class="gb-iconbtn wc-mobile-only" type="button" aria-label="關閉"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
         <div id="addPieceBox" class="wc-add-box" style="display:none;">
-          <div class="gb-section" style="padding:0;border:0;">
-            <h3 class="gb-section__title">新增木工構件（自動避碰）</h3>
+          <div class="gb-section" style="padding:0;border:0;gap:8px;">
+            <div id="addCatSeg" class="gb-seg gb-seg--block" role="group" aria-label="選擇材料類別">
+              <button class="gb-seg__item add-cat-btn" data-cat="batten" type="button" aria-pressed="true">角材</button>
+              <button class="gb-seg__item add-cat-btn" data-cat="blockboard" type="button" aria-pressed="false">木心板</button>
+              <button class="gb-seg__item add-cat-btn" data-cat="csb" type="button" aria-pressed="false">矽酸鈣板</button>
+            </div>
+            <div id="addPreviewCard" class="wc-add-preview" aria-live="polite">
+              <div id="addPreviewSvg" class="wc-add-preview__svg" aria-hidden="true"></div>
+              <div class="wc-add-preview__info">
+                <span id="addPreviewTag" class="wc-add-preview__tag">長條角材 · 橫放 (X)</span>
+                <span id="addPreviewDims" class="wc-add-preview__dims">長 60 × 3.2 × 2.6 cm</span>
+                <span id="addPreviewSub" class="wc-add-preview__sub">原支 243 cm（8尺 × 1.2寸 × 1寸）</span>
+              </div>
+            </div>
             <label class="gb-field">
               <span class="gb-field__label">材料規格（台灣建材行）</span>
               <span class="gb-select"><select id="addMaterial"></select></span>
@@ -607,25 +861,25 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
                 <span class="gb-input"><input id="addCutL" class="gb-input__control gb-num" type="number" min="1" max="364" step="0.5" value="60"><span class="gb-input__unit">cm</span></span>
               </label>
               <label class="gb-field" id="addCutWWrap">
-                <span class="gb-field__label">裁切寬度</span>
-                <span class="gb-input"><input id="addCutW" class="gb-input__control gb-num" type="number" min="1" max="122" step="0.5" value="60"><span class="gb-input__unit">cm</span></span>
+                <span id="addCutWLabel" class="gb-field__label">斷面尺寸</span>
+                <span id="addCutWInputBox" class="gb-input"><input id="addCutW" class="gb-input__control gb-num" type="number" min="1" max="122" step="0.5" value="60"><span class="gb-input__unit">cm</span></span>
+                <span id="addSectionReadout" class="gb-input" data-readonly="true" style="display:none;"><input id="addSectionVal" class="gb-input__control gb-num" value="3.2 × 2.6" readonly aria-label="斷面尺寸"><span class="gb-input__unit">cm</span></span>
               </label>
             </div>
-            <div class="gb-grid-2">
-              <label class="gb-field">
-                <span class="gb-field__label">擺放方向</span>
-                <span class="gb-select"><select id="addOrient"></select></span>
-              </label>
-              <label class="gb-field">
-                <span class="gb-field__label">接合工法</span>
-                <span class="gb-select"><select id="addJoinery"></select></span>
-              </label>
+            <div class="gb-field">
+              <span class="gb-field__label">擺放方向</span>
+              <div id="addOrientGrid" class="wc-orient-grid" role="group" aria-label="擺放方向"></div>
+              <select id="addOrient" hidden></select>
             </div>
+            <label class="gb-field">
+              <span class="gb-field__label">接合工法</span>
+              <span class="gb-select"><select id="addJoinery"></select></span>
+            </label>
             <button id="btnAddPiece" class="gb-btn gb-btn--primary gb-btn--block" type="button">加入結構並選取</button>
           </div>
         </div>
         <div id="partsList" class="gb-panel__body gb-list" role="listbox" aria-label="構件"></div>
-        <div class="gb-section" style="border-top: var(--gb-border-hair) solid var(--gb-line); border-bottom: 0;">
+        <div class="gb-section wc-conv-section" style="border-top: var(--gb-border-hair) solid var(--gb-line); border-bottom: 0;">
           <h3 class="gb-section__title">台尺換算</h3>
           <div class="gb-grid-2">
             <span class="gb-input"><input id="convCm" class="gb-input__control gb-num" type="number" step="0.1" value="60" aria-label="公分"><span class="gb-input__unit">cm</span></span>
@@ -680,21 +934,48 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
           </div>
         </aside>
 
+        <div id="dragSnapPill" class="wc-snap-pill" hidden></div>
+
         <div class="gb-canvas__bc wc-docks-stack">
-          <div id="mobileSelBar" class="wc-sel-bar wc-mobile-only" role="region" aria-label="已選取構件操作" hidden>
-            <div class="wc-sel-bar__info">
+          <div id="quickDragTray" class="wc-drag-tray" role="toolbar" aria-label="拖曳新增木工構件">
+            <span class="wc-drag-tray__hint">拖曳加入</span>
+            <button class="wc-drag-chip" type="button" data-drag-mat="batten_lauan_8_12x1" data-drag-orient="X" data-drag-l="60" data-drag-w="3.2" data-drag-label="橫角材">
+              <svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="4,14 26,8 32,11 10,17" fill="#d7a46e" stroke="#10271f" stroke-width="1.2"/><polygon points="4,14 10,17 10,20 4,17" fill="#a7713c" stroke="#10271f" stroke-width="1.2"/><polygon points="10,17 32,11 32,14 10,20" fill="#c28b52" stroke="#10271f" stroke-width="1.2"/></svg>
+              <span>橫角材</span>
+            </button>
+            <button class="wc-drag-chip" type="button" data-drag-mat="batten_lauan_8_12x1" data-drag-orient="Z" data-drag-l="60" data-drag-w="3.2" data-drag-label="立柱">
+              <svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="14,3 19,1.5 22,3 17,4.5" fill="#d7a46e" stroke="#10271f" stroke-width="1.2"/><polygon points="14,3 17,4.5 17,22 14,20.5" fill="#c28b52" stroke="#10271f" stroke-width="1.2"/><polygon points="17,4.5 22,3 22,20.5 17,22" fill="#a7713c" stroke="#10271f" stroke-width="1.2"/></svg>
+              <span>立柱</span>
+            </button>
+            <button class="wc-drag-chip" type="button" data-drag-mat="board_lauan_4x8_18" data-drag-orient="XY" data-drag-l="60" data-drag-w="40" data-drag-label="平放板">
+              <svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="4,12 18,6 32,12 18,18" fill="#e7c99f" stroke="#10271f" stroke-width="1.2"/><polygon points="4,12 18,18 18,21 4,15" fill="#d6b280" stroke="#10271f" stroke-width="1.2"/><polygon points="18,18 32,12 32,15 18,21" fill="#ba9462" stroke="#10271f" stroke-width="1.2"/></svg>
+              <span>平放板</span>
+            </button>
+            <button class="wc-drag-chip" type="button" data-drag-mat="board_lauan_4x8_18" data-drag-orient="XZ" data-drag-l="60" data-drag-w="60" data-drag-label="直立板">
+              <svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="7,7 26,3 29,4.5 10,8.5" fill="#e7c99f" stroke="#10271f" stroke-width="1.2"/><polygon points="7,7 10,8.5 10,21 7,19.5" fill="#ba9462" stroke="#10271f" stroke-width="1.2"/><polygon points="10,8.5 29,4.5 29,17 10,21" fill="#d6b280" stroke="#10271f" stroke-width="1.2"/></svg>
+              <span>直立板</span>
+            </button>
+          </div>
+          <div id="mobileSelBar" class="wc-sel-panel" role="region" aria-label="已選取構件快捷操控" hidden>
+            <div class="wc-sel-panel__top">
               <span id="mobileSelSwatch" class="gb-row__swatch" aria-hidden="true"></span>
-              <div class="wc-sel-bar__text">
+              <div class="wc-sel-bar__text" style="flex:1 1 0;">
                 <span id="mobileSelName" class="wc-sel-bar__name"></span>
                 <span id="mobileSelMeta" class="wc-sel-bar__meta"></span>
               </div>
+              <button id="btnMobileSelLock" class="wc-mini-btn wc-mini-btn--lock" type="button" aria-pressed="false" title="固定位置，避免誤拖">未固定</button>
+              <button id="btnMobileSelEdit" class="wc-mini-btn" type="button" title="展開詳細設定">詳細</button>
+              <button id="btnMobileSelClear" class="gb-iconbtn" type="button" aria-label="取消選取" style="width:30px;height:30px;"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
             </div>
-            <div class="wc-sel-bar__actions">
-              <button id="btnMobileSelEdit" class="gb-btn gb-btn--primary" type="button">編輯</button>
-              <button id="btnMobileSelDup" class="gb-iconbtn" type="button" aria-label="複製構件" title="複製"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
-              <button id="btnMobileSelDel" class="gb-iconbtn" type="button" aria-label="刪除構件" title="刪除" style="color:var(--gb-danger);"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
-              <button id="btnMobileSelClear" class="gb-iconbtn" type="button" aria-label="取消選取" title="取消選取"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            <div class="wc-sel-panel__modes">
+              <button class="wc-sel-mode-btn" data-sel-mode="move" type="button" aria-pressed="true">微調</button>
+              <button class="wc-sel-mode-btn" data-sel-mode="size" type="button" aria-pressed="false">尺寸/轉向</button>
+              <button class="wc-sel-mode-btn" data-sel-mode="mat" type="button" aria-pressed="false">同中心線換料</button>
+              <span style="flex:1;"></span>
+              <button id="btnMobileSelDup" class="wc-mini-btn" type="button" title="複製構件">複製</button>
+              <button id="btnMobileSelDel" class="wc-mini-btn wc-mini-btn--danger" type="button" title="刪除構件">刪除</button>
             </div>
+            <div id="mobileSelCtrlRow" class="wc-sel-panel__ctrl"></div>
           </div>
           <div class="gb-dock wc-view-dock" role="toolbar" aria-label="3D 視角">
             <div class="gb-seg" role="group" aria-label="視角" style="border:0;background:transparent;padding:0;">
@@ -704,7 +985,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
               <button class="gb-seg__item view-btn" data-view="side" type="button" aria-pressed="false">側視</button>
             </div>
           </div>
-          <div class="gb-dock wc-dock-scroll" role="toolbar" aria-label="3D 工具">
+          <div class="gb-dock wc-dock-scroll wc-3d-tools-dock" role="toolbar" aria-label="3D 工具">
             <button id="btnCollisionMode" class="gb-iconbtn active" type="button" aria-label="防穿透與磁吸貼齊" aria-pressed="true" title="防穿透＋磁吸"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4v8a6 6 0 0 0 12 0V4h-4v8a2 2 0 0 1-4 0V4z"/><path d="M6 8h4M14 8h4"/></svg></button>
             <button id="btnToggleLabels" class="gb-iconbtn active" type="button" aria-label="顯示尺寸標註" aria-pressed="true" title="顯示尺寸"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 14-14 4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg></button>
             <button id="btnToggleExplode" class="gb-iconbtn" type="button" aria-label="爆炸圖" aria-pressed="false" title="爆炸圖"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/><rect x="10" y="10" width="4" height="4"/></svg></button>
@@ -1889,11 +2170,18 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     const x1 = x * cy - y * sy, y1 = x * sy + y * cy;
     const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
     const y2 = y1 * cp - z * sp, z2 = y1 * sp + z * cp;
+    let bottomInset = 0;
+    if (state.activePage === '3d') {
+      const bc = document.querySelector('#page3D .gb-canvas__bc');
+      if (bc) bottomInset = bc.offsetHeight || 0;
+    }
+    const usableH = Math.max(160, h - bottomInset - 40);
+    const centerY = 40 + usableH * 0.5;
     const maxSpan = Math.max(bounds.sizeX, bounds.sizeY, bounds.sizeZ, 60);
-    const scale = ((Math.min(w, h) * 0.44) / maxSpan) * cam.zoom;
+    const scale = ((Math.min(w, usableH) * 0.46) / maxSpan) * cam.zoom;
     const dist = maxSpan * 4.2;
     const persp = dist / Math.max(10, dist + y2);
-    return { sx: w / 2 + cam.panX + x1 * scale * persp, sy: h / 2 + 20 + cam.panY - z2 * scale * persp, depth: y2 };
+    return { sx: w / 2 + cam.panX + x1 * scale * persp, sy: centerY + cam.panY - z2 * scale * persp, depth: y2 };
   }
 
   function renderScene() {
@@ -1923,9 +2211,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     }
 
     const bboxEl = document.getElementById('bboxReadout');
-    bboxEl.textContent = state.pieces.length === 0
-      ? '畫布為空'
-      : `外廓：${bounds.sizeX.toFixed(1)} × ${bounds.sizeY.toFixed(1)} × ${bounds.sizeZ.toFixed(1)} cm (${(bounds.sizeX / 30.3).toFixed(2)}×${(bounds.sizeZ / 30.3).toFixed(2)}尺)`;
+    if (state.pieces.length === 0) {
+      bboxEl.textContent = '畫布為空';
+    } else if (window.innerWidth < 1080) {
+      bboxEl.textContent = `${bounds.sizeX.toFixed(0)}×${bounds.sizeY.toFixed(0)}×${bounds.sizeZ.toFixed(0)}cm (${(bounds.sizeX / 30.3).toFixed(1)}×${(bounds.sizeZ / 30.3).toFixed(1)}尺)`;
+    } else {
+      bboxEl.textContent = `外廓：${bounds.sizeX.toFixed(1)} × ${bounds.sizeY.toFixed(1)} × ${bounds.sizeZ.toFixed(1)} cm (${(bounds.sizeX / 30.3).toFixed(2)}×${(bounds.sizeZ / 30.3).toFixed(2)}尺)`;
+    }
 
     // Floor Grid
     const gridSpan = Math.max(120, Math.ceil(Math.max(bounds.maxX, bounds.maxY, 80) / 20) * 20 + 20);
@@ -1987,7 +2279,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 
       if (state.camera.showLabels) {
         const cp = projectPoint((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, bounds, w, h);
-        labelPts.push({ sx: cp.sx, sy: cp.sy, text: m.category === 'batten' ? `${p.cutL}cm` : `${p.cutL}×${p.cutW}cm`, name: p.name, isSel, isCol });
+        labelPts.push({ sx: cp.sx, sy: cp.sy, text: m.category === 'batten' ? `${p.cutL}cm` : `${p.cutL}×${p.cutW}cm`, name: (p.locked ? '🔒 ' : '') + p.name, isSel, isCol });
       }
 
       if (state.camera.showFasteners && p.joinery && p.joinery !== 'none') {
@@ -2041,6 +2333,33 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       }
     }
 
+
+    if (!showSectionPlane && dragGhost && MAT_MAP[dragGhost.materialId]) {
+      const gd = getPieceDims(dragGhost);
+      const gx0 = dragGhost.x, gy0 = dragGhost.y, gz0 = dragGhost.z;
+      const gx1 = gx0 + gd.dx, gy1 = gy0 + gd.dy, gz1 = gz0 + gd.dz;
+      const gv = [
+        projectPoint(gx0, gy0, gz0, bounds, w, h), projectPoint(gx1, gy0, gz0, bounds, w, h),
+        projectPoint(gx1, gy1, gz0, bounds, w, h), projectPoint(gx0, gy1, gz0, bounds, w, h),
+        projectPoint(gx0, gy0, gz1, bounds, w, h), projectPoint(gx1, gy0, gz1, bounds, w, h),
+        projectPoint(gx1, gy1, gz1, bounds, w, h), projectPoint(gx0, gy1, gz1, bounds, w, h)
+      ];
+      const gFaces = [[4,5,6,7],[0,1,2,3],[0,1,5,4],[2,3,7,6],[1,2,6,5],[3,0,4,7]];
+      c.save();
+      c.fillStyle = 'rgba(27, 79, 216, 0.22)';
+      c.strokeStyle = '#1b4fd8';
+      c.lineWidth = 2;
+      c.setLineDash([5, 4]);
+      for (const idxs of gFaces) {
+        c.beginPath();
+        c.moveTo(gv[idxs[0]].sx, gv[idxs[0]].sy);
+        for (let k = 1; k < idxs.length; k++) c.lineTo(gv[idxs[k]].sx, gv[idxs[k]].sy);
+        c.closePath();
+        c.fill();
+        c.stroke();
+      }
+      c.restore();
+    }
 
     // Translucent blue cutting plane indicator when viewing a Cross-Section sheet in Split mode
     if (showSectionPlane) {
@@ -2538,25 +2857,215 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     el._ghostTimer = setTimeout(() => el.classList.remove('wc-sheet-guard'), 320);
   }
 
+  let selCtrlMode = 'move';
+  let selNudgeAxis = 'x';
+  let dragGhost = null;
+
+  function swapPieceMaterialKeepCenterline(piece, nextMatId) {
+    const prevMat = MAT_MAP[piece.materialId], nextMat = MAT_MAP[nextMatId];
+    if (!prevMat || !nextMat) return { ok: false, reason: '找不到指定材料' };
+    if (piece.materialId === nextMatId) return { ok: true, unchanged: true };
+    const oldD = getPieceDims(piece);
+    const cx = piece.x + oldD.dx / 2, cy = piece.y + oldD.dy / 2, cz = piece.z + oldD.dz / 2;
+    const test = Object.assign({}, piece, { materialId: nextMatId });
+    if (nextMat.category === 'batten') {
+      test.cutW = nextMat.stockW;
+      if (prevMat.category !== 'batten') test.orientation = 'X';
+    } else if (prevMat.category === 'batten') {
+      test.cutW = Math.min(60, nextMat.stockW);
+      test.orientation = 'XY';
+    }
+    const newD = getPieceDims(test);
+    test.x = Number((cx - newD.dx / 2).toFixed(2));
+    test.y = Number((cy - newD.dy / 2).toFixed(2));
+    test.z = Number((cz - newD.dz / 2).toFixed(2));
+    if (state.collisionMode === 'prevent') {
+      const hit = pieceCollidesWithAny(test, piece.id);
+      if (hit) return { ok: false, reason: `更換規格會與「${hit.other.name}」重疊 ${hit.ov.depth.toFixed(1)} cm（可先關閉磁吸防穿透再換）` };
+    }
+    pushHistory3D(`同中心線更換「${piece.name}」規格`);
+    Object.assign(piece, test);
+    return { ok: true };
+  }
+
+  function rotatePieceKeepCenterline(piece) {
+    const m = MAT_MAP[piece.materialId];
+    if (!m) return;
+    const seq = m.category === 'batten' ? ['X', 'Z', 'Y'] : ['XY', 'XZ', 'YZ'];
+    const nextOrient = seq[(seq.indexOf(piece.orientation) + 1) % seq.length];
+    const oldD = getPieceDims(piece);
+    const cx = piece.x + oldD.dx / 2, cy = piece.y + oldD.dy / 2, cz = piece.z + oldD.dz / 2;
+    const test = Object.assign({}, piece, { orientation: nextOrient });
+    const newD = getPieceDims(test);
+    test.x = Number((cx - newD.dx / 2).toFixed(2));
+    test.y = Number((cy - newD.dy / 2).toFixed(2));
+    test.z = Number(Math.max(0, cz - newD.dz / 2).toFixed(2));
+    if (state.collisionMode === 'prevent') {
+      const hit = pieceCollidesWithAny(test, piece.id);
+      if (hit) { showToast(`轉向後會與「${hit.other.name}」重疊，已阻擋`); return; }
+    }
+    pushHistory3D(`轉向「${piece.name}」`);
+    Object.assign(piece, test);
+    renderAll();
+  }
+
+  function screenToWorldPlane(sx, sy, planeType, fixedVal, initA, initB) {
+    const wrap = document.getElementById('canvasWrap');
+    const w = wrap.clientWidth || 400, h = wrap.clientHeight || 400;
+    const bounds = getOverallBounds();
+    let a = Number.isFinite(initA) ? initA : bounds.cx;
+    let b = Number.isFinite(initB) ? initB : (planeType === 'xy' ? bounds.cy : bounds.cz);
+    const evalPt = (u, v) => {
+      if (planeType === 'xy') return projectPoint(u, v, fixedVal, bounds, w, h);
+      if (planeType === 'xz') return projectPoint(u, fixedVal, v, bounds, w, h);
+      return projectPoint(fixedVal, u, v, bounds, w, h);
+    };
+    const eps = 1.0;
+    for (let iter = 0; iter < 4; iter++) {
+      const p0 = evalPt(a, b);
+      const pu = evalPt(a + eps, b);
+      const pv = evalPt(a, b + eps);
+      const j11 = (pu.sx - p0.sx) / eps, j12 = (pv.sx - p0.sx) / eps;
+      const j21 = (pu.sy - p0.sy) / eps, j22 = (pv.sy - p0.sy) / eps;
+      const det = j11 * j22 - j12 * j21;
+      if (Math.abs(det) < 1e-5) break;
+      const ex = sx - p0.sx, ey = sy - p0.sy;
+      a += (ex * j22 - ey * j12) / det;
+      b += (j11 * ey - j21 * ex) / det;
+    }
+    if (planeType === 'xy') return { x: a, y: b, z: fixedVal };
+    if (planeType === 'xz') return { x: a, y: fixedVal, z: b };
+    return { x: fixedVal, y: a, z: b };
+  }
+
+  function snapDraggedPiece(draft, excludeId) {
+    const d = getPieceDims(draft);
+    let x = draft.x, y = draft.y, z = Math.max(0, draft.z);
+    let snapLabel = '';
+    const thresh = 5.0;
+    if (state.collisionMode === 'prevent') {
+      let bestDx = thresh, snapX = null, labelX = '';
+      let bestDy = thresh, snapY = null, labelY = '';
+      let bestDz = thresh, snapZ = null, labelZ = '';
+      for (const other of state.pieces) {
+        if (other.id === excludeId) continue;
+        const rb = getPieceBox(other);
+        const xCands = [
+          [rb.x1, `靠右貼齊 ${other.name}`],
+          [rb.x0 - d.dx, `靠左貼齊 ${other.name}`],
+          [rb.x0, `左緣對齊 ${other.name}`],
+          [rb.x1 - d.dx, `右緣對齊 ${other.name}`],
+          [(rb.x0 + rb.x1) / 2 - d.dx / 2, `中心線對齊 ${other.name}`]
+        ];
+        for (const [cx, lbl] of xCands) {
+          const diff = Math.abs(x - cx);
+          if (diff < bestDx) { bestDx = diff; snapX = cx; labelX = lbl; }
+        }
+        const yCands = [
+          [rb.y1, `靠後貼齊 ${other.name}`],
+          [rb.y0 - d.dy, `靠前貼齊 ${other.name}`],
+          [rb.y0, `前緣對齊 ${other.name}`],
+          [(rb.y0 + rb.y1) / 2 - d.dy / 2, `中心線對齊 ${other.name}`]
+        ];
+        for (const [cy, lbl] of yCands) {
+          const diff = Math.abs(y - cy);
+          if (diff < bestDy) { bestDy = diff; snapY = cy; labelY = lbl; }
+        }
+        const zCands = [
+          [rb.z1, `疊放於 ${other.name} 上方`],
+          [rb.z0 - d.dz, `貼齊 ${other.name} 下方`],
+          [rb.z0, `底面齊平 ${other.name}`],
+          [(rb.z0 + rb.z1) / 2 - d.dz / 2, `高度中心對齊 ${other.name}`]
+        ];
+        for (const [cz, lbl] of zCands) {
+          const diff = Math.abs(z - cz);
+          if (diff < bestDz) { bestDz = diff; snapZ = cz; labelZ = lbl; }
+        }
+      }
+      if (snapX !== null) { x = snapX; snapLabel = labelX; } else { x = Math.round(x); }
+      if (snapY !== null) { y = snapY; if (!snapLabel) snapLabel = labelY; } else { y = Math.round(y); }
+      if (snapZ !== null) { z = Math.max(0, snapZ); if (!snapLabel) snapLabel = labelZ; } else { z = Math.max(0, Math.round(z)); }
+    } else {
+      x = Math.round(x); y = Math.round(y); z = Math.max(0, Math.round(z));
+    }
+    return { x: Number(x.toFixed(2)), y: Number(y.toFixed(2)), z: Number(z.toFixed(2)), snapLabel };
+  }
+
+  function showDragSnapPill(text) {
+    const el = document.getElementById('dragSnapPill');
+    if (!el) return;
+    if (!text) { el.hidden = true; return; }
+    el.textContent = text;
+    el.hidden = false;
+  }
+
   function renderMobileSelBar() {
     const bar = document.getElementById('mobileSelBar');
-    if (!bar) return;
+    const tray = document.getElementById('quickDragTray');
     const isMobile = window.innerWidth < 1080;
     const piece = state.pieces.find(p => p.id === state.selectedId);
-    const shouldShow = isMobile && state.activePage === '3d' && !!piece && !state.leftDrawerOpen && !state.rightDrawerOpen;
-    bar.hidden = !shouldShow;
-    if (!shouldShow) return;
-    const mat = getMat(piece.materialId);
+    const in3D = state.activePage === '3d';
+    const sheetsClosed = !isMobile || (!state.leftDrawerOpen && !state.rightDrawerOpen);
+    const showSel = in3D && !!piece && sheetsClosed;
+    if (bar) bar.hidden = !showSel;
+    if (tray) tray.hidden = !(in3D && !piece && sheetsClosed);
+    const p3d = document.getElementById('page3D');
+    if (p3d) p3d.classList.toggle('wc-sel-active', showSel);
+    if (!bar || !showSel) return;
+
+    const mat = MAT_MAP[piece.materialId];
     const d = getPieceDims(piece);
     const sw = document.getElementById('mobileSelSwatch');
-    if (sw) {
-      sw.classList.toggle('gb-row__swatch--concrete', mat.category === 'board' && mat.id.includes('calcium'));
-      sw.style.background = mat.color;
+    if (sw && mat) {
+      sw.classList.toggle('gb-row__swatch--concrete', mat.category === 'csb');
+      sw.style.background = mat.colorFront;
     }
     const nameEl = document.getElementById('mobileSelName');
     const metaEl = document.getElementById('mobileSelMeta');
-    if (nameEl) nameEl.textContent = piece.name;
-    if (metaEl) metaEl.textContent = `${piece.cutL} cm · ${d.dx.toFixed(1)}×${d.dy.toFixed(1)}×${d.dz.toFixed(1)} cm`;
+    if (nameEl) nameEl.textContent = (piece.locked ? '🔒 ' : '') + piece.name;
+    if (metaEl) metaEl.textContent = `${piece.cutL}cm · ${d.dx.toFixed(1)}×${d.dy.toFixed(1)}×${d.dz.toFixed(1)}cm`;
+
+    const lockBtn = document.getElementById('btnMobileSelLock');
+    if (lockBtn) {
+      lockBtn.setAttribute('aria-pressed', piece.locked ? 'true' : 'false');
+      lockBtn.textContent = piece.locked ? '已固定' : '固定';
+    }
+    bar.querySelectorAll('[data-sel-mode]').forEach(b => {
+      b.setAttribute('aria-pressed', b.dataset.selMode === selCtrlMode ? 'true' : 'false');
+    });
+
+    const ctrl = document.getElementById('mobileSelCtrlRow');
+    if (!ctrl) return;
+    if (selCtrlMode === 'move') {
+      const disabledAttr = piece.locked ? 'disabled style="opacity:0.45;"' : '';
+      ctrl.innerHTML = `
+        <button class="wc-mini-btn" type="button" data-quick-axis="x" aria-pressed="${selNudgeAxis === 'x'}" title="左右 X 軸">X</button>
+        <button class="wc-mini-btn" type="button" data-quick-axis="y" aria-pressed="${selNudgeAxis === 'y'}" title="前後 Y 軸">Y</button>
+        <button class="wc-mini-btn" type="button" data-quick-axis="z" aria-pressed="${selNudgeAxis === 'z'}" title="上下 Z 軸">Z</button>
+        <button class="wc-mini-btn" type="button" data-quick-nudge="-1" ${disabledAttr}>-1</button>
+        <button class="wc-mini-btn" type="button" data-quick-nudge="-0.5" ${disabledAttr}>-0.5</button>
+        <button class="wc-mini-btn" type="button" data-quick-nudge="0.5" ${disabledAttr}>+0.5</button>
+        <button class="wc-mini-btn" type="button" data-quick-nudge="1" ${disabledAttr}>+1</button>
+      `;
+    } else if (selCtrlMode === 'size') {
+      ctrl.innerHTML = `
+        <button class="wc-mini-btn" type="button" data-quick-len="-10">-10</button>
+        <button class="wc-mini-btn" type="button" data-quick-len="-1">-1</button>
+        <span class="wc-mini-readout">長 ${piece.cutL}cm</span>
+        <button class="wc-mini-btn" type="button" data-quick-len="1">+1</button>
+        <button class="wc-mini-btn" type="button" data-quick-len="10">+10</button>
+        <button class="wc-mini-btn" type="button" data-quick-rotate="1">轉向</button>
+      `;
+    } else if (selCtrlMode === 'mat') {
+      const curCat = mat ? mat.category : 'batten';
+      const sortedMats = [...MATERIALS].sort((a, b) => (a.category === curCat ? -1 : 1) - (b.category === curCat ? -1 : 1));
+      ctrl.innerHTML = sortedMats.map(m => {
+        const shortSpec = m.category === 'batten'
+          ? `${m.name.replace(/柳安防腐角材|柳安角材|萬財F3積層角材/, s => s.slice(0, 2))} ${m.stockW}×${m.thick}`
+          : `${m.categoryLabel} ${m.taiwanSpec.split(' ')[0]} ${m.thick}cm`;
+        return `<button class="wc-mini-btn" type="button" data-quick-mat="${m.id}" aria-pressed="${m.id === piece.materialId}" title="${escapeHtml(m.name)}">${escapeHtml(shortSpec)}</button>`;
+      }).join('');
+    }
   }
 
   function syncDrawerVisibility() {
@@ -2922,8 +3431,127 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   /* =========================================================================
      9. 快速新增與操作動作
      ========================================================================= */
+  let addFormCategory = 'batten';
+
+  function renderAddMaterialOptions(cat, preferredId) {
+    const sel = document.getElementById('addMaterial');
+    if (!sel) return;
+    const list = MATERIALS.filter(m => m.category === cat);
+    sel.innerHTML = list.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+    if (preferredId && list.some(m => m.id === preferredId)) sel.value = preferredId;
+    document.querySelectorAll('.add-cat-btn').forEach(btn => {
+      btn.setAttribute('aria-pressed', btn.dataset.cat === cat ? 'true' : 'false');
+    });
+  }
+
+  function buildOrientSvg(orient, isBatten) {
+    if (isBatten) {
+      if (orient === 'X') return '<svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="4,15 26,9 32,12 10,18" fill="#d7a46e" stroke="#10271f" stroke-width="1.2"/><polygon points="4,15 10,18 10,21 4,18" fill="#a7713c" stroke="#10271f" stroke-width="1.2"/><polygon points="10,18 32,12 32,15 10,21" fill="#c28b52" stroke="#10271f" stroke-width="1.2"/></svg>';
+      if (orient === 'Z') return '<svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="14,3 19,1.5 22,3 17,4.5" fill="#d7a46e" stroke="#10271f" stroke-width="1.2"/><polygon points="14,3 17,4.5 17,22 14,20.5" fill="#c28b52" stroke="#10271f" stroke-width="1.2"/><polygon points="17,4.5 22,3 22,20.5 17,22" fill="#a7713c" stroke="#10271f" stroke-width="1.2"/></svg>';
+      return '<svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="6,10 12,8 30,15 24,17" fill="#d7a46e" stroke="#10271f" stroke-width="1.2"/><polygon points="6,10 24,17 24,20 6,13" fill="#c28b52" stroke="#10271f" stroke-width="1.2"/><polygon points="24,17 30,15 30,18 24,20" fill="#a7713c" stroke="#10271f" stroke-width="1.2"/></svg>';
+    }
+    if (orient === 'XY') return '<svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="4,12 18,6 32,12 18,18" fill="#e7c99f" stroke="#10271f" stroke-width="1.2"/><polygon points="4,12 18,18 18,21 4,15" fill="#d6b280" stroke="#10271f" stroke-width="1.2"/><polygon points="18,18 32,12 32,15 18,21" fill="#ba9462" stroke="#10271f" stroke-width="1.2"/></svg>';
+    if (orient === 'XZ') return '<svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="7,7 26,3 29,4.5 10,8.5" fill="#e7c99f" stroke="#10271f" stroke-width="1.2"/><polygon points="7,7 10,8.5 10,21 7,19.5" fill="#ba9462" stroke="#10271f" stroke-width="1.2"/><polygon points="10,8.5 29,4.5 29,17 10,21" fill="#d6b280" stroke="#10271f" stroke-width="1.2"/></svg>';
+    return '<svg viewBox="0 0 36 24" aria-hidden="true"><polygon points="8,4.5 11,3 29,8.5 26,10" fill="#e7c99f" stroke="#10271f" stroke-width="1.2"/><polygon points="8,4.5 26,10 26,21.5 8,16" fill="#d6b280" stroke="#10271f" stroke-width="1.2"/><polygon points="26,10 29,8.5 29,20 26,21.5" fill="#ba9462" stroke="#10271f" stroke-width="1.2"/></svg>';
+  }
+
+  function renderAddPreview() {
+    const m = MAT_MAP[document.getElementById('addMaterial').value];
+    if (!m) return;
+    const isBatten = m.category === 'batten';
+    const cutL = Math.max(1, Number(document.getElementById('addCutL').value) || 60);
+    const cutW = isBatten ? m.stockW : Math.max(1, Number(document.getElementById('addCutW').value) || 60);
+    const orient = document.getElementById('addOrient').value || (isBatten ? 'X' : 'XY');
+
+    const tempPiece = { materialId: m.id, cutL, cutW, orientation: orient, flipSection: false };
+    const d = getPieceDims(tempPiece);
+
+    // Visual scaling: keep thin edges clearly readable while preserving relative proportions
+    const maxDim = Math.max(d.dx, d.dy, d.dz, 1);
+    const vis = v => {
+      const ratio = v / maxDim;
+      return Math.max(0.11, Math.pow(ratio, 0.58));
+    };
+    const vx = vis(d.dx), vy = vis(d.dy), vz = vis(d.dz);
+
+    // Simple isometric projection onto 96x76 SVG
+    const proj = (x, y, z) => {
+      const px = (x - y) * 0.866;
+      const py = (x + y) * 0.44 - z * 0.92;
+      return [px, py];
+    };
+    const corners = [
+      proj(0, 0, 0), proj(vx, 0, 0), proj(vx, vy, 0), proj(0, vy, 0),
+      proj(0, 0, vz), proj(vx, 0, vz), proj(vx, vy, vz), proj(0, vy, vz)
+    ];
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const [cx, cy] of corners) {
+      if (cx < minX) minX = cx; if (cx > maxX) maxX = cx;
+      if (cy < minY) minY = cy; if (cy > maxY) maxY = cy;
+    }
+    const spanX = Math.max(0.01, maxX - minX), spanY = Math.max(0.01, maxY - minY);
+    const scale = Math.min(72 / spanX, 54 / spanY);
+    const ox = 48 - ((minX + maxX) / 2) * scale;
+    const oy = 38 - ((minY + maxY) / 2) * scale;
+    const pt = i => `${(ox + corners[i][0] * scale).toFixed(1)},${(oy + corners[i][1] * scale).toFixed(1)}`;
+
+    const topPoly = `${pt(4)} ${pt(5)} ${pt(6)} ${pt(7)}`;
+    const frontPoly = `${pt(1)} ${pt(2)} ${pt(6)} ${pt(5)}`;
+    const sidePoly = `${pt(3)} ${pt(2)} ${pt(6)} ${pt(7)}`;
+    const strokeCol = m.category === 'csb' ? '#7c8880' : '#6c4724';
+
+    const svgWrap = document.getElementById('addPreviewSvg');
+    if (svgWrap) {
+      svgWrap.innerHTML = `<svg viewBox="0 0 96 76" aria-hidden="true">
+        <polygon points="${sidePoly}" fill="${m.colorFront}" stroke="${strokeCol}" stroke-width="1.2" stroke-linejoin="round"/>
+        <polygon points="${frontPoly}" fill="${m.colorSide}" stroke="${strokeCol}" stroke-width="1.2" stroke-linejoin="round"/>
+        <polygon points="${topPoly}" fill="${m.colorTop}" stroke="${strokeCol}" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>`;
+    }
+
+    const orientLabels = { X: '橫放 (X)', Z: '直立 (Z)', Y: '前後 (Y)', XY: '水平平放', XZ: '正面直立', YZ: '側面直立' };
+    const shapeLabel = isBatten ? '長條角材' : (m.category === 'csb' ? '矽酸鈣板' : '木心板');
+    const tagEl = document.getElementById('addPreviewTag');
+    const dimsEl = document.getElementById('addPreviewDims');
+    const subEl = document.getElementById('addPreviewSub');
+    if (tagEl) tagEl.textContent = `${shapeLabel} · ${orientLabels[orient] || orient}`;
+    if (dimsEl) {
+      dimsEl.textContent = isBatten
+        ? `長 ${cutL} × ${m.stockW} × ${m.thick} cm`
+        : `${cutL} × ${cutW} × ${m.thick} cm`;
+    }
+    if (subEl) {
+      subEl.textContent = isBatten
+        ? `原支 ${m.stockL} cm（${m.taiwanSpec}）`
+        : `原片 ${m.stockL}×${m.stockW} cm（${m.taiwanSpec}）`;
+    }
+  }
+
+  function renderAddOrientButtons(isBatten, currentVal) {
+    const sel = document.getElementById('addOrient');
+    const grid = document.getElementById('addOrientGrid');
+    const opts = isBatten
+      ? [
+          { v: 'X', label: '橫放 (X)' },
+          { v: 'Z', label: '直立 (Z)' },
+          { v: 'Y', label: '前後 (Y)' }
+        ]
+      : [
+          { v: 'XY', label: '水平平放' },
+          { v: 'XZ', label: '正面直立' },
+          { v: 'YZ', label: '側面直立' }
+        ];
+    sel.innerHTML = opts.map(o => `<option value="${o.v}">${o.label}</option>`).join('');
+    const activeVal = opts.some(o => o.v === currentVal) ? currentVal : opts[0].v;
+    sel.value = activeVal;
+    if (grid) {
+      grid.innerHTML = opts.map(o => `<button class="wc-orient-btn" type="button" data-orient="${o.v}" aria-pressed="${o.v === activeVal ? 'true' : 'false'}">${buildOrientSvg(o.v, isBatten)}<span>${o.label}</span></button>`).join('');
+    }
+  }
+
   function initAddForm() {
-    document.getElementById('addMaterial').innerHTML = MATERIALS.map(m => `<option value="${m.id}">[${m.categoryLabel}] ${escapeHtml(m.name)}</option>`).join('');
+    addFormCategory = 'batten';
+    renderAddMaterialOptions(addFormCategory);
     document.getElementById('addJoinery').innerHTML = JOINERY_OPTIONS.map(j => `<option value="${j.id}">${escapeHtml(j.label)}</option>`).join('');
     syncAddFormByMaterial();
   }
@@ -2931,13 +3559,19 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   function syncAddFormByMaterial() {
     const m = MAT_MAP[document.getElementById('addMaterial').value]; if (!m) return;
     const isBatten = m.category === 'batten';
-    document.getElementById('addCutWWrap').style.opacity = isBatten ? '0.5' : '1';
+    const cutWInputBox = document.getElementById('addCutWInputBox');
+    const secReadout = document.getElementById('addSectionReadout');
+    const cutWLabel = document.getElementById('addCutWLabel');
+    const secVal = document.getElementById('addSectionVal');
+    if (cutWLabel) cutWLabel.textContent = isBatten ? '斷面（寬×厚）' : '裁切寬度';
+    if (cutWInputBox) cutWInputBox.style.display = isBatten ? 'none' : 'flex';
+    if (secReadout) secReadout.style.display = isBatten ? 'flex' : 'none';
+    if (secVal) secVal.value = `${m.stockW} × ${m.thick}`;
     document.getElementById('addCutW').disabled = isBatten;
     document.getElementById('addCutW').value = isBatten ? m.stockW : Math.min(60, m.stockW);
-    document.getElementById('addOrient').innerHTML = isBatten
-      ? '<option value="X">沿 X 軸（橫料）</option><option value="Z">沿 Z 軸（立柱）</option><option value="Y">沿 Y 軸（深向）</option>'
-      : '<option value="XY">水平板（桌面/層板）</option><option value="XZ">直立正面（封板/背板）</option><option value="YZ">直立側面（側板）</option>';
+    renderAddOrientButtons(isBatten, document.getElementById('addOrient').value);
     document.getElementById('addJoinery').value = isBatten ? 'glue_nail' : (m.category === 'csb' ? 'csb_staple' : 'wood_screw');
+    renderAddPreview();
   }
 
   function addPiece(materialId, opts) {
@@ -2960,7 +3594,14 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     state.pieces.push(newPiece);
     state.selectedId = newPiece.id;
     state.activeTab = 'inspector';
-    state.rightDrawerOpen = true;
+    if (window.innerWidth < 1080) {
+      state.leftDrawerOpen = false;
+      state.rightDrawerOpen = false;
+      const leftEl = document.getElementById('drawer3DLeft');
+      if (leftEl) leftEl.classList.remove('wc-add-only');
+    } else {
+      state.rightDrawerOpen = true;
+    }
     renderAll();
     showToast(`已新增「${newPiece.name}」並自動避開重疊`);
   }
@@ -3055,7 +3696,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   document.getElementById('projectNameInput').addEventListener('input', e => { state.projectName = e.target.value; saveToLocal(); });
 
   // Floating drawer collapse/expand controls
-  document.getElementById('btnCloseLeft3D').addEventListener('click', () => { state.leftDrawerOpen = false; syncDrawerVisibility(); });
+  document.getElementById('btnCloseLeft3D').addEventListener('click', () => { state.leftDrawerOpen = false; setLeftDrawerAddOnly(false); syncDrawerVisibility(); });
   document.getElementById('btnOpenLeft3D').addEventListener('click', () => { state.leftDrawerOpen = true; if (window.innerWidth < 1080) state.rightDrawerOpen = false; syncDrawerVisibility(); });
   document.getElementById('btnCloseRight3D').addEventListener('click', () => { state.rightDrawerOpen = false; syncDrawerVisibility(); });
   document.getElementById('btnOpenIns3D').addEventListener('click', () => { state.activeTab = 'inspector'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
@@ -3170,7 +3811,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       if (typeof name !== 'string' || typeof notes !== 'string' || typeof flipSection !== 'boolean') {
         return '構件名稱、備註或轉向格式無效';
       }
-      validPieces.push({ id, name, materialId: p.materialId, cutL, cutW, x, y, z, orientation, flipSection, joinery, notes });
+      const vp = { id, name, materialId: p.materialId, cutL, cutW, x, y, z, orientation, flipSection, joinery, notes };
+      if (p.locked === true) vp.locked = true;
+      validPieces.push(vp);
     }
     let validBlueprints = null;
     if (obj.blueprints !== undefined) {
@@ -3281,6 +3924,25 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     if (item) { state.selectedId = item.dataset.selectId; state.activeTab = 'inspector'; state.rightDrawerOpen = true; renderAll(); }
   });
   document.getElementById('addMaterial').addEventListener('change', syncAddFormByMaterial);
+  const addCatSeg = document.getElementById('addCatSeg');
+  if (addCatSeg) addCatSeg.addEventListener('click', e => {
+    const btn = e.target.closest('.add-cat-btn');
+    if (!btn) return;
+    addFormCategory = btn.dataset.cat;
+    renderAddMaterialOptions(addFormCategory);
+    syncAddFormByMaterial();
+  });
+  const addOrientGrid = document.getElementById('addOrientGrid');
+  if (addOrientGrid) addOrientGrid.addEventListener('click', e => {
+    const btn = e.target.closest('[data-orient]');
+    if (!btn) return;
+    const val = btn.dataset.orient;
+    document.getElementById('addOrient').value = val;
+    addOrientGrid.querySelectorAll('[data-orient]').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+    renderAddPreview();
+  });
+  document.getElementById('addCutL').addEventListener('input', renderAddPreview);
+  document.getElementById('addCutW').addEventListener('input', renderAddPreview);
   document.getElementById('btnAddPiece').addEventListener('click', () => {
     addPiece(document.getElementById('addMaterial').value, {
       cutL: Number(document.getElementById('addCutL').value) || 60,
@@ -3360,13 +4022,53 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   const active3DPtrs = new Map();
   let prev3DPinch = null, prev3DMid = null;
   let dragMode = null, lastX = 0, lastY = 0, dragDist = 0;
+  let pieceDragCtx = null;
+  function cancelPieceDrag() {
+    if (pieceDragCtx?.moved) Object.assign(pieceDragCtx.piece, pieceDragCtx.startPiece);
+    pieceDragCtx = null;
+    showDragSnapPill('');
+  }
+
+  function activeDragPlaneForCamera() {
+    if (selNudgeAxis === 'z') return 'xz';
+    if (Math.abs(state.camera.pitch) < 0.25 && Math.abs(state.camera.yaw) < 0.35) return 'xz';
+    if (Math.abs(state.camera.pitch) < 0.25 && Math.abs(Math.abs(state.camera.yaw) - Math.PI / 2) < 0.35) return 'yz';
+    return 'xy';
+  }
+
   canvas.addEventListener('pointerdown', e => {
     canvas.setPointerCapture(e.pointerId);
     active3DPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (active3DPtrs.size >= 2) {
-      dragMode = 'pinch'; prev3DPinch = null; prev3DMid = null; return;
+      cancelPieceDrag();
+      dragMode = 'pinch'; prev3DPinch = null; prev3DMid = null;
+      renderScene(); renderMobileSelBar(); return;
     }
-    dragMode = (e.shiftKey || e.button === 2 || state.panMode3D) ? 'pan' : 'orbit';
+    const rect = canvas.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    let hitId = null;
+    for (let i = hitPolygons.length - 1; i >= 0; i--) {
+      if (pointInPoly(mx, my, hitPolygons[i].pts)) { hitId = hitPolygons[i].pieceId; break; }
+    }
+    const selP = hitId && hitId === state.selectedId ? state.pieces.find(x => x.id === hitId) : null;
+    if (selP && !selP.locked && !state.panMode3D && e.button !== 2 && !e.shiftKey) {
+      const plane = activeDragPlaneForCamera();
+      const d = getPieceDims(selP);
+      const fixedVal = plane === 'xy' ? selP.z : (plane === 'xz' ? selP.y : selP.x);
+      const startW = screenToWorldPlane(mx, my, plane, fixedVal, selP.x + d.dx / 2, plane === 'xy' ? selP.y + d.dy / 2 : selP.z + d.dz / 2);
+      pieceDragCtx = {
+        piece: selP,
+        plane,
+        fixedVal,
+        startPiece: { x: selP.x, y: selP.y, z: selP.z },
+        startWorld: startW,
+        beforeSnap: snapshot3D(false),
+        moved: false
+      };
+      dragMode = 'movePiece';
+    } else {
+      pieceDragCtx = null;
+      dragMode = (e.shiftKey || e.button === 2 || state.panMode3D) ? 'pan' : 'orbit';
+    }
     lastX = e.clientX; lastY = e.clientY; dragDist = 0;
   });
   canvas.addEventListener('pointermove', e => {
@@ -3381,6 +4083,29 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     }
     if (!dragMode || dragMode === 'pinch') return;
     const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY; dragDist += Math.hypot(dx, dy);
+    if (dragMode === 'movePiece' && pieceDragCtx) {
+      if (dragDist < 5) return;
+      const rect = canvas.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const p = pieceDragCtx.piece;
+      const curW = screenToWorldPlane(mx, my, pieceDragCtx.plane, pieceDragCtx.fixedVal, pieceDragCtx.startWorld.x, pieceDragCtx.plane === 'xy' ? pieceDragCtx.startWorld.y : pieceDragCtx.startWorld.z);
+      const cand = Object.assign({}, p, {
+        x: pieceDragCtx.startPiece.x + (curW.x - pieceDragCtx.startWorld.x),
+        y: pieceDragCtx.startPiece.y + (curW.y - pieceDragCtx.startWorld.y),
+        z: Math.max(0, pieceDragCtx.startPiece.z + (curW.z - pieceDragCtx.startWorld.z))
+      });
+      const snapped = snapDraggedPiece(cand, p.id);
+      cand.x = snapped.x; cand.y = snapped.y; cand.z = snapped.z;
+      if (state.collisionMode === 'prevent' && pieceCollidesWithAny(cand, p.id)) {
+        showDragSnapPill('此位置會穿透其他構件');
+      } else {
+        p.x = cand.x; p.y = cand.y; p.z = cand.z;
+        pieceDragCtx.moved = true;
+        showDragSnapPill(snapped.snapLabel || `位置 X:${p.x} Y:${p.y} Z:${p.z} cm`);
+      }
+      renderScene();
+      renderMobileSelBar();
+      return;
+    }
     if (dragMode === 'orbit') { state.camera.yaw += dx * 0.008; state.camera.pitch = Math.max(-1.52, Math.min(1.54, state.camera.pitch + dy * 0.008)); }
     else { state.camera.panX += dx; state.camera.panY += dy; }
     renderScene();
@@ -3389,7 +4114,20 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     active3DPtrs.delete(e.pointerId);
     if (active3DPtrs.size < 2) { prev3DPinch = null; prev3DMid = null; }
     if (active3DPtrs.size === 0) {
-      if (dragMode && dragMode !== 'pinch' && dragDist < 5) {
+      if (dragMode === 'movePiece' && pieceDragCtx && pieceDragCtx.moved) {
+        const p = pieceDragCtx.piece;
+        state.history3D.undo.push({ label: `拖曳移動「${p.name}」`, scope: '3d', snap: pieceDragCtx.beforeSnap });
+        if (state.history3D.undo.length > state.history3D.max) state.history3D.undo.shift();
+        state.history3D.redo = [];
+        pieceDragCtx = null;
+        showDragSnapPill('');
+        dragMode = null;
+        renderAll();
+        return;
+      }
+      pieceDragCtx = null;
+      showDragSnapPill('');
+      if (dragMode && dragMode !== 'pinch' && dragDist < 6) {
         const rect = canvas.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
         let found = null;
         for (let i = hitPolygons.length - 1; i >= 0; i--) {
@@ -3398,17 +4136,11 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         if (found) {
           if (e.cancelable) e.preventDefault();
           const isMobile = window.innerWidth < 1080;
+          state.selectedId = found;
+          state.activeTab = 'inspector';
           if (isMobile) {
-            const alreadySelected = state.selectedId === found;
-            state.selectedId = found;
-            state.activeTab = 'inspector';
             state.leftDrawerOpen = false;
-            if (alreadySelected) {
-              state.rightDrawerOpen = true;
-            }
           } else {
-            state.selectedId = found;
-            state.activeTab = 'inspector';
             state.rightDrawerOpen = true;
           }
           renderAll();
@@ -3420,7 +4152,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     }
   }
   canvas.addEventListener('pointerup', end3DPtr);
-  canvas.addEventListener('pointercancel', end3DPtr);
+  canvas.addEventListener('pointercancel', e => {
+    if (!active3DPtrs.delete(e.pointerId)) return;
+    prev3DPinch = null; prev3DMid = null;
+    cancelPieceDrag();
+    dragMode = active3DPtrs.size ? 'pinch' : null;
+    renderScene(); renderMobileSelBar();
+  });
   canvas.addEventListener('contextmenu', e => e.preventDefault());
   canvas.addEventListener('wheel', e => { e.preventDefault(); state.camera.zoom = Math.max(0.35, Math.min(3.5, state.camera.zoom * (e.deltaY > 0 ? 0.92 : 1.09))); renderScene(); }, { passive: false });
 
@@ -3492,16 +4230,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   rightBody.addEventListener('change', e => {
     const t = e.target, p = state.pieces.find(x => x.id === state.selectedId); if (!p) return;
     if (t.id === 'insMat') {
-      const prevCat = MAT_MAP[p.materialId].category, nextMat = MAT_MAP[t.value];
-      const test = Object.assign({}, p, { materialId: t.value });
-      if (nextMat.category === 'batten') { test.cutW = nextMat.stockW; if (prevCat !== 'batten') test.orientation = 'X'; }
-      else if (prevCat === 'batten') { test.cutW = Math.min(60, nextMat.stockW); test.orientation = 'XY'; }
-      if (state.collisionMode === 'prevent') {
-        const hit = pieceCollidesWithAny(test, p.id);
-        if (hit) { t.value = p.materialId; showToast(`更換規格會與「${hit.other.name}」重疊 ${hit.ov.depth.toFixed(1)} cm，已阻擋`); return; }
-      }
-      pushHistory3D(`更換「${p.name}」規格`);
-      Object.assign(p, test); renderAll();
+      const res = swapPieceMaterialKeepCenterline(p, t.value);
+      if (!res.ok) { t.value = p.materialId; showToast(res.reason); return; }
+      renderAll();
+      if (!res.unchanged) showToast(`已依原中心線更換為「${MAT_MAP[p.materialId].name}」`);
     } else if (t.id === 'insOrient') {
       const test = Object.assign({}, p, { orientation: t.value });
       if (state.collisionMode === 'prevent') {
@@ -4547,16 +5279,33 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   const btnMobileAdd = document.getElementById('btnMobileAdd');
   const btnMobileSettings = document.getElementById('btnMobileSettings');
   const mobileBackdrop = document.getElementById('mobileSheetBackdrop');
+  function setLeftDrawerAddOnly(addOnly) {
+    const leftEl = document.getElementById('drawer3DLeft');
+    const titleEl = document.getElementById('leftDrawerTitle');
+    const box = document.getElementById('addPieceBox');
+    if (leftEl) leftEl.classList.toggle('wc-add-only', !!addOnly);
+    if (titleEl) titleEl.textContent = addOnly ? '新增構件' : '構件清單';
+    if (box) box.style.display = addOnly ? 'block' : 'none';
+    if (addOnly) renderAddPreview();
+  }
   if (btnMobileParts) btnMobileParts.addEventListener('click', () => {
-    state.leftDrawerOpen = !state.leftDrawerOpen;
-    if (state.leftDrawerOpen) state.rightDrawerOpen = false;
+    const leftEl = document.getElementById('drawer3DLeft');
+    const wasAddOnly = leftEl && leftEl.classList.contains('wc-add-only');
+    if (state.leftDrawerOpen && wasAddOnly) {
+      setLeftDrawerAddOnly(false);
+    } else {
+      state.leftDrawerOpen = !state.leftDrawerOpen;
+      if (state.leftDrawerOpen) {
+        state.rightDrawerOpen = false;
+        setLeftDrawerAddOnly(false);
+      }
+    }
     syncDrawerVisibility();
   });
   if (btnMobileAdd) btnMobileAdd.addEventListener('click', () => {
     state.leftDrawerOpen = true;
     state.rightDrawerOpen = false;
-    const box = document.getElementById('addPieceBox');
-    if (box) box.style.display = 'block';
+    setLeftDrawerAddOnly(true);
     syncDrawerVisibility();
   });
   if (btnMobileSettings) btnMobileSettings.addEventListener('click', () => {
@@ -4567,6 +5316,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   if (mobileBackdrop) mobileBackdrop.addEventListener('click', () => {
     state.leftDrawerOpen = false;
     state.rightDrawerOpen = false;
+    setLeftDrawerAddOnly(false);
     syncDrawerVisibility();
   });
   const btnToggleExplode = document.getElementById('btnToggleExplode');
@@ -4622,15 +5372,25 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     });
   });
   const btnMobileSelEdit = document.getElementById('btnMobileSelEdit');
+  const btnMobileSelLock = document.getElementById('btnMobileSelLock');
   const btnMobileSelDup = document.getElementById('btnMobileSelDup');
   const btnMobileSelDel = document.getElementById('btnMobileSelDel');
   const btnMobileSelClear = document.getElementById('btnMobileSelClear');
+  const mobileSelBarEl = document.getElementById('mobileSelBar');
   if (btnMobileSelEdit) btnMobileSelEdit.addEventListener('click', () => {
     if (!state.selectedId) return;
     state.activeTab = 'inspector';
     state.rightDrawerOpen = true;
     state.leftDrawerOpen = false;
     renderAll();
+  });
+  if (btnMobileSelLock) btnMobileSelLock.addEventListener('click', () => {
+    const p = state.pieces.find(x => x.id === state.selectedId);
+    if (!p) return;
+    pushHistory3D(p.locked ? `解鎖「${p.name}」` : `固定「${p.name}」`);
+    p.locked = !p.locked;
+    renderAll();
+    showToast(p.locked ? `已固定「${p.name}」，不會誤拖移動` : `已解鎖「${p.name}」，可在畫布拖曳或微調`);
   });
   if (btnMobileSelDup) btnMobileSelDup.addEventListener('click', () => {
     if (state.selectedId) duplicatePiece(state.selectedId);
@@ -4642,6 +5402,172 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     state.selectedId = null;
     renderAll();
   });
+  if (mobileSelBarEl) mobileSelBarEl.addEventListener('click', e => {
+    const modeBtn = e.target.closest('[data-sel-mode]');
+    if (modeBtn) {
+      selCtrlMode = modeBtn.dataset.selMode;
+      renderMobileSelBar();
+      return;
+    }
+    const axisBtn = e.target.closest('[data-quick-axis]');
+    if (axisBtn) {
+      selNudgeAxis = axisBtn.dataset.quickAxis;
+      renderMobileSelBar();
+      return;
+    }
+    const p = state.pieces.find(x => x.id === state.selectedId);
+    if (!p) return;
+    const nudgeBtn = e.target.closest('[data-quick-nudge]');
+    if (nudgeBtn) {
+      if (p.locked) { showToast('此構件已固定，請先點「已固定」解鎖'); return; }
+      const delta = parseFloat(nudgeBtn.dataset.quickNudge);
+      const beforeSnap = snapshot3D(false);
+      const prevVal = p[selNudgeAxis];
+      const res = movePieceWithCollisionGuard(p, selNudgeAxis, delta);
+      if (p[selNudgeAxis] !== prevVal) {
+        state.history3D.undo.push({ label: `微調「${p.name}」${selNudgeAxis.toUpperCase()}${delta > 0 ? '+' : ''}${delta}`, scope: '3d', snap: beforeSnap });
+        if (state.history3D.undo.length > state.history3D.max) state.history3D.undo.shift();
+        state.history3D.redo = [];
+      }
+      renderAll();
+      if (res.snapped) showToast(`已貼齊「${res.targetName}」`);
+      return;
+    }
+    const lenBtn = e.target.closest('[data-quick-len]');
+    if (lenBtn) {
+      const delta = parseFloat(lenBtn.dataset.quickLen);
+      const nextL = Math.max(5, Math.min(364, Number((p.cutL + delta).toFixed(1))));
+      if (nextL === p.cutL) return;
+      const test = Object.assign({}, p, { cutL: nextL });
+      if (state.collisionMode === 'prevent') {
+        const hit = pieceCollidesWithAny(test, p.id);
+        if (hit) { showToast(`調整長度會與「${hit.other.name}」重疊`); return; }
+      }
+      pushHistory3D(`調整「${p.name}」長度`);
+      p.cutL = nextL;
+      renderAll();
+      return;
+    }
+    if (e.target.closest('[data-quick-rotate]')) {
+      rotatePieceKeepCenterline(p);
+      return;
+    }
+    const matBtn = e.target.closest('[data-quick-mat]');
+    if (matBtn) {
+      const res = swapPieceMaterialKeepCenterline(p, matBtn.dataset.quickMat);
+      if (!res.ok) { showToast(res.reason); return; }
+      renderAll();
+      if (!res.unchanged) showToast(`已依相同中心線換成「${MAT_MAP[p.materialId].name}」`);
+    }
+  });
+
+  // Drag-and-drop from Quick Material Tray directly onto the 3D Canvas
+  const quickDragTray = document.getElementById('quickDragTray');
+  let trayDragState = null;
+  if (quickDragTray) {
+    quickDragTray.addEventListener('pointerdown', e => {
+      const chip = e.target.closest('.wc-drag-chip');
+      if (!chip) return;
+      chip.setPointerCapture(e.pointerId);
+      trayDragState = {
+        pointerId: e.pointerId,
+        chip,
+        matId: chip.dataset.dragMat,
+        orient: chip.dataset.dragOrient,
+        cutL: Number(chip.dataset.dragL) || 60,
+        cutW: Number(chip.dataset.dragW) || 3.2,
+        label: chip.dataset.dragLabel || '構件',
+        startX: e.clientX,
+        startY: e.clientY,
+        draggingOnCanvas: false
+      };
+    });
+    quickDragTray.addEventListener('pointermove', e => {
+      if (!trayDragState || trayDragState.pointerId !== e.pointerId) return;
+      const dist = Math.hypot(e.clientX - trayDragState.startX, e.clientY - trayDragState.startY);
+      if (dist < 10) return;
+      const rect = canvas.getBoundingClientRect();
+      const insideCanvas = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom - 52;
+      if (!insideCanvas) {
+        dragGhost = null;
+        trayDragState.draggingOnCanvas = false;
+        showDragSnapPill('往上拖曳到 3D 畫布放開即可放置');
+        renderScene();
+        return;
+      }
+      trayDragState.draggingOnCanvas = true;
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const plane = (trayDragState.orient === 'Z' || trayDragState.orient === 'XZ') ? 'xz' : 'xy';
+      const worldPt = screenToWorldPlane(mx, my, plane, 0);
+      const draft = {
+        materialId: trayDragState.matId,
+        cutL: trayDragState.cutL,
+        cutW: trayDragState.cutW,
+        orientation: trayDragState.orient,
+        flipSection: false,
+        x: 0, y: 0, z: 0
+      };
+      const gd = getPieceDims(draft);
+      draft.x = worldPt.x - gd.dx / 2;
+      draft.y = plane === 'xy' ? worldPt.y - gd.dy / 2 : 0;
+      draft.z = plane === 'xz' ? Math.max(0, worldPt.z - gd.dz / 2) : 0;
+      const snapped = snapDraggedPiece(draft, '__ghost__');
+      draft.x = snapped.x; draft.y = snapped.y; draft.z = snapped.z;
+      dragGhost = draft;
+      showDragSnapPill(snapped.snapLabel ? `放開即可放置 · ${snapped.snapLabel}` : `放開放置「${trayDragState.label}」(${draft.x}, ${draft.y}, ${draft.z} cm)`);
+      renderScene();
+    });
+    const finishTrayDrag = e => {
+      if (!trayDragState || trayDragState.pointerId !== e.pointerId) return;
+      const st = trayDragState;
+      trayDragState = null;
+      showDragSnapPill('');
+      if (st.draggingOnCanvas && dragGhost) {
+        const m = MAT_MAP[st.matId];
+        const newPiece = {
+          id: uid(),
+          name: `${st.label} #${state.pieces.length + 1}`,
+          materialId: st.matId,
+          cutL: st.cutL,
+          cutW: m && m.category === 'batten' ? m.stockW : st.cutW,
+          x: dragGhost.x,
+          y: dragGhost.y,
+          z: dragGhost.z,
+          orientation: st.orient,
+          flipSection: false,
+          joinery: m && m.category === 'batten' ? 'glue_nail' : 'wood_screw',
+          notes: ''
+        };
+        dragGhost = null;
+        if (state.collisionMode === 'prevent' && pieceCollidesWithAny(newPiece, newPiece.id)) {
+          const safe = findNonCollidingPlacement(newPiece, state.pieces.find(x => x.id === state.selectedId) || null);
+          newPiece.x = safe.x; newPiece.y = safe.y; newPiece.z = safe.z;
+        }
+        pushHistory3D(`拖放新增「${newPiece.name}」`);
+        state.pieces.push(newPiece);
+        state.selectedId = newPiece.id;
+        selCtrlMode = 'move';
+        renderAll();
+        showToast(`已放置「${newPiece.name}」，可拖曳微調或點「固定」`);
+      } else {
+        dragGhost = null;
+        const dist = Math.hypot(e.clientX - st.startX, e.clientY - st.startY);
+        if (dist < 10) {
+          addPiece(st.matId, { name: `${st.label} #${state.pieces.length + 1}`, cutL: st.cutL, cutW: st.cutW, orientation: st.orient });
+        } else {
+          renderScene();
+        }
+      }
+    };
+    quickDragTray.addEventListener('pointerup', finishTrayDrag);
+    quickDragTray.addEventListener('pointercancel', e => {
+      if (!trayDragState || trayDragState.pointerId !== e.pointerId) return;
+      trayDragState = null;
+      dragGhost = null;
+      showDragSnapPill('');
+      renderScene();
+    });
+  }
   ['btnCollisionMode', 'btnToggleLabels', 'btnToggleFasteners', 'btnToggleWire', 'btnToggleRefSheet', 'btn3DPanMode', 'btnBpOrtho', 'btnBpDashed', 'btnBpPanToggle'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('click', () => {
