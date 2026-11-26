@@ -344,7 +344,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 .wc-page.active { display: contents; }
 #pageBlueprint.active, #pageSplit.active { display: flex; flex-direction: column; grid-column: 1 / -1; position: relative; }
 .wc-canvas-wrap { position: absolute; inset: 0; }
-.wc-canvas-wrap canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.wc-canvas-wrap canvas { display: block; width: 100%; height: 100%; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.gb-canvas, .gb-dock, .gb-viewbar, .gb-actionbar, .gb-appbar__tool, .wc-drag-tray, .wc-sel-panel { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea { -webkit-user-select: text; user-select: text; }
 .wc-menu-wrap { position: relative; }
 .wc-menu-pop { position: absolute; top: calc(100% + var(--gb-space-1)); right: 0; z-index: 40; display: none; }
 .wc-menu-pop.open { display: flex; }
@@ -702,6 +704,39 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   padding: 0 4px;
   white-space: nowrap;
 }
+.wc-suggest-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: min(calc(100vw - var(--gb-space-4)), 420px);
+  padding: 5px 8px;
+  border: var(--gb-border-hair) solid var(--gb-select);
+  border-radius: var(--gb-radius-md);
+  background: var(--gb-select-soft);
+  box-shadow: var(--gb-shadow-float);
+  overflow-x: auto;
+}
+.wc-suggest-bar__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gb-select);
+  white-space: nowrap;
+  flex: none;
+}
+.wc-suggest-chip {
+  height: 28px;
+  padding: 0 9px;
+  border: var(--gb-border-hair) solid var(--gb-select);
+  border-radius: var(--gb-radius-full);
+  background: var(--gb-surface);
+  color: var(--gb-select);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  flex: none;
+}
+.wc-suggest-chip:active { background: var(--gb-select); color: var(--gb-on-select); }
 .wc-snap-pill {
   position: absolute;
   top: 48px;
@@ -732,9 +767,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   #pageBlueprint .gb-canvas__bl { left: var(--gb-space-3); right: var(--gb-space-3); bottom: var(--gb-space-3); }
   #pageBlueprint .gb-canvas__bl .wc-dock-scroll { max-width: 100%; width: 100%; }
   #pageBlueprint .gb-canvas__br { bottom: calc(var(--gb-space-3) + 56px); right: var(--gb-space-3); }
-  #bboxReadout { max-width: calc(100vw - 118px); overflow: hidden; text-overflow: ellipsis; }
+  #bboxReadout { max-width: calc(100vw - 208px); overflow: hidden; text-overflow: ellipsis; }
+  .gb-dense .gb-input__control, .gb-dense .gb-select select, .gb-appbar__project, .gb-input__control, .gb-select select { font-size: 16px !important; }
   .wc-sel-active .wc-3d-tools-dock { display: none; }
-  .wc-drag-tray { width: calc(100vw - var(--gb-space-4)); padding: 5px 6px; gap: 4px; justify-content: space-between; }
+  .wc-drag-tray { width: calc(100vw - var(--gb-space-4)); padding: 5px 6px; gap: 4px; justify-content: space-between; overflow: visible; }
   .wc-drag-tray__hint { display: none; }
   .wc-drag-chip { flex: 1 1 0; justify-content: center; padding: 0 4px; gap: 3px; font-size: 11px; min-width: 0; }
   .gb-app__side.wc-mobile-sheet-open { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; max-height: 82vh; max-height: 82dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; border: 0; box-shadow: var(--gb-shadow-sheet); }
@@ -747,7 +783,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 @media (min-width: 1080px) {
   .wc-mobile-only { display: none; }
   .wc-desktop-only { display: inline-flex; }
-  .wc-docks-stack { flex-direction: row; }
+  .wc-docks-stack { flex-direction: column; align-items: center; }
   .gb-app__side .gb-sheet__grip { display: none; }
 }
 @media print {
@@ -907,6 +943,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
               <button class="gb-menu__item view-btn" data-view="side" type="button" role="menuitemradio" aria-checked="false">側視 (YZ)</button>
             </div>
           </div>
+          <button id="btnLabelModeTop" class="gb-canvas__label wc-view-trigger" type="button" title="切換尺寸標註顯示模式（僅選中 / 全部 / 關閉）" aria-label="切換尺寸標註">標註：選中</button>
           <span id="collisionBadge" class="gb-notice gb-notice--danger wc-collision-badge" role="status"></span>
         </div>
         <div class="gb-canvas__tr">
@@ -956,6 +993,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
               <span>直立板</span>
             </button>
           </div>
+          <div id="postSnapBar" class="wc-suggest-bar" role="region" aria-label="建議貼齊位置" hidden></div>
           <div id="mobileSelBar" class="wc-sel-panel" role="region" aria-label="已選取構件快捷操控" hidden>
             <div class="wc-sel-panel__top">
               <span id="mobileSelSwatch" class="gb-row__swatch" aria-hidden="true"></span>
@@ -963,14 +1001,16 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
                 <span id="mobileSelName" class="wc-sel-bar__name"></span>
                 <span id="mobileSelMeta" class="wc-sel-bar__meta"></span>
               </div>
-              <button id="btnMobileSelLock" class="wc-mini-btn wc-mini-btn--lock" type="button" aria-pressed="false" title="固定位置，避免誤拖">未固定</button>
+              <button id="btnMobileSnapStyle" class="wc-mini-btn" type="button" data-toggle-snap-style="1" aria-pressed="false" title="切換：黏滯磁吸（拖曳即時吸附）或 放手貼齊（放開後建議貼齊）">磁吸</button>
+              <button id="btnMobileSelLock" class="wc-mini-btn wc-mini-btn--lock" type="button" aria-pressed="false" title="固定位置，避免誤拖">固定</button>
               <button id="btnMobileSelEdit" class="wc-mini-btn" type="button" title="展開詳細設定">詳細</button>
               <button id="btnMobileSelClear" class="gb-iconbtn" type="button" aria-label="取消選取" style="width:30px;height:30px;"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
             </div>
             <div class="wc-sel-panel__modes">
               <button class="wc-sel-mode-btn" data-sel-mode="move" type="button" aria-pressed="true">微調</button>
-              <button class="wc-sel-mode-btn" data-sel-mode="size" type="button" aria-pressed="false">尺寸/轉向</button>
-              <button class="wc-sel-mode-btn" data-sel-mode="mat" type="button" aria-pressed="false">同中心線換料</button>
+              <button class="wc-sel-mode-btn" data-sel-mode="mate" type="button" aria-pressed="false">貼面</button>
+              <button class="wc-sel-mode-btn" data-sel-mode="size" type="button" aria-pressed="false">尺寸</button>
+              <button class="wc-sel-mode-btn" data-sel-mode="mat" type="button" aria-pressed="false">換料</button>
               <span style="flex:1;"></span>
               <button id="btnMobileSelDup" class="wc-mini-btn" type="button" title="複製構件">複製</button>
               <button id="btnMobileSelDel" class="wc-mini-btn wc-mini-btn--danger" type="button" title="刪除構件">刪除</button>
@@ -1250,7 +1290,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   <nav class="gb-actionbar" id="mobileActionBar" aria-label="主要操作">
     <button id="btnMobileParts" type="button" class="gb-btn"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3-9 5 9 5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>構件 <span id="partCountMobile" class="gb-num">0</span></button>
     <button id="btnMobileAdd" type="button" class="gb-btn gb-btn--primary"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>新增</button>
-    <button id="btnMobileSettings" type="button" class="gb-btn"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/></svg>設定</button>
+    <button id="btnMobileSettings" type="button" class="gb-btn"><svg class="gb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/></svg>採購／設定</button>
   </nav>
 
   <!-- Modal: Add View / Cross-Section -->
@@ -1529,7 +1569,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     history3D: { undo: [], redo: [], max: 50 },
     camera: {
       yaw: -0.62, pitch: 0.42, zoom: 1.0, panX: 0, panY: 0,
-      explode: 0, showLabels: true, showFasteners: true, wireframe: false
+      explode: 0, showLabels: true, labelMode: 'selected', showFasteners: true, wireframe: false
     },
     blueprints: [],
     activeSheetId: null,
@@ -1687,6 +1727,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     const isFull = entry.scope === 'full';
     state.history3D.redo.push({ label: entry.label, scope: entry.scope || '3d', snap: snapshot3D(isFull) });
     applyProjectSnapshot(JSON.parse(entry.snap));
+    postDragSuggestions = [];
+    if (selCtrlMode === 'mate') { selCtrlMode = 'move'; showDragSnapPill(''); }
     renderAll();
     showToast(`已復原：${entry.label}`);
   }
@@ -1697,6 +1739,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     const isFull = entry.scope === 'full';
     state.history3D.undo.push({ label: entry.label, scope: entry.scope || '3d', snap: snapshot3D(isFull) });
     applyProjectSnapshot(JSON.parse(entry.snap));
+    postDragSuggestions = [];
+    if (selCtrlMode === 'mate') { selCtrlMode = 'move'; showDragSnapPill(''); }
     renderAll();
     showToast(`已重做：${entry.label}`);
   }
@@ -1873,7 +1917,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         { x: rb.x0, y: rb.y1, z: rb.z0 }, { x: rb.x0 - d.dx, y: rb.y0, z: rb.z0 }
       );
     }
-    const bounds = getOverallBounds();
+    const bounds = (pieceDragCtx && pieceDragCtx.bounds) ? pieceDragCtx.bounds : getOverallBounds();
     candidates.push(
       { x: state.pieces.length ? bounds.maxX + 2 : 0, y: 0, z: 0 },
       { x: 0, y: state.pieces.length ? bounds.maxY + 2 : 0, z: 0 },
@@ -2277,9 +2321,17 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         faces.push({ pts, depth: (pts[0].depth + pts[1].depth + pts[2].depth + pts[3].depth) / 4, color: bf.color, pieceId: p.id, isSel, isCol });
       }
 
-      if (state.camera.showLabels) {
-        const cp = projectPoint((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, bounds, w, h);
-        labelPts.push({ sx: cp.sx, sy: cp.sy, text: m.category === 'batten' ? `${p.cutL}cm` : `${p.cutL}×${p.cutW}cm`, name: (p.locked ? '🔒 ' : '') + p.name, isSel, isCol });
+      const lMode = state.camera.labelMode || (state.camera.showLabels ? 'selected' : 'off');
+      if (lMode !== 'off' && (lMode === 'all' || isSel || isCol)) {
+        const topPt = projectPoint((x0 + x1) / 2, (y0 + y1) / 2, z1, bounds, w, h);
+        labelPts.push({
+          sx: topPt.sx,
+          sy: topPt.sy - 14,
+          depth: topPt.depth,
+          text: (p.locked ? '🔒 ' : '') + (m.category === 'batten' ? `${p.cutL}cm` : `${p.cutL}×${p.cutW}cm`),
+          isSel,
+          isCol
+        });
       }
 
       if (state.camera.showFasteners && p.joinery && p.joinery !== 'none') {
@@ -2333,6 +2385,34 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       }
     }
 
+
+    if (!showSectionPlane && pieceDragCtx && pieceDragCtx.piece) {
+      const dp = pieceDragCtx.piece, dd = getPieceDims(dp);
+      const dcx = dp.x + dd.dx / 2, dcy = dp.y + dd.dy / 2, dcz = dp.z + dd.dz / 2;
+      const ax = pieceDragCtx.axis;
+      const railSpan = 140;
+      const rA = ax === 'x' ? projectPoint(dcx - railSpan, dcy, dcz, bounds, w, h)
+               : (ax === 'y' ? projectPoint(dcx, dcy - railSpan, dcz, bounds, w, h)
+               : projectPoint(dcx, dcy, Math.max(0, dcz - railSpan), bounds, w, h));
+      const rB = ax === 'x' ? projectPoint(dcx + railSpan, dcy, dcz, bounds, w, h)
+               : (ax === 'y' ? projectPoint(dcx, dcy + railSpan, dcz, bounds, w, h)
+               : projectPoint(dcx, dcy, dcz + railSpan, bounds, w, h));
+      c.save();
+      c.strokeStyle = ax === 'x' ? 'rgba(220,38,38,0.65)' : (ax === 'y' ? 'rgba(22,163,74,0.65)' : 'rgba(37,99,235,0.65)');
+      c.lineWidth = 1.6;
+      c.setLineDash([6, 4]);
+      c.beginPath(); c.moveTo(rA.sx, rA.sy); c.lineTo(rB.sx, rB.sy); c.stroke();
+      if (pieceDragCtx.activeSnap && pieceDragCtx.activeSnap.guideLine) {
+        const gl = pieceDragCtx.activeSnap.guideLine;
+        const gA = projectPoint(gl.a[0], gl.a[1], gl.a[2], bounds, w, h);
+        const gB = projectPoint(gl.b[0], gl.b[1], gl.b[2], bounds, w, h);
+        c.strokeStyle = '#1b4fd8';
+        c.lineWidth = 2.2;
+        c.setLineDash([4, 3]);
+        c.beginPath(); c.moveTo(gA.sx, gA.sy); c.lineTo(gB.sx, gB.sy); c.stroke();
+      }
+      c.restore();
+    }
 
     if (!showSectionPlane && dragGhost && MAT_MAP[dragGhost.materialId]) {
       const gd = getPieceDims(dragGhost);
@@ -2412,18 +2492,25 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       }
     }
 
-    if (state.camera.showLabels) {
-      c.font = '700 12px ui-monospace, Menlo, Consolas, monospace';
+    if (labelPts.length) {
+      c.font = '700 11px ui-monospace, Menlo, Consolas, monospace';
       c.textAlign = 'center'; c.textBaseline = 'middle';
+      // Priority: selected & colliding first, then nearest to camera; cull overlapping boxes
+      labelPts.sort((a, b) => ((b.isSel ? 2 : 0) + (b.isCol ? 3 : 0)) - ((a.isSel ? 2 : 0) + (a.isCol ? 3 : 0)) || a.depth - b.depth);
+      const placedBoxes = [];
       for (const lb of labelPts) {
-        const text = lb.isSel ? `${lb.name} · ${lb.text}` : lb.text;
-        const tw = c.measureText(text).width + 12, th = 21;
-        c.fillStyle = lb.isCol ? 'rgba(185, 28, 28, 0.94)' : (lb.isSel ? 'rgba(154, 91, 37, 0.94)' : 'rgba(255, 255, 255, 0.88)');
-        c.strokeStyle = lb.isCol ? '#7f1d1d' : (lb.isSel ? '#7f491b' : 'rgba(140, 128, 110, 0.45)');
+        const text = lb.text;
+        const tw = c.measureText(text).width + 10, th = 18;
+        const x0b = lb.sx - tw / 2, y0b = lb.sy - th / 2, x1b = x0b + tw, y1b = y0b + th;
+        const overlaps = !lb.isSel && !lb.isCol && placedBoxes.some(b => !(x1b + 3 < b.x0 || x0b - 3 > b.x1 || y1b + 3 < b.y0 || y0b - 3 > b.y1));
+        if (overlaps) continue;
+        placedBoxes.push({ x0: x0b, y0: y0b, x1: x1b, y1: y1b });
+        c.fillStyle = lb.isCol ? 'rgba(185, 28, 28, 0.9)' : (lb.isSel ? 'rgba(16, 39, 31, 0.86)' : 'rgba(255, 255, 255, 0.78)');
+        c.strokeStyle = lb.isCol ? '#7f1d1d' : (lb.isSel ? '#10271f' : 'rgba(124, 136, 128, 0.45)');
         c.lineWidth = 1;
-        roundRect(c, lb.sx - tw / 2, lb.sy - th / 2, tw, th, 4);
+        roundRect(c, x0b, y0b, tw, th, 4);
         c.fill(); c.stroke();
-        c.fillStyle = (lb.isSel || lb.isCol) ? '#ffffff' : '#1e242b';
+        c.fillStyle = (lb.isSel || lb.isCol) ? '#ffffff' : '#10271f';
         c.fillText(text, lb.sx, lb.sy + 0.5);
       }
       c.textAlign = 'left';
@@ -2860,6 +2947,107 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   let selCtrlMode = 'move';
   let selNudgeAxis = 'x';
   let dragGhost = null;
+  const DRAG_STYLE_KEY = 'woodcraft_drag_snap_style_v1';
+  const dragAssist = {
+    snapStyle: (() => { try { return localStorage.getItem(DRAG_STYLE_KEY) === 'suggest' ? 'suggest' : 'hysteresis'; } catch { return 'hysteresis'; } })()
+  };
+  let mateDir = 'right'; // 'left' | 'right' | 'front' | 'back' | 'top' | 'bottom'
+  let postDragSuggestions = [];
+
+  function renderPostSnapBar() {
+    const bar = document.getElementById('postSnapBar');
+    if (!bar) return;
+    if (!postDragSuggestions.length || !state.selectedId || state.activePage !== '3d') {
+      bar.hidden = true;
+      bar.innerHTML = '';
+      return;
+    }
+    bar.hidden = false;
+    bar.innerHTML = `<span class="wc-suggest-bar__label">快速貼齊</span>`
+      + postDragSuggestions.map((s, i) => `<button class="wc-suggest-chip" type="button" data-apply-suggest="${i}">${escapeHtml(s.label)}</button>`).join('')
+      + `<button class="wc-suggest-chip" type="button" data-dismiss-suggest="1" aria-label="關閉建議">×</button>`;
+  }
+
+  function collectAxisSnapCandidates(piece, axis, excludeId, maxDist) {
+    const d = getPieceDims(piece);
+    const dim = axis === 'x' ? d.dx : (axis === 'y' ? d.dy : d.dz);
+    const otherAxes = ['x', 'y', 'z'].filter(a => a !== axis);
+    const pBox = getPieceBox(piece);
+    const out = [];
+    const proximityPad = 18.0;
+    for (const other of state.pieces) {
+      if (other.id === excludeId) continue;
+      const rb = getPieceBox(other);
+      // Only snap to pieces that are actually nearby on the other two axes
+      let isNear = true;
+      for (const oa of otherAxes) {
+        const pMin = pBox[oa + '0'], pMax = pBox[oa + '1'];
+        const oMin = rb[oa + '0'], oMax = rb[oa + '1'];
+        if (pMax + proximityPad < oMin || pMin - proximityPad > oMax) { isNear = false; break; }
+      }
+      if (!isNear) continue;
+      const r0 = rb[axis + '0'], r1 = rb[axis + '1'];
+      const rawCands = axis === 'x'
+        ? [
+            { val: r1, label: `靠右貼齊 ${other.name}`, refCoord: r1 },
+            { val: r0 - dim, label: `靠左貼齊 ${other.name}`, refCoord: r0 },
+            { val: r0, label: `左緣齊平 ${other.name}`, refCoord: r0 },
+            { val: r1 - dim, label: `右緣齊平 ${other.name}`, refCoord: r1 },
+            { val: (r0 + r1) / 2 - dim / 2, label: `中心對齊 ${other.name}`, refCoord: (r0 + r1) / 2 }
+          ]
+        : (axis === 'y'
+          ? [
+              { val: r1, label: `靠後貼齊 ${other.name}`, refCoord: r1 },
+              { val: r0 - dim, label: `靠前貼齊 ${other.name}`, refCoord: r0 },
+              { val: r0, label: `前緣齊平 ${other.name}`, refCoord: r0 },
+              { val: (r0 + r1) / 2 - dim / 2, label: `中心對齊 ${other.name}`, refCoord: (r0 + r1) / 2 }
+            ]
+          : [
+              { val: r1, label: `疊放於 ${other.name} 上方`, refCoord: r1 },
+              { val: r0 - dim, label: `貼齊 ${other.name} 下方`, refCoord: r0 },
+              { val: r0, label: `底面齊平 ${other.name}`, refCoord: r0 },
+              { val: (r0 + r1) / 2 - dim / 2, label: `高度中心對齊 ${other.name}`, refCoord: (r0 + r1) / 2 }
+            ]);
+      for (const cItem of rawCands) {
+        const val = axis === 'z' ? Math.max(0, Number(cItem.val.toFixed(2))) : Number(cItem.val.toFixed(2));
+        const dist = Math.abs(piece[axis] - val);
+        if (dist > maxDist) continue;
+        // Pre-filter out colliding snap targets so we never trap user in collision
+        const test = Object.assign({}, piece, { [axis]: val });
+        if (state.collisionMode === 'prevent' && pieceCollidesWithAny(test, excludeId)) continue;
+        const midX = (pBox.x0 + pBox.x1 + rb.x0 + rb.x1) / 4;
+        const midY = (pBox.y0 + pBox.y1 + rb.y0 + rb.y1) / 4;
+        const midZ = (pBox.z0 + pBox.z1 + rb.z0 + rb.z1) / 4;
+        const guideLine = axis === 'x'
+          ? { a: [cItem.refCoord, Math.min(pBox.y0, rb.y0) - 8, midZ], b: [cItem.refCoord, Math.max(pBox.y1, rb.y1) + 8, midZ] }
+          : (axis === 'y'
+            ? { a: [Math.min(pBox.x0, rb.x0) - 8, cItem.refCoord, midZ], b: [Math.max(pBox.x1, rb.x1) + 8, cItem.refCoord, midZ] }
+            : { a: [Math.min(pBox.x0, rb.x0) - 8, midY, cItem.refCoord], b: [Math.max(pBox.x1, rb.x1) + 8, midY, cItem.refCoord] });
+        out.push({ axis, val, dist, label: cItem.label, guideLine });
+      }
+    }
+    out.sort((a, b) => a.dist - b.dist);
+    return out;
+  }
+
+  function snapAxisWithHysteresis(piece, axis, rawVal, prevSnap) {
+    const enterThresh = 1.8;
+    const exitThresh = 3.2;
+    const clampedRaw = axis === 'z' ? Math.max(0, rawVal) : rawVal;
+    // Stay locked to previous snap until user pulls past exitThresh (Hysteresis!)
+    if (prevSnap && prevSnap.axis === axis && Math.abs(clampedRaw - prevSnap.val) <= exitThresh) {
+      const testPrev = Object.assign({}, piece, { [axis]: prevSnap.val });
+      if (state.collisionMode !== 'prevent' || !pieceCollidesWithAny(testPrev, piece.id)) {
+        return { val: prevSnap.val, snap: prevSnap };
+      }
+    }
+    const probe = Object.assign({}, piece, { [axis]: clampedRaw });
+    const cands = collectAxisSnapCandidates(probe, axis, piece.id, enterThresh);
+    if (cands.length) {
+      return { val: cands[0].val, snap: cands[0] };
+    }
+    return { val: Number((Math.round(clampedRaw * 2) / 2).toFixed(2)), snap: null };
+  }
 
   function swapPieceMaterialKeepCenterline(piece, nextMatId) {
     const prevMat = MAT_MAP[piece.materialId], nextMat = MAT_MAP[nextMatId];
@@ -2879,13 +3067,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     test.x = Number((cx - newD.dx / 2).toFixed(2));
     test.y = Number((cy - newD.dy / 2).toFixed(2));
     test.z = Number((cz - newD.dz / 2).toFixed(2));
-    if (state.collisionMode === 'prevent') {
-      const hit = pieceCollidesWithAny(test, piece.id);
-      if (hit) return { ok: false, reason: `更換規格會與「${hit.other.name}」重疊 ${hit.ov.depth.toFixed(1)} cm（可先關閉磁吸防穿透再換）` };
-    }
+    const hit = pieceCollidesWithAny(test, piece.id);
     pushHistory3D(`同中心線更換「${piece.name}」規格`);
     Object.assign(piece, test);
-    return { ok: true };
+    return { ok: true, overlapHit: hit };
   }
 
   function rotatePieceKeepCenterline(piece) {
@@ -2909,10 +3094,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     renderAll();
   }
 
-  function screenToWorldPlane(sx, sy, planeType, fixedVal, initA, initB) {
+  function screenToWorldPlane(sx, sy, planeType, fixedVal, initA, initB, frozenBounds) {
     const wrap = document.getElementById('canvasWrap');
     const w = wrap.clientWidth || 400, h = wrap.clientHeight || 400;
-    const bounds = getOverallBounds();
+    const bounds = frozenBounds || ((pieceDragCtx && pieceDragCtx.bounds) ? pieceDragCtx.bounds : getOverallBounds());
     let a = Number.isFinite(initA) ? initA : bounds.cx;
     let b = Number.isFinite(initB) ? initB : (planeType === 'xy' ? bounds.cy : bounds.cz);
     const evalPt = (u, v) => {
@@ -3011,7 +3196,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     if (tray) tray.hidden = !(in3D && !piece && sheetsClosed);
     const p3d = document.getElementById('page3D');
     if (p3d) p3d.classList.toggle('wc-sel-active', showSel);
-    if (!bar || !showSel) return;
+    if (!bar || !showSel) { postDragSuggestions = []; renderPostSnapBar(); if (selCtrlMode === 'mate') showDragSnapPill(''); return; }
 
     const mat = MAT_MAP[piece.materialId];
     const d = getPieceDims(piece);
@@ -3036,17 +3221,31 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 
     const ctrl = document.getElementById('mobileSelCtrlRow');
     if (!ctrl) return;
+    renderPostSnapBar();
+    const snapStyleBtn = document.getElementById('btnMobileSnapStyle');
+    if (snapStyleBtn) {
+      const isSuggest = dragAssist.snapStyle === 'suggest';
+      snapStyleBtn.setAttribute('aria-pressed', isSuggest ? 'true' : 'false');
+      snapStyleBtn.textContent = isSuggest ? '放手貼' : '磁吸';
+    }
     if (selCtrlMode === 'move') {
       const disabledAttr = piece.locked ? 'disabled style="opacity:0.45;"' : '';
       ctrl.innerHTML = `
-        <button class="wc-mini-btn" type="button" data-quick-axis="x" aria-pressed="${selNudgeAxis === 'x'}" title="左右 X 軸">X</button>
-        <button class="wc-mini-btn" type="button" data-quick-axis="y" aria-pressed="${selNudgeAxis === 'y'}" title="前後 Y 軸">Y</button>
-        <button class="wc-mini-btn" type="button" data-quick-axis="z" aria-pressed="${selNudgeAxis === 'z'}" title="上下 Z 軸">Z</button>
+        <button class="wc-mini-btn" type="button" data-quick-axis="x" aria-pressed="${selNudgeAxis === 'x'}" title="沿 X 軸單軸滑軌">X</button>
+        <button class="wc-mini-btn" type="button" data-quick-axis="y" aria-pressed="${selNudgeAxis === 'y'}" title="沿 Y 軸單軸滑軌">Y</button>
+        <button class="wc-mini-btn" type="button" data-quick-axis="z" aria-pressed="${selNudgeAxis === 'z'}" title="沿 Z 軸單軸滑軌">Z</button>
         <button class="wc-mini-btn" type="button" data-quick-nudge="-1" ${disabledAttr}>-1</button>
         <button class="wc-mini-btn" type="button" data-quick-nudge="-0.5" ${disabledAttr}>-0.5</button>
         <button class="wc-mini-btn" type="button" data-quick-nudge="0.5" ${disabledAttr}>+0.5</button>
         <button class="wc-mini-btn" type="button" data-quick-nudge="1" ${disabledAttr}>+1</button>
       `;
+    } else if (selCtrlMode === 'mate') {
+      const dirs = [
+        ['right', '貼右側'], ['left', '貼左側'], ['top', '疊上方'],
+        ['bottom', '貼下方'], ['back', '貼後方'], ['front', '貼前方']
+      ];
+      ctrl.innerHTML = dirs.map(([k, lbl]) => `<button class="wc-mini-btn" type="button" data-mate-dir="${k}" aria-pressed="${mateDir === k}">${lbl}</button>`).join('');
+      showDragSnapPill(`點畫布上任一目標構件 → 將「${piece.name}」${dirs.find(x => x[0] === mateDir)[1]}`);
     } else if (selCtrlMode === 'size') {
       ctrl.innerHTML = `
         <button class="wc-mini-btn" type="button" data-quick-len="-10">-10</button>
@@ -3627,6 +3826,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 
   function switchPage(page) {
     state.activePage = page;
+    postDragSuggestions = [];
+    if (page !== '3d' && selCtrlMode === 'mate') { selCtrlMode = 'move'; showDragSnapPill(''); }
     document.getElementById('page3D').classList.toggle('active', page === '3d');
     document.getElementById('pageBlueprint').classList.toggle('active', page === 'blueprint');
     document.getElementById('pageSplit').classList.toggle('active', page === 'split');
@@ -3921,7 +4122,17 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     const dupBtn = e.target.closest('[data-dup-id]'); if (dupBtn) { e.stopPropagation(); duplicatePiece(dupBtn.dataset.dupId); return; }
     const delBtn = e.target.closest('[data-del-id]'); if (delBtn) { e.stopPropagation(); deletePiece(delBtn.dataset.delId); return; }
     const item = e.target.closest('[data-select-id]');
-    if (item) { state.selectedId = item.dataset.selectId; state.activeTab = 'inspector'; state.rightDrawerOpen = true; renderAll(); }
+    if (item) {
+      state.selectedId = item.dataset.selectId;
+      state.activeTab = 'inspector';
+      if (window.innerWidth < 1080) {
+        state.leftDrawerOpen = false;
+        state.rightDrawerOpen = false;
+      } else {
+        state.rightDrawerOpen = true;
+      }
+      renderAll();
+    }
   });
   document.getElementById('addMaterial').addEventListener('change', syncAddFormByMaterial);
   const addCatSeg = document.getElementById('addCatSeg');
@@ -4014,7 +4225,30 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   document.getElementById('refSheetSelect').addEventListener('change', e => { state.refSheetId = e.target.value; renderRefCanvas(); });
   document.getElementById('btnJumpToBlueprint').addEventListener('click', () => { if (state.refSheetId) state.activeSheetId = state.refSheetId; switchPage('blueprint'); });
 
-  document.getElementById('btnToggleLabels').addEventListener('click', e => { state.camera.showLabels = !state.camera.showLabels; e.currentTarget.classList.toggle('active', state.camera.showLabels); renderScene(); });
+  function syncLabelModeUI() {
+    const mode = state.camera.labelMode || 'selected';
+    state.camera.showLabels = mode !== 'off';
+    const topBtn = document.getElementById('btnLabelModeTop');
+    const dockBtn = document.getElementById('btnToggleLabels');
+    const names = { selected: '標註：選中', all: '標註：全部', off: '標註：關' };
+    if (topBtn) topBtn.textContent = names[mode] || '標註：選中';
+    if (dockBtn) {
+      dockBtn.classList.toggle('active', mode !== 'off');
+      dockBtn.setAttribute('aria-pressed', mode !== 'off' ? 'true' : 'false');
+      dockBtn.title = names[mode] || '尺寸標註';
+    }
+  }
+  function cycleLabelMode() {
+    const order = ['selected', 'all', 'off'];
+    const cur = state.camera.labelMode || 'selected';
+    state.camera.labelMode = order[(order.indexOf(cur) + 1) % order.length];
+    syncLabelModeUI();
+    renderScene();
+  }
+  document.getElementById('btnToggleLabels').addEventListener('click', cycleLabelMode);
+  const btnLabelModeTop = document.getElementById('btnLabelModeTop');
+  if (btnLabelModeTop) btnLabelModeTop.addEventListener('click', cycleLabelMode);
+  syncLabelModeUI();
   document.getElementById('btnToggleFasteners').addEventListener('click', e => { state.camera.showFasteners = !state.camera.showFasteners; e.currentTarget.classList.toggle('active', state.camera.showFasteners); renderScene(); });
   document.getElementById('btnToggleWire').addEventListener('click', e => { state.camera.wireframe = !state.camera.wireframe; e.currentTarget.classList.toggle('active', state.camera.wireframe); renderScene(); });
   document.getElementById('explodeSlider').addEventListener('input', e => { state.camera.explode = Number(e.target.value); document.getElementById('explodeVal').textContent = state.camera.explode + '%'; renderScene(); });
@@ -4023,8 +4257,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   let prev3DPinch = null, prev3DMid = null;
   let dragMode = null, lastX = 0, lastY = 0, dragDist = 0;
   let pieceDragCtx = null;
+  let holdGrabTimer = null;
   function cancelPieceDrag() {
-    if (pieceDragCtx?.moved) Object.assign(pieceDragCtx.piece, pieceDragCtx.startPiece);
+    clearTimeout(holdGrabTimer); holdGrabTimer = null;
+    if (pieceDragCtx?.moved) pieceDragCtx.piece[pieceDragCtx.axis] = pieceDragCtx.startAxisVal;
     pieceDragCtx = null;
     showDragSnapPill('');
   }
@@ -4036,7 +4272,46 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     return 'xy';
   }
 
+  function startPieceDrag(selP, mx, my) {
+    const axis = selNudgeAxis || 'x';
+    const d = getPieceDims(selP);
+    const frozenBounds = getOverallBounds();
+    const wrap = document.getElementById('canvasWrap');
+    const w = wrap.clientWidth || 400, h = wrap.clientHeight || 400;
+    const cx = selP.x + d.dx / 2, cy = selP.y + d.dy / 2, cz = selP.z + d.dz / 2;
+    const p0 = projectPoint(cx, cy, cz, frozenBounds, w, h);
+    const p1 = axis === 'x' ? projectPoint(cx + 10, cy, cz, frozenBounds, w, h)
+             : (axis === 'y' ? projectPoint(cx, cy + 10, cz, frozenBounds, w, h)
+             : projectPoint(cx, cy, cz + 10, frozenBounds, w, h));
+    let vx = (p1.sx - p0.sx) / 10, vy = (p1.sy - p0.sy) / 10;
+    let vLen2 = vx * vx + vy * vy;
+    // Fallback if viewing axis almost dead-on: map horizontal screen drag cleanly
+    if (vLen2 < 0.04) { vx = 1.8; vy = 0; vLen2 = vx * vx; }
+    postDragSuggestions = [];
+    renderPostSnapBar();
+    pieceDragCtx = {
+      piece: selP,
+      axis,
+      bounds: frozenBounds,
+      unitVec: { x: vx, y: vy, len2: vLen2 },
+      startAxisVal: selP[axis],
+      rawAxisVal: selP[axis],
+      lastPtrX: mx,
+      lastPtrY: my,
+      lastTime: performance.now(),
+      activeSnap: null,
+      recentSamples: [{ t: performance.now(), val: selP[axis], snap: null }],
+      beforeSnap: snapshot3D(false),
+      moved: false
+    };
+    dragMode = 'movePiece';
+  }
+
+  canvas.addEventListener('touchstart', e => { if (e.cancelable) e.preventDefault(); }, { passive: false });
   canvas.addEventListener('pointerdown', e => {
+    if (e.cancelable) e.preventDefault();
+    clearTimeout(holdGrabTimer);
+    holdGrabTimer = null;
     canvas.setPointerCapture(e.pointerId);
     active3DPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (active3DPtrs.size >= 2) {
@@ -4049,25 +4324,24 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     for (let i = hitPolygons.length - 1; i >= 0; i--) {
       if (pointInPoly(mx, my, hitPolygons[i].pts)) { hitId = hitPolygons[i].pieceId; break; }
     }
-    const selP = hitId && hitId === state.selectedId ? state.pieces.find(x => x.id === hitId) : null;
-    if (selP && !selP.locked && !state.panMode3D && e.button !== 2 && !e.shiftKey) {
-      const plane = activeDragPlaneForCamera();
-      const d = getPieceDims(selP);
-      const fixedVal = plane === 'xy' ? selP.z : (plane === 'xz' ? selP.y : selP.x);
-      const startW = screenToWorldPlane(mx, my, plane, fixedVal, selP.x + d.dx / 2, plane === 'xy' ? selP.y + d.dy / 2 : selP.z + d.dz / 2);
-      pieceDragCtx = {
-        piece: selP,
-        plane,
-        fixedVal,
-        startPiece: { x: selP.x, y: selP.y, z: selP.z },
-        startWorld: startW,
-        beforeSnap: snapshot3D(false),
-        moved: false
-      };
-      dragMode = 'movePiece';
+    const hitPiece = hitId ? state.pieces.find(x => x.id === hitId) : null;
+    if (hitPiece && hitPiece.id === state.selectedId && !hitPiece.locked && !state.panMode3D && e.button !== 2 && !e.shiftKey) {
+      startPieceDrag(hitPiece, mx, my);
     } else {
       pieceDragCtx = null;
       dragMode = (e.shiftKey || e.button === 2 || state.panMode3D) ? 'pan' : 'orbit';
+      if (hitPiece && !hitPiece.locked && !state.panMode3D && e.button !== 2 && !e.shiftKey) {
+        holdGrabTimer = setTimeout(() => {
+          holdGrabTimer = null;
+          if (active3DPtrs.size === 1 && dragDist < 6) {
+            state.selectedId = hitPiece.id;
+            startPieceDrag(hitPiece, mx, my);
+            showDragSnapPill(`已抓住「${hitPiece.name}」，拖曳即可移動`);
+            renderScene();
+            renderMobileSelBar();
+          }
+        }, 220);
+      }
     }
     lastX = e.clientX; lastY = e.clientY; dragDist = 0;
   });
@@ -4083,24 +4357,43 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     }
     if (!dragMode || dragMode === 'pinch') return;
     const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY; dragDist += Math.hypot(dx, dy);
+    if (holdGrabTimer && dragDist >= 6) { clearTimeout(holdGrabTimer); holdGrabTimer = null; }
     if (dragMode === 'movePiece' && pieceDragCtx) {
       if (dragDist < 5) return;
       const rect = canvas.getBoundingClientRect(), mx = e.clientX - rect.left, my = e.clientY - rect.top;
-      const p = pieceDragCtx.piece;
-      const curW = screenToWorldPlane(mx, my, pieceDragCtx.plane, pieceDragCtx.fixedVal, pieceDragCtx.startWorld.x, pieceDragCtx.plane === 'xy' ? pieceDragCtx.startWorld.y : pieceDragCtx.startWorld.z);
-      const cand = Object.assign({}, p, {
-        x: pieceDragCtx.startPiece.x + (curW.x - pieceDragCtx.startWorld.x),
-        y: pieceDragCtx.startPiece.y + (curW.y - pieceDragCtx.startWorld.y),
-        z: Math.max(0, pieceDragCtx.startPiece.z + (curW.z - pieceDragCtx.startWorld.z))
-      });
-      const snapped = snapDraggedPiece(cand, p.id);
-      cand.x = snapped.x; cand.y = snapped.y; cand.z = snapped.z;
-      if (state.collisionMode === 'prevent' && pieceCollidesWithAny(cand, p.id)) {
-        showDragSnapPill('此位置會穿透其他構件');
+      const now = performance.now();
+      const stepDx = mx - pieceDragCtx.lastPtrX, stepDy = my - pieceDragCtx.lastPtrY;
+      const dt = Math.max(1, now - pieceDragCtx.lastTime);
+      pieceDragCtx.lastPtrX = mx; pieceDragCtx.lastPtrY = my; pieceDragCtx.lastTime = now;
+      // Option 5: Slow-speed precision damping (0.45x when moving slowly for fine alignment)
+      const speed = Math.hypot(stepDx, stepDy) / dt;
+      const gain = speed < 0.35 ? 0.45 : (speed < 0.7 ? 0.72 : 1.0);
+      const uv = pieceDragCtx.unitVec;
+      const deltaCm = ((stepDx * uv.x + stepDy * uv.y) / uv.len2) * gain;
+      const p = pieceDragCtx.piece, ax = pieceDragCtx.axis;
+      pieceDragCtx.rawAxisVal = ax === 'z' ? Math.max(0, pieceDragCtx.rawAxisVal + deltaCm) : (pieceDragCtx.rawAxisVal + deltaCm);
+
+      let nextVal, activeSnap = null;
+      if (dragAssist.snapStyle === 'suggest') {
+        // Option 3: Clean 1cm grid during drag, suggestions offered on release
+        nextVal = ax === 'z' ? Math.max(0, Math.round(pieceDragCtx.rawAxisVal)) : Math.round(pieceDragCtx.rawAxisVal);
       } else {
-        p.x = cand.x; p.y = cand.y; p.z = cand.z;
+        // Option 2: Hysteresis single-axis snapping
+        const res = snapAxisWithHysteresis(p, ax, pieceDragCtx.rawAxisVal, pieceDragCtx.activeSnap);
+        nextVal = res.val;
+        activeSnap = res.snap;
+      }
+      const cand = Object.assign({}, p, { [ax]: nextVal });
+      if (state.collisionMode === 'prevent' && pieceCollidesWithAny(cand, p.id)) {
+        showDragSnapPill(`${ax.toUpperCase()} 軸滑軌 · 前方已有構件`);
+      } else {
+        p[ax] = nextVal;
+        pieceDragCtx.activeSnap = activeSnap;
         pieceDragCtx.moved = true;
-        showDragSnapPill(snapped.snapLabel || `位置 X:${p.x} Y:${p.y} Z:${p.z} cm`);
+        pieceDragCtx.recentSamples.push({ t: now, val: nextVal, snap: activeSnap });
+        if (pieceDragCtx.recentSamples.length > 6) pieceDragCtx.recentSamples.shift();
+        const axisNames = { x: '左右 X', y: '前後 Y', z: '上下 Z' };
+        showDragSnapPill(activeSnap ? `磁吸鎖定 · ${activeSnap.label}` : `${axisNames[ax]} 滑軌：${p[ax]} cm`);
       }
       renderScene();
       renderMobileSelBar();
@@ -4111,18 +4404,44 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     renderScene();
   });
   function end3DPtr(e) {
+    clearTimeout(holdGrabTimer); holdGrabTimer = null;
     active3DPtrs.delete(e.pointerId);
     if (active3DPtrs.size < 2) { prev3DPinch = null; prev3DMid = null; }
     if (active3DPtrs.size === 0) {
       if (dragMode === 'movePiece' && pieceDragCtx && pieceDragCtx.moved) {
-        const p = pieceDragCtx.piece;
-        state.history3D.undo.push({ label: `拖曳移動「${p.name}」`, scope: '3d', snap: pieceDragCtx.beforeSnap });
+        const p = pieceDragCtx.piece, ax = pieceDragCtx.axis;
+        // Option 5: Lift-off debounce — if thumb jerked off a snap within last 65ms, restore the stable snapped value
+        const now = performance.now();
+        if (!pieceDragCtx.activeSnap && pieceDragCtx.recentSamples.length >= 2) {
+          const stableSnapped = [...pieceDragCtx.recentSamples].reverse().find(s => s.snap && (now - s.t) <= 65);
+          if (stableSnapped) p[ax] = stableSnapped.val;
+        }
+        state.history3D.undo.push({ label: `滑軌移動「${p.name}」`, scope: '3d', snap: pieceDragCtx.beforeSnap });
         if (state.history3D.undo.length > state.history3D.max) state.history3D.undo.shift();
         state.history3D.redo = [];
+        // Option 3: If in 'suggest' mode, collect up to 3 legal nearby snap options for 1-tap alignment
+        if (dragAssist.snapStyle === 'suggest') {
+          const allNear = [
+            ...collectAxisSnapCandidates(p, ax, p.id, 10.0),
+            ...(['x', 'y', 'z'].filter(a => a !== ax).flatMap(oa => collectAxisSnapCandidates(p, oa, p.id, 6.0)))
+          ].filter(c => Math.abs(p[c.axis] - c.val) > 0.05);
+          const seen = new Set();
+          postDragSuggestions = [];
+          for (const c of allNear) {
+            const key = `${c.axis}:${c.val}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            postDragSuggestions.push(c);
+            if (postDragSuggestions.length >= 3) break;
+          }
+        } else {
+          postDragSuggestions = [];
+        }
         pieceDragCtx = null;
         showDragSnapPill('');
         dragMode = null;
         renderAll();
+        renderPostSnapBar();
         return;
       }
       pieceDragCtx = null;
@@ -4135,7 +4454,28 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         }
         if (found) {
           if (e.cancelable) e.preventDefault();
+          if (selCtrlMode === 'mate' && state.selectedId && found !== state.selectedId) {
+            const srcP = state.pieces.find(x => x.id === state.selectedId);
+            const tgtP = state.pieces.find(x => x.id === found);
+            if (srcP && tgtP) {
+              if (srcP.locked) { showToast('目前構件已固定，請先解鎖'); return; }
+              const test = Object.assign({}, srcP);
+              snapPieceToReference(test, tgtP, mateDir);
+              if (state.collisionMode === 'prevent') {
+                const hit = pieceCollidesWithAny(test, srcP.id);
+                if (hit) { showToast(`貼面位置會與「${hit.other.name}」重疊，已阻擋`); return; }
+              }
+              pushHistory3D(`貼面接合「${srcP.name}」→「${tgtP.name}」`);
+              srcP.x = test.x; srcP.y = test.y; srcP.z = test.z;
+              selCtrlMode = 'move';
+              showDragSnapPill('');
+              renderAll();
+              showToast(`已將「${srcP.name}」貼齊「${tgtP.name}」`);
+              return;
+            }
+          }
           const isMobile = window.innerWidth < 1080;
+          postDragSuggestions = [];
           state.selectedId = found;
           state.activeTab = 'inspector';
           if (isMobile) {
@@ -4233,7 +4573,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       const res = swapPieceMaterialKeepCenterline(p, t.value);
       if (!res.ok) { t.value = p.materialId; showToast(res.reason); return; }
       renderAll();
-      if (!res.unchanged) showToast(`已依原中心線更換為「${MAT_MAP[p.materialId].name}」`);
+      if (!res.unchanged) {
+        if (res.overlapHit) showToast(`已依原中心線換料（與「${res.overlapHit.other.name}」重疊 ${res.overlapHit.ov.depth.toFixed(1)} cm，可點上方一鍵解碰）`);
+        else showToast(`已依原中心線更換為「${MAT_MAP[p.materialId].name}」`);
+      }
     } else if (t.id === 'insOrient') {
       const test = Object.assign({}, p, { orientation: t.value });
       if (state.collisionMode === 'prevent') {
@@ -4441,6 +4784,12 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   });
 
   // Blueprint Canvas Drawing
+  function restoreCancelledBpDrag(drag) {
+    if (drag?.sheet && drag.beforeSnap && (drag.mode === 'move' || drag.mode === 'resize')) {
+      drag.sheet.shapes = JSON.parse(drag.beforeSnap);
+    }
+  }
+
   function commitBpDragIfChanged(sh, drag) {
     if (!sh || !drag || !drag.beforeSnap) return;
     if (JSON.stringify(sh.shapes) !== drag.beforeSnap) {
@@ -4483,7 +4832,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         const hdId = singleSel && hitTestBpHandle(raw.wx, raw.wy, singleSel, state.bp);
         if (hdId) {
           const anchor = singleSel.type === 'rect' ? getRectFixedAnchor(singleSel, hdId) : null;
-          bpDragState = { mode: 'resize', shape: singleSel, handleId: hdId, anchor, beforeSnap: JSON.stringify(sh.shapes), moved: false };
+          bpDragState = { mode: 'resize', shape: singleSel, handleId: hdId, anchor, sheet: sh, beforeSnap: JSON.stringify(sh.shapes), moved: false };
           return;
         }
       }
@@ -4498,7 +4847,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         renderBpInspector(); renderBlueprintCanvas();
         const shapesToMove = getBpSelectedShapes(sh);
         if (shapesToMove.length) {
-          bpDragState = { mode: 'move', shapes: shapesToMove, lastWx: wx, lastWy: wy, beforeSnap: JSON.stringify(sh.shapes), moved: false };
+          bpDragState = { mode: 'move', shapes: shapesToMove, lastWx: wx, lastWy: wy, sheet: sh, beforeSnap: JSON.stringify(sh.shapes), moved: false };
         }
       } else {
         if (!e.shiftKey) state.bp.selectedShapeIds = [];
@@ -4562,9 +4911,15 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   });
 
   function endBpPtr(e) {
-    activeBpPtrs.delete(e.pointerId);
+    if (!activeBpPtrs.delete(e.pointerId)) return;
     if (activeBpPtrs.size < 2) { prevBpPinch = null; prevBpMid = null; }
     if (activeBpPtrs.size > 0) return;
+    if (e.type === 'pointercancel') {
+      restoreCancelledBpDrag(bpDragState);
+      bpDragState = null; bpDraftShape = null; bpMarqueeRect = null;
+      renderBpInspector(); renderBlueprintCanvas();
+      return;
+    }
     const sh = getActiveSheet();
     if (bpDragState && bpDragState.mode === 'draw' && bpDraftShape && sh) {
       let valid = true;
@@ -4903,7 +5258,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         const hdId = singleSel && hitTestBpHandle(raw.wx, raw.wy, singleSel, state.splitBpCam);
         if (hdId) {
           const anchor = singleSel.type === 'rect' ? getRectFixedAnchor(singleSel, hdId) : null;
-          splitBpDrag = { mode: 'resize', shape: singleSel, handleId: hdId, anchor, beforeSnap: JSON.stringify(sh.shapes), moved: false };
+          splitBpDrag = { mode: 'resize', shape: singleSel, handleId: hdId, anchor, sheet: sh, beforeSnap: JSON.stringify(sh.shapes), moved: false };
           return;
         }
       }
@@ -4917,7 +5272,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
         }
         renderSplitViews();
         const shapesToMove = getBpSelectedShapes(sh);
-        if (shapesToMove.length) splitBpDrag = { mode: 'move', shapes: shapesToMove, lastWx: wx, lastWy: wy, beforeSnap: JSON.stringify(sh.shapes), moved: false };
+        if (shapesToMove.length) splitBpDrag = { mode: 'move', shapes: shapesToMove, lastWx: wx, lastWy: wy, sheet: sh, beforeSnap: JSON.stringify(sh.shapes), moved: false };
       } else {
         if (!e.shiftKey) state.bp.selectedShapeIds = [];
         bpMarqueeRect = { x1: raw.wx, y1: raw.wy, x2: raw.wx, y2: raw.wy };
@@ -4975,9 +5330,15 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     }
   });
   function endSplitBpPtr(e) {
-    activeSplitBpPtrs.delete(e.pointerId);
+    if (!activeSplitBpPtrs.delete(e.pointerId)) return;
     if (activeSplitBpPtrs.size < 2) { prevSplitBpPinch = null; prevSplitBpMid = null; }
     if (activeSplitBpPtrs.size > 0) return;
+    if (e.type === 'pointercancel') {
+      restoreCancelledBpDrag(splitBpDrag);
+      splitBpDrag = null; bpDraftShape = null; bpMarqueeRect = null;
+      renderSplitViews();
+      return;
+    }
     const sh = getActiveSheet();
     if (splitBpDrag && splitBpDrag.mode === 'draw' && bpDraftShape && sh) {
       let valid = true;
@@ -5289,6 +5650,14 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     if (addOnly) renderAddPreview();
   }
   if (btnMobileParts) btnMobileParts.addEventListener('click', () => {
+    if (state.activePage !== '3d') {
+      switchPage('3d');
+      state.leftDrawerOpen = true;
+      state.rightDrawerOpen = false;
+      setLeftDrawerAddOnly(false);
+      syncDrawerVisibility();
+      return;
+    }
     const leftEl = document.getElementById('drawer3DLeft');
     const wasAddOnly = leftEl && leftEl.classList.contains('wc-add-only');
     if (state.leftDrawerOpen && wasAddOnly) {
@@ -5303,15 +5672,27 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     syncDrawerVisibility();
   });
   if (btnMobileAdd) btnMobileAdd.addEventListener('click', () => {
+    if (state.activePage !== '3d') switchPage('3d');
     state.leftDrawerOpen = true;
     state.rightDrawerOpen = false;
     setLeftDrawerAddOnly(true);
     syncDrawerVisibility();
   });
   if (btnMobileSettings) btnMobileSettings.addEventListener('click', () => {
+    if (state.activePage !== '3d') {
+      switchPage('3d');
+      state.activeTab = state.selectedId ? 'inspector' : 'bom';
+      state.rightDrawerOpen = true;
+      state.leftDrawerOpen = false;
+      renderAll(false);
+      return;
+    }
     state.rightDrawerOpen = !state.rightDrawerOpen;
-    if (state.rightDrawerOpen) state.leftDrawerOpen = false;
-    syncDrawerVisibility();
+    if (state.rightDrawerOpen) {
+      state.leftDrawerOpen = false;
+      if (!state.selectedId && state.activeTab === 'inspector') state.activeTab = 'bom';
+    }
+    renderAll(false);
   });
   if (mobileBackdrop) mobileBackdrop.addEventListener('click', () => {
     state.leftDrawerOpen = false;
@@ -5331,6 +5712,13 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     btnFileMenuMobile.addEventListener('click', e => {
       e.stopPropagation();
       const open = !fileMenuDrop.classList.contains('open');
+      if (open) {
+        state.leftDrawerOpen = false;
+        state.rightDrawerOpen = false;
+        setLeftDrawerAddOnly(false);
+        syncDrawerVisibility();
+        closeViewModeMenu();
+      }
       fileMenuDrop.classList.toggle('open', open);
       btnFileMenuMobile.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
@@ -5400,13 +5788,50 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   });
   if (btnMobileSelClear) btnMobileSelClear.addEventListener('click', () => {
     state.selectedId = null;
+    postDragSuggestions = [];
+    selCtrlMode = 'move';
+    showDragSnapPill('');
     renderAll();
+  });
+  const postSnapBarEl = document.getElementById('postSnapBar');
+  if (postSnapBarEl) postSnapBarEl.addEventListener('click', e => {
+    if (e.target.closest('[data-dismiss-suggest]')) {
+      postDragSuggestions = [];
+      renderPostSnapBar();
+      return;
+    }
+    const chip = e.target.closest('[data-apply-suggest]');
+    if (!chip) return;
+    const item = postDragSuggestions[Number(chip.dataset.applySuggest)];
+    const p = state.pieces.find(x => x.id === state.selectedId);
+    if (!item || !p) return;
+    pushHistory3D(`一鍵貼齊：${item.label}`);
+    p[item.axis] = item.val;
+    postDragSuggestions = [];
+    renderAll();
+    renderPostSnapBar();
+    showToast(`已套用：${item.label}`);
   });
   if (mobileSelBarEl) mobileSelBarEl.addEventListener('click', e => {
     const modeBtn = e.target.closest('[data-sel-mode]');
     if (modeBtn) {
       selCtrlMode = modeBtn.dataset.selMode;
+      if (selCtrlMode !== 'mate') showDragSnapPill('');
       renderMobileSelBar();
+      return;
+    }
+    const mateBtn = e.target.closest('[data-mate-dir]');
+    if (mateBtn) {
+      mateDir = mateBtn.dataset.mateDir;
+      renderMobileSelBar();
+      return;
+    }
+    if (e.target.closest('[data-toggle-snap-style]')) {
+      dragAssist.snapStyle = dragAssist.snapStyle === 'hysteresis' ? 'suggest' : 'hysteresis';
+      try { localStorage.setItem(DRAG_STYLE_KEY, dragAssist.snapStyle); } catch {}
+      postDragSuggestions = [];
+      renderMobileSelBar();
+      showToast(dragAssist.snapStyle === 'suggest' ? '已切換「放手建議貼齊」：拖曳走格線、放手點選貼齊' : '已切換「黏滯磁吸」：拖曳時防抖磁吸鎖定');
       return;
     }
     const axisBtn = e.target.closest('[data-quick-axis]');
@@ -5457,7 +5882,10 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       const res = swapPieceMaterialKeepCenterline(p, matBtn.dataset.quickMat);
       if (!res.ok) { showToast(res.reason); return; }
       renderAll();
-      if (!res.unchanged) showToast(`已依相同中心線換成「${MAT_MAP[p.materialId].name}」`);
+      if (!res.unchanged) {
+        if (res.overlapHit) showToast(`已依原中心線換料（與「${res.overlapHit.other.name}」重疊 ${res.overlapHit.ov.depth.toFixed(1)} cm，可點上方一鍵解碰）`);
+        else showToast(`已依相同中心線換成「${MAT_MAP[p.materialId].name}」`);
+      }
     }
   });
 
@@ -5465,9 +5893,11 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   const quickDragTray = document.getElementById('quickDragTray');
   let trayDragState = null;
   if (quickDragTray) {
+    quickDragTray.addEventListener('touchstart', e => { if (e.target.closest('.wc-drag-chip') && e.cancelable) e.preventDefault(); }, { passive: false });
     quickDragTray.addEventListener('pointerdown', e => {
       const chip = e.target.closest('.wc-drag-chip');
       if (!chip) return;
+      if (e.cancelable) e.preventDefault();
       chip.setPointerCapture(e.pointerId);
       trayDragState = {
         pointerId: e.pointerId,
@@ -5497,7 +5927,12 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
       }
       trayDragState.draggingOnCanvas = true;
       const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-      const plane = (trayDragState.orient === 'Z' || trayDragState.orient === 'XZ') ? 'xz' : 'xy';
+      let plane = (trayDragState.orient === 'Z' || trayDragState.orient === 'XZ') ? 'xz' : 'xy';
+      if (Math.abs(state.camera.pitch) < 0.28) {
+        plane = Math.abs(Math.abs(state.camera.yaw) - Math.PI / 2) < 0.45 ? 'yz' : 'xz';
+      } else if (Math.abs(state.camera.pitch) > 1.1) {
+        plane = 'xy';
+      }
       const worldPt = screenToWorldPlane(mx, my, plane, 0);
       const draft = {
         materialId: trayDragState.matId,
@@ -5594,6 +6029,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     });
   }
   const restoredLocalProject = loadInitialState();
+  if (window.innerWidth < 1080) state.selectedId = null;
   initAddForm();
   renderAll(restoredLocalProject);
   if (!restoredLocalProject) {
