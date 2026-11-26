@@ -492,6 +492,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 @media (max-width: 1079px) {
   .wc-sheet-backdrop.open { display: block; position: fixed; inset: 0; z-index: 30; }
   .wc-view-dock { display: none; }
+  #pageBlueprint .gb-canvas__bl { left: var(--gb-space-3); right: var(--gb-space-3); bottom: var(--gb-space-3); }
+  #pageBlueprint .gb-canvas__bl .wc-dock-scroll { max-width: 100%; width: 100%; }
+  #pageBlueprint .gb-canvas__br { bottom: calc(var(--gb-space-3) + 56px); right: var(--gb-space-3); }
   .gb-app__side.wc-mobile-sheet-open { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; max-height: 82vh; max-height: 82dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; border: 0; box-shadow: var(--gb-shadow-sheet); }
   .wc-bp-floating-left, .wc-bp-floating-right { top: auto; left: 0; right: 0; bottom: 0; width: 100%; max-height: 70dvh; border-radius: var(--gb-radius-md) var(--gb-radius-md) 0 0; }
   .wc-split-wrap { flex-direction: column; }
@@ -1838,14 +1841,26 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   const split3DCtx = split3DCanvas.getContext('2d');
   let splitHitPolygons = [];
 
+  function sync3DCanvasBacking() {
+    const wrap = document.getElementById('canvasWrap');
+    if (!wrap) return false;
+    const rect = wrap.getBoundingClientRect();
+    if (rect.width < 10 || rect.height < 10) return false;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const targetW = Math.floor(rect.width * dpr);
+    const targetH = Math.floor(rect.height * dpr);
+    if (canvas.width !== targetW || canvas.height !== targetH) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return true;
+  }
+
   function resizeCanvas() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     if (state.activePage === '3d') {
-      const wrap = document.getElementById('canvasWrap');
-      const rect = wrap.getBoundingClientRect();
-      canvas.width = Math.max(100, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(100, Math.floor(rect.height * dpr));
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (!sync3DCanvasBacking()) return;
       renderScene();
       if (state.showRefDrawer) renderRefCanvas();
     } else if (state.activePage === 'blueprint') {
@@ -1883,7 +1898,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
 
   function renderScene() {
     const wrap = document.getElementById('canvasWrap');
-    renderSceneOnContext(ctx, wrap.clientWidth || 800, wrap.clientHeight || 600, hitPolygons, false);
+    if (!wrap || wrap.clientWidth < 10 || wrap.clientHeight < 10) return;
+    sync3DCanvasBacking();
+    renderSceneOnContext(ctx, wrap.clientWidth, wrap.clientHeight, hitPolygons, false);
   }
 
   function renderSceneOnContext(c, w, h, outHits, showSectionPlane) {
@@ -4641,6 +4658,15 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
   });
 
   window.addEventListener('resize', () => { syncDrawerVisibility(); resizeCanvas(); });
+  window.addEventListener('load', () => resizeCanvas());
+  window.addEventListener('pageshow', () => resizeCanvas());
+  if (typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => resizeCanvas());
+    ['canvasWrap', 'bpCanvasWrap', 'splitBpWrap', 'split3DWrap'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) ro.observe(el);
+    });
+  }
   const restoredLocalProject = loadInitialState();
   initAddForm();
   renderAll(restoredLocalProject);
@@ -4649,6 +4675,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--gb-gro
     showToast('無法讀取瀏覽器中的舊專案。可從檔案選單匯入 JSON 備份。');
   }
   resizeCanvas();
+  requestAnimationFrame(() => resizeCanvas());
 })();
 </script>
 </body>
