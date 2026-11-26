@@ -1796,33 +1796,67 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     el.classList.toggle('gb-status--error', !ok);
   }
 
-  function saveToLocal() {
+  let lastSavedProjectRaw = null;
+  let rejectedProjectRaw = false;
+
+  function saveToLocal({ recover = false } = {}) {
+    if (storageAccessDenied) {
+      setSaveStatus(false, '無法自動儲存，請匯出 JSON');
+      return false;
+    }
+    if (rejectedProjectRaw && !recover) {
+      setSaveStatus(false, '舊專案讀取失敗，請匯出 JSON');
+      return false;
+    }
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      if (localStorage.getItem(STORAGE_KEY) !== lastSavedProjectRaw) {
+        setSaveStatus(false, '另一分頁已更新專案，請先匯出目前的 JSON');
+        return false;
+      }
+      if (rejectedProjectRaw) {
+        const key = STORAGE_KEY + '_rejected_' + uid();
+        localStorage.setItem(key, lastSavedProjectRaw);
+        if (localStorage.getItem(key) !== lastSavedProjectRaw) throw new Error('Backup verification failed');
+      }
+      const raw = JSON.stringify({
         savedOnce: true,
         projectName: state.projectName, kerfCm: state.kerfCm,
         pieces: state.pieces, customPrices: state.customPrices, blueprints: state.blueprints,
         activeSheetId: state.activeSheetId, refSheetId: state.refSheetId
-      }));
+      });
+      if (raw !== lastSavedProjectRaw) localStorage.setItem(STORAGE_KEY, raw);
+      lastSavedProjectRaw = raw;
+      rejectedProjectRaw = false;
       setSaveStatus(true, '已儲存');
+      return true;
     } catch (e) {
-      setSaveStatus(false, '儲存失敗');
+      setSaveStatus(false, '儲存失敗，請匯出 JSON');
+      return false;
     }
   }
 
+  let storageAccessDenied = false;
   function loadInitialState() {
     let loaded = null;
     let readFailed = false;
+    storageAccessDenied = false;
+    let raw = null;
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
+      raw = localStorage.getItem(STORAGE_KEY);
+    } catch {
+      storageAccessDenied = true;
+    }
+    lastSavedProjectRaw = raw;
+    if (!storageAccessDenied && raw !== null) {
+      try {
         const project = validateImportPayload(JSON.parse(raw), '木工結構專案');
         if (typeof project === 'string') readFailed = true;
         else loaded = project;
+      } catch {
+        readFailed = true;
       }
-    } catch {
-      readFailed = true;
     }
+    rejectedProjectRaw = readFailed;
     if (loaded) {
       applyValidatedProject(loaded);
     } else {
@@ -2957,7 +2991,8 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   function renderPostSnapBar() {
     const bar = document.getElementById('postSnapBar');
     if (!bar) return;
-    if (!postDragSuggestions.length || !state.selectedId || state.activePage !== '3d') {
+    const selected = state.pieces.find(p => p.id === state.selectedId);
+    if (!postDragSuggestions.length || !selected || selected.locked || state.activePage !== '3d') {
       bar.hidden = true;
       bar.innerHTML = '';
       return;
@@ -3050,6 +3085,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   }
 
   function swapPieceMaterialKeepCenterline(piece, nextMatId) {
+    if (piece.locked) return { ok: false, reason: `「${piece.name}」已固定，請先解鎖再換料` };
     const prevMat = MAT_MAP[piece.materialId], nextMat = MAT_MAP[nextMatId];
     if (!prevMat || !nextMat) return { ok: false, reason: '找不到指定材料' };
     if (piece.materialId === nextMatId) return { ok: true, unchanged: true };
@@ -3066,7 +3102,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     const newD = getPieceDims(test);
     test.x = Number((cx - newD.dx / 2).toFixed(2));
     test.y = Number((cy - newD.dy / 2).toFixed(2));
-    test.z = Number((cz - newD.dz / 2).toFixed(2));
+    test.z = Number(Math.max(0, cz - newD.dz / 2).toFixed(2));
     const hit = pieceCollidesWithAny(test, piece.id);
     pushHistory3D(`同中心線更換「${piece.name}」規格`);
     Object.assign(piece, test);
@@ -3293,7 +3329,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     renderMobileSelBar();
   }
 
-  function renderAll(persist = true) {
+  function renderAll(persist = true, saveOptions) {
     document.getElementById('projectNameInput').value = state.projectName;
     document.getElementById('sheetCountBadge').textContent = state.blueprints.length;
     syncDrawerVisibility();
@@ -3312,7 +3348,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       renderSplitViews();
     }
     updateUndoRedoButtons();
-    if (persist) saveToLocal();
+    if (persist) return saveToLocal(saveOptions);
   }
 
   function renderRefSheetSelector() {
@@ -3779,14 +3815,18 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     const newPiece = {
       id: uid(), name: (opts && opts.name) || `${m.categoryLabel} #${state.pieces.length + 1}`,
       materialId: m.id,
-      cutL: Number((opts && opts.cutL) || (isBatten ? 60 : Math.min(90, m.stockL))),
-      cutW: isBatten ? m.stockW : Number((opts && opts.cutW) || Math.min(60, m.stockW)),
+      cutL: (opts && opts.cutL !== undefined) ? Number(opts.cutL) : (isBatten ? 60 : Math.min(90, m.stockL)),
+      cutW: isBatten ? m.stockW : ((opts && opts.cutW !== undefined) ? Number(opts.cutW) : Math.min(60, m.stockW)),
       x: 0, y: 0, z: 0,
       orientation: (opts && opts.orientation) || (isBatten ? 'X' : 'XY'),
       flipSection: false,
       joinery: (opts && opts.joinery) || (isBatten ? 'glue_nail' : (m.category === 'csb' ? 'csb_staple' : 'wood_screw')),
       notes: (opts && opts.notes) || ''
     };
+    if (!Number.isFinite(newPiece.cutL) || newPiece.cutL <= 0 || !Number.isFinite(newPiece.cutW) || newPiece.cutW <= 0) {
+      showToast('構件尺寸必須大於 0 cm，已拒絕新增');
+      return null;
+    }
     const pos = findNonCollidingPlacement(newPiece, state.pieces.find(x => x.id === state.selectedId) || null);
     newPiece.x = pos.x; newPiece.y = pos.y; newPiece.z = pos.z;
     pushHistory3D(`新增「${newPiece.name}」`);
@@ -3836,7 +3876,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
     }
-    renderAll();
+    renderAll(false);
     setTimeout(() => {
       resizeCanvas();
       if (page === 'blueprint') document.getElementById('btnBpFit').click();
@@ -3884,7 +3924,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   function fallbackCopy(text) {
     const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); showToast('已複製採購與裁切清單'); } catch (e) { showToast('複製失敗'); }
+    try { showToast(document.execCommand('copy') ? '已複製採購與裁切清單' : '複製失敗'); } catch (e) { showToast('複製失敗'); }
     document.body.removeChild(ta);
   }
 
@@ -3900,9 +3940,9 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   document.getElementById('btnCloseLeft3D').addEventListener('click', () => { state.leftDrawerOpen = false; setLeftDrawerAddOnly(false); syncDrawerVisibility(); });
   document.getElementById('btnOpenLeft3D').addEventListener('click', () => { state.leftDrawerOpen = true; if (window.innerWidth < 1080) state.rightDrawerOpen = false; syncDrawerVisibility(); });
   document.getElementById('btnCloseRight3D').addEventListener('click', () => { state.rightDrawerOpen = false; syncDrawerVisibility(); });
-  document.getElementById('btnOpenIns3D').addEventListener('click', () => { state.activeTab = 'inspector'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
-  document.getElementById('btnOpenBom3D').addEventListener('click', () => { state.activeTab = 'bom'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
-  document.getElementById('btnOpenCat3D').addEventListener('click', () => { state.activeTab = 'catalog'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(); });
+  document.getElementById('btnOpenIns3D').addEventListener('click', () => { state.activeTab = 'inspector'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(false); });
+  document.getElementById('btnOpenBom3D').addEventListener('click', () => { state.activeTab = 'bom'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(false); });
+  document.getElementById('btnOpenCat3D').addEventListener('click', () => { state.activeTab = 'catalog'; state.rightDrawerOpen = true; if (window.innerWidth < 1080) state.leftDrawerOpen = false; renderAll(false); });
   document.getElementById('btnToggleBpStyleCard').addEventListener('click', () => {
     state.bpStyleCardOpen = !state.bpStyleCardOpen;
     syncDrawerVisibility();
@@ -4051,7 +4091,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     const matchingSheet = id => validBlueprints?.find(sheet => sheet.id === id)?.id;
     return {
       projectName: typeof obj.projectName === 'string' ? obj.projectName.trim() || defaultTitle : defaultTitle,
-      kerfCm: (typeof obj.kerfCm === 'number' && Number.isFinite(obj.kerfCm) && obj.kerfCm >= 0) ? obj.kerfCm : 0.3,
+      kerfCm: (typeof obj.kerfCm === 'number' && Number.isFinite(obj.kerfCm) && obj.kerfCm >= 0 && obj.kerfCm <= 1) ? obj.kerfCm : 0.3,
       customPrices: validPrices,
       pieces: validPieces,
       blueprints: validBlueprints,
@@ -4090,8 +4130,8 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       pushHistory3D(`匯入專案「${project.projectName}」`, true);
       applyValidatedProject(project);
       resetBpHistories();
-      renderAll();
-      showToast(`已匯入「${state.projectName}」`);
+      const saved = renderAll(true, { recover: true });
+      showToast(saved !== false ? `已匯入「${state.projectName}」` : `已匯入「${state.projectName}」，未存入瀏覽器，請匯出 JSON`);
     };
     reader.onerror = () => showToast('匯入失敗：無法讀取檔案');
     reader.readAsText(file); e.target.value = '';
@@ -4100,7 +4140,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   let prePrintState = null;
   document.getElementById('btnPrint').addEventListener('click', () => {
     prePrintState = { activeTab: state.activeTab, rightDrawerOpen: state.rightDrawerOpen, leftDrawerOpen: state.leftDrawerOpen };
-    if (state.activePage === '3d') { state.activeTab = 'bom'; state.rightDrawerOpen = true; renderAll(); }
+    if (state.activePage === '3d') { state.activeTab = 'bom'; state.rightDrawerOpen = true; renderAll(false); }
     setTimeout(() => window.print(), 80);
   });
   window.addEventListener('afterprint', () => {
@@ -4109,7 +4149,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       state.rightDrawerOpen = prePrintState.rightDrawerOpen;
       state.leftDrawerOpen = prePrintState.leftDrawerOpen;
       prePrintState = null;
-      renderAll();
+      renderAll(false);
     }
   });
 
@@ -4131,7 +4171,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       } else {
         state.rightDrawerOpen = true;
       }
-      renderAll();
+      renderAll(false);
     }
   });
   document.getElementById('addMaterial').addEventListener('change', syncAddFormByMaterial);
@@ -4155,9 +4195,21 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   document.getElementById('addCutL').addEventListener('input', renderAddPreview);
   document.getElementById('addCutW').addEventListener('input', renderAddPreview);
   document.getElementById('btnAddPiece').addEventListener('click', () => {
-    addPiece(document.getElementById('addMaterial').value, {
-      cutL: Number(document.getElementById('addCutL').value) || 60,
-      cutW: Number(document.getElementById('addCutW').value) || 60,
+    const matId = document.getElementById('addMaterial').value;
+    const mat = MAT_MAP[matId];
+    const rawL = Number(document.getElementById('addCutL').value);
+    const rawW = Number(document.getElementById('addCutW').value);
+    if (!Number.isFinite(rawL) || rawL <= 0) {
+      showToast('裁切長度必須大於 0 cm');
+      return;
+    }
+    if (mat && mat.category !== 'batten' && (!Number.isFinite(rawW) || rawW <= 0)) {
+      showToast('板材裁切寬度必須大於 0 cm');
+      return;
+    }
+    addPiece(matId, {
+      cutL: rawL,
+      cutW: mat && mat.category === 'batten' ? mat.stockW : rawW,
       orientation: document.getElementById('addOrient').value,
       joinery: document.getElementById('addJoinery').value
     });
@@ -4524,7 +4576,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   });
   rightBody.addEventListener('input', e => {
     const t = e.target;
-    if (t.id === 'kerfInput') { const parsedK = parseFloat(t.value); if (!isNaN(parsedK) && parsedK >= 0) { state.kerfCm = parsedK; saveToLocal(); renderBOM(rightBody, true); } return; }
+    if (t.id === 'kerfInput') { const parsedK = parseFloat(t.value); if (!isNaN(parsedK) && parsedK >= 0) { const clamped = Math.min(1, parsedK); if (parsedK > 1) { t.value = '1'; showToast('鋸路上限為 1 cm，已自動調整為 1 cm'); } state.kerfCm = clamped; saveToLocal(); renderBOM(rightBody, true); } return; }
     if (t.dataset.priceMat) {
       state.customPrices[t.dataset.priceMat] = Math.max(0, parseFloat(t.value) || 0); saveToLocal();
       const bom = computeBOM(), kpiVal = rightBody.querySelector('.kpi-val');
@@ -4538,9 +4590,10 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     if (t.id === 'insName') p.name = t.value;
     else if (t.id === 'insNotes') p.notes = t.value;
     else if (['insCutL', 'insCutW', 'insX', 'insY', 'insZ'].includes(t.id)) {
+      const prop = { insCutL: 'cutL', insCutW: 'cutW', insX: 'x', insY: 'y', insZ: 'z' }[t.id];
+      if (p.locked) { t.value = p[prop]; showToast(`「${p.name}」已固定，請先解鎖再編輯`); return; }
       const nextVal = parseFloat(t.value);
       if (isNaN(nextVal)) return;
-      const prop = { insCutL: 'cutL', insCutW: 'cutW', insX: 'x', insY: 'y', insZ: 'z' }[t.id];
       const clamped = (prop === 'cutL' || prop === 'cutW') ? Math.max(0.5, nextVal) : nextVal;
       if (state.collisionMode === 'prevent') {
         const hit = pieceCollidesWithAny(Object.assign({}, p, { [prop]: clamped }), p.id);
@@ -4569,6 +4622,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   });
   rightBody.addEventListener('change', e => {
     const t = e.target, p = state.pieces.find(x => x.id === state.selectedId); if (!p) return;
+    if (p.locked && ['insMat', 'insOrient'].includes(t.id)) { t.value = t.id === 'insMat' ? p.materialId : p.orientation; showToast(`「${p.name}」已固定，請先解鎖再編輯`); return; }
     if (t.id === 'insMat') {
       const res = swapPieceMaterialKeepCenterline(p, t.value);
       if (!res.ok) { t.value = p.materialId; showToast(res.reason); return; }
@@ -4591,6 +4645,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     const nudge = e.target.closest('[data-nudge]');
     if (nudge) {
       const p = state.pieces.find(x => x.id === state.selectedId); if (!p) return;
+      if (p.locked) { showToast('構件已固定，請先解鎖'); return; }
       const [axis, delta] = nudge.dataset.nudge.split(','), prevPos = p[axis];
       const beforeSnap = snapshot3D(false);
       const res = movePieceWithCollisionGuard(p, axis, parseFloat(delta));
@@ -4606,6 +4661,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       const p = state.pieces.find(x => x.id === state.selectedId);
       const refP = state.pieces.find(x => x.id === (document.getElementById('snapTargetSelect') && document.getElementById('snapTargetSelect').value));
       if (p && refP) {
+        if (p.locked) { showToast('構件已固定，請先解鎖'); return; }
         const test = Object.assign({}, p);
         snapPieceToReference(test, refP, faceSnap.dataset.faceSnap);
         if (state.collisionMode === 'prevent') {
@@ -4620,9 +4676,10 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       }
       return;
     }
-    if (e.target.id === 'btnAutoSeparatePiece' && state.selectedId) { pushHistory3D('自動退讓貼齊'); resolveCollisionsForPiece(state.selectedId); renderAll(); showToast('已自動退讓貼齊'); }
+    if (e.target.id === 'btnAutoSeparatePiece' && state.selectedId) { if (state.pieces.find(p => p.id === state.selectedId)?.locked) { showToast('構件已固定，請先解鎖'); return; } pushHistory3D('自動退讓貼齊'); resolveCollisionsForPiece(state.selectedId); renderAll(); showToast('已自動退讓貼齊'); }
     else if (e.target.id === 'btnFlipSection') {
       const p = state.pieces.find(x => x.id === state.selectedId); if (!p) return;
+      if (p.locked) { showToast('構件已固定，請先解鎖'); return; }
       if (state.collisionMode === 'prevent') {
         const hit = pieceCollidesWithAny(Object.assign({}, p, { flipSection: !p.flipSection }), p.id);
         if (hit) { showToast(`旋轉會與「${hit.other.name}」重疊 ${hit.ov.depth.toFixed(1)} cm，已阻擋`); return; }
@@ -4631,6 +4688,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     }
     else if (e.target.id === 'btnSnapGround') {
       const p = state.pieces.find(x => x.id === state.selectedId); if (!p || p.z === 0) return;
+      if (p.locked) { showToast('構件已固定，請先解鎖'); return; }
       if (state.collisionMode === 'prevent') {
         const hit = pieceCollidesWithAny(Object.assign({}, p, { z: 0 }), p.id);
         if (hit) { showToast(`貼齊地面會與「${hit.other.name}」重疊 ${hit.ov.depth.toFixed(1)} cm，已阻擋`); return; }
@@ -4808,7 +4866,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     activeBpPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (activeBpPtrs.size >= 2) {
       bpCanvas.setPointerCapture(e.pointerId);
-      if (bpDragState && (bpDragState.mode === 'move' || bpDragState.mode === 'resize')) commitBpDragIfChanged(sh, bpDragState);
+      restoreCancelledBpDrag(bpDragState);
       bpDraftShape = null; bpMarqueeRect = null; bpDragState = { mode: 'pinch' }; prevBpPinch = null; prevBpMid = null;
       renderBlueprintCanvas(); return;
     }
@@ -5159,7 +5217,14 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   splitDivider.addEventListener('pointerup', () => { isResizingSplit = false; splitDivider.classList.remove('dragging'); });
   splitDivider.addEventListener('dblclick', () => {
     state.splitRatio = 0.5;
-    document.getElementById('splitLeftPane').style.width = '50%';
+    const pane = document.getElementById('splitLeftPane');
+    if (window.innerWidth < 1080) {
+      pane.style.height = '50%';
+      pane.style.width = '';
+    } else {
+      pane.style.width = '50%';
+      pane.style.height = '';
+    }
     resizeCanvas();
   });
 
@@ -5213,6 +5278,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   document.getElementById('splitQuickNudge').addEventListener('click', e => {
     const btn = e.target.closest('[data-split-nudge]'); if (!btn) return;
     const p = state.pieces.find(x => x.id === state.selectedId); if (!p) { showToast('請先點擊右側 3D 構件'); return; }
+    if (p.locked) { showToast(`「${p.name}」已固定，請先解鎖再移動`); return; }
     const [axis, delta] = btn.dataset.splitNudge.split(','), prevPos = p[axis];
     const beforeSnap = snapshot3D(false);
     const res = movePieceWithCollisionGuard(p, axis, parseFloat(delta));
@@ -5234,7 +5300,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     activeSplitBpPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (activeSplitBpPtrs.size >= 2) {
       splitBpCanvas.setPointerCapture(e.pointerId);
-      if (splitBpDrag && (splitBpDrag.mode === 'move' || splitBpDrag.mode === 'resize')) commitBpDragIfChanged(sh, splitBpDrag);
+      restoreCancelledBpDrag(splitBpDrag);
       bpDraftShape = null; bpMarqueeRect = null; splitBpDrag = { mode: 'pinch' };
       prevSplitBpPinch = null; prevSplitBpMid = null; renderSplitViews(); return;
     }
@@ -5777,6 +5843,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     if (!p) return;
     pushHistory3D(p.locked ? `解鎖「${p.name}」` : `固定「${p.name}」`);
     p.locked = !p.locked;
+    postDragSuggestions = [];
     renderAll();
     showToast(p.locked ? `已固定「${p.name}」，不會誤拖移動` : `已解鎖「${p.name}」，可在畫布拖曳或微調`);
   });
@@ -5804,7 +5871,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     if (!chip) return;
     const item = postDragSuggestions[Number(chip.dataset.applySuggest)];
     const p = state.pieces.find(x => x.id === state.selectedId);
-    if (!item || !p) return;
+    if (!item || !p || p.locked) return;
     pushHistory3D(`一鍵貼齊：${item.label}`);
     p[item.axis] = item.val;
     postDragSuggestions = [];
@@ -5860,6 +5927,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
     }
     const lenBtn = e.target.closest('[data-quick-len]');
     if (lenBtn) {
+      if (p.locked) { showToast(`「${p.name}」已固定，請先點「已固定」解鎖`); return; }
       const delta = parseFloat(lenBtn.dataset.quickLen);
       const nextL = Math.max(5, Math.min(364, Number((p.cutL + delta).toFixed(1))));
       if (nextL === p.cutL) return;
@@ -5874,6 +5942,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
       return;
     }
     if (e.target.closest('[data-quick-rotate]')) {
+      if (p.locked) { showToast(`「${p.name}」已固定，請先點「已固定」解鎖`); return; }
       rotatePieceKeepCenterline(p);
       return;
     }
@@ -6031,10 +6100,15 @@ input, textarea { -webkit-user-select: text; user-select: text; }
   const restoredLocalProject = loadInitialState();
   if (window.innerWidth < 1080) state.selectedId = null;
   initAddForm();
-  renderAll(restoredLocalProject);
-  if (!restoredLocalProject) {
+  renderAll(false);
+  if (storageAccessDenied) {
+    setSaveStatus(false, '無法自動儲存');
+    showToast('瀏覽器停用本機儲存，離開前請從檔案選單匯出專案 JSON。');
+  } else if (!restoredLocalProject) {
     setSaveStatus(false, '舊專案讀取失敗');
     showToast('無法讀取瀏覽器中的舊專案。可從檔案選單匯入 JSON 備份。');
+  } else if (lastSavedProjectRaw === null) {
+    setSaveStatus(true, '尚未儲存');
   }
   resizeCanvas();
   requestAnimationFrame(() => resizeCanvas());
