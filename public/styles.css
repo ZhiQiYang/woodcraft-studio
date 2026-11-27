@@ -356,7 +356,7 @@ body {
 }
 
 main { padding-top: 29px; }
-h1, h2, p { margin: 0; }
+h1, h2, h3, p { margin: 0; }
 
 h1 {
   margin-inline: 5px;
@@ -366,12 +366,15 @@ h1 {
   line-height: 1.16;
 }
 
-.intro {
-  margin: 7px 5px 24px;
+.tool-group { margin-top: 26px; }
+.tool-group + .tool-group { margin-top: 36px; }
+.tool-group > h2, .empty {
+  margin: 0 5px 12px;
   color: var(--gb-ink-2);
-  font-size: clamp(17px, 4.6vw, 21px);
-  font-weight: 560;
+  font-size: 18px;
+  font-weight: 650;
 }
+.empty { margin-top: 24px; }
 
 .tools { display: grid; gap: 20px; }
 
@@ -396,16 +399,11 @@ h1 {
 .tool img {
   display: block;
   width: 100%;
-  aspect-ratio: 2;
+  aspect-ratio: 1.82;
   height: auto;
   object-fit: cover;
   object-position: center 47%;
   background: var(--mat-wood);
-}
-
-.tool .room-image {
-  aspect-ratio: 1.81;
-  background: var(--mat-concrete);
 }
 
 .tool-body {
@@ -417,17 +415,19 @@ h1 {
   padding: 10px clamp(12px, 4.4vw, 22px) 13px;
 }
 
-h2 {
+.tool h3 {
   font-size: clamp(23px, 7.2vw, 34px);
   font-weight: 850;
   line-height: 1.22;
   letter-spacing: .015em;
+  overflow-wrap: anywhere;
 }
 
 .tool p {
   margin-top: 4px;
   color: var(--gb-ink-2);
   font-size: clamp(13px, 4.2vw, 17px);
+  overflow-wrap: anywhere;
 }
 
 .arrow {
@@ -443,9 +443,7 @@ h2 {
 @media (min-width: 680px) {
   .shell { padding-top: 31px; }
   main { padding-top: 41px; }
-  .intro { margin-bottom: 30px; }
   .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-  .tool img, .tool .room-image { aspect-ratio: 1.82; }
   .tool-body { min-height: 101px; }
 }
 
