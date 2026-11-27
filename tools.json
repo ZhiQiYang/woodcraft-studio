@@ -1,0 +1,16 @@
+[
+  {
+    "name": "木工設計",
+    "description": "3D 組裝、圖紙與裁切估算",
+    "url": "/woodcraft/",
+    "stage": "active",
+    "cover": "/images/woodcraft.webp"
+  },
+  {
+    "name": "房間模擬器",
+    "description": "繪製房間、配置樑柱並查看 3D",
+    "url": "/room-space/",
+    "stage": "active",
+    "cover": "/images/room-space.webp"
+  }
+]

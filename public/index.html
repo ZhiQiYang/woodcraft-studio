@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#eef0ec">
-  <meta name="description" content="從正經工班開啟木工設計與房間模擬器。">
+  <meta name="description" content="正經工班的日常工具與試用中的應用。">
   <title>工作工具｜正經工班</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -16,29 +16,29 @@
     </header>
     <main>
       <h1>工作工具</h1>
-      <p class="intro">選擇要開啟的工具</p>
-      <nav class="tools" aria-label="工作工具">
-        <a class="tool" href="/woodcraft/" aria-labelledby="woodcraft-title" aria-describedby="woodcraft-description">
-          <img src="/images/woodcraft.webp" alt="" width="900" height="510" fetchpriority="high">
-          <div class="tool-body">
-            <div>
-              <h2 id="woodcraft-title">木工設計</h2>
-              <p id="woodcraft-description">3D 組裝、圖紙與裁切估算</p>
+      <section class="tool-group" aria-labelledby="active-heading">
+        <h2 id="active-heading">日常工具</h2>
+        <nav class="tools" aria-labelledby="active-heading">
+          <a class="tool" href="/woodcraft/" aria-labelledby="active-0-title" aria-describedby="active-0-description">
+            <img src="/images/woodcraft.webp" alt="" width="900" height="510"><div class="tool-body">
+              <div>
+                <h3 id="active-0-title">木工設計</h3>
+                <p id="active-0-description">3D 組裝、圖紙與裁切估算</p>
+              </div>
+              <span class="arrow" aria-hidden="true"><svg class="gb-icon" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
             </div>
-            <span class="arrow" aria-hidden="true"><svg class="gb-icon" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
-          </div>
-        </a>
-        <a class="tool" href="/room-space/" aria-labelledby="room-title" aria-describedby="room-description">
-          <img class="room-image" src="/images/room-space.webp" alt="" width="900" height="510">
-          <div class="tool-body">
-            <div>
-              <h2 id="room-title">房間模擬器</h2>
-              <p id="room-description">繪製房間、配置樑柱並查看 3D</p>
+          </a>
+          <a class="tool" href="/room-space/" aria-labelledby="active-1-title" aria-describedby="active-1-description">
+            <img src="/images/room-space.webp" alt="" width="900" height="510"><div class="tool-body">
+              <div>
+                <h3 id="active-1-title">房間模擬器</h3>
+                <p id="active-1-description">繪製房間、配置樑柱並查看 3D</p>
+              </div>
+              <span class="arrow" aria-hidden="true"><svg class="gb-icon" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
             </div>
-            <span class="arrow" aria-hidden="true"><svg class="gb-icon" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
-          </div>
-        </a>
-      </nav>
+          </a>
+        </nav>
+      </section>
     </main>
   </div>
 </body>
