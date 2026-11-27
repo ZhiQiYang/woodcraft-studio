@@ -12,6 +12,24 @@ LINE 圖文選單第三格「工作工具」連到[工作工具首頁](https://l
 
 ## 加入一個 AI 做的小工具
 
+### 一個指令上架
+
+在這個專案的資料夾開啟終端機。這台電腦需要 Node.js 22 以上、Git、已登入的 GitHub CLI 和本庫的推送權限。以下任選一種來源。
+
+```powershell
+node scripts/publish-app.mjs 備料清單 "$env:USERPROFILE\Downloads\備料清單.html"
+node scripts/publish-app.mjs 放樣計算 "$env:USERPROFILE\Downloads\放樣計算\dist"
+node scripts/publish-app.mjs 現場筆記 "https://example.org/site-notes/"
+```
+
+第一個參數是固定的工具代號，預設也用作首頁名稱；可加 `--name "顯示名稱"` 或 `--description "一句用途"`。同一代號配上新版檔案就會更新原入口。想並排比較兩版，給它們不同代號即可。新工具會出現在「試用中」。
+
+指令會從 GitHub 最新的 `main` 建立暫存副本，產生首頁、執行測試並以普通 Git 推送觸發 Cloudflare 部署。它會等到 Cloudflare 回報成功，核對正式首頁與站內工具的入口檔案，再印出網址。重跑相同內容會檢查部署。遇到其他人同時更新 `main` 而被 Git 拒絕時，重跑即可。若只想預演，可在指令最後加 `--check`，使用本機最新提交測試。
+
+單檔 HTML 應能獨立開啟。多檔網站請傳入已建置、含 `index.html` 的發布資料夾，圖片和腳本使用相對路徑，或以工具的 `/apps/<代號>/` 為基底。ZIP 先解壓縮。只放準備公開的網站檔案。需要伺服器或資料庫的應用可先部署在原服務，再把 HTTPS 網址加入首頁。
+
+### 從 GitHub 編輯清單
+
 1. 如果 AI 給你單檔 HTML，將它存成 `public/apps/<工具代號>/index.html`，並用 `/apps/<工具代號>/` 當網址。如果工具已經部署在別處，直接使用它的 HTTPS 網址。
 2. 在根目錄的 `tools.json` 陣列中加一筆。例如下面這個試用工具。封面可省略。
 

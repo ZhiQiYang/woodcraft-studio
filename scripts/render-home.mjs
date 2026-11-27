@@ -18,7 +18,7 @@ function isLocalPath(value) {
 function validateCatalog(tools) {
   const urls = new Set();
   for (const { name, description, url, stage, cover } of tools) {
-    if (!name?.trim() || !description?.trim()) throw new Error('工具需要名稱和說明');
+    if (!name?.trim() || (description !== undefined && typeof description !== 'string')) throw new Error('請填寫工具名稱，說明可省略');
     if (!['active', 'trial', 'archived'].includes(stage)) throw new Error(`「${name}」的 stage 無效`);
     if (!isLocalPath(url) && !(typeof url === 'string' && url.startsWith('https://') && URL.canParse(url))) {
       throw new Error(`「${name}」需要站內路徑或完整 HTTPS 網址`);
@@ -31,13 +31,12 @@ function validateCatalog(tools) {
 
 function renderCard(tool, id) {
   const title = escapeHtml(tool.name);
-  const description = escapeHtml(tool.description);
+  const description = tool.description ? `\n                <p id="${id}-description">${escapeHtml(tool.description)}</p>` : '';
   const image = tool.cover ? `<img src="${escapeHtml(tool.cover)}" alt="" width="900" height="510">` : '';
-  return `          <a class="tool" href="${escapeHtml(tool.url)}" aria-labelledby="${id}-title" aria-describedby="${id}-description">
+  return `          <a class="tool" href="${escapeHtml(tool.url)}" aria-labelledby="${id}-title"${description ? ` aria-describedby="${id}-description"` : ''}>
             ${image}<div class="tool-body">
               <div>
-                <h3 id="${id}-title">${title}</h3>
-                <p id="${id}-description">${description}</p>
+                <h3 id="${id}-title">${title}</h3>${description}
               </div>
               <span class="arrow" aria-hidden="true"><svg class="gb-icon" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
             </div>
